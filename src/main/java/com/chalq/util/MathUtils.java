@@ -2,41 +2,53 @@ package com.chalq.util;
 
 public class MathUtils {
 
-    static public short clamp (short value, short min, short max) {
+    public static short clamp (short value, short min, short max) {
         if (value < min) return min;
         if (value > max) return max;
         return value;
     }
 
-    static public int clamp (int value, int min, int max) {
+    public static int clamp (int value, int min, int max) {
         if (value < min) return min;
         if (value > max) return max;
         return value;
     }
 
-    static public long clamp (long value, long min, long max) {
+    public static long clamp (long value, long min, long max) {
         if (value < min) return min;
         if (value > max) return max;
         return value;
     }
 
-    static public float clamp (float value, float min, float max) {
+    public static float clamp (float value, float min, float max) {
         if (value < min) return min;
         if (value > max) return max;
         return value;
     }
 
-    static public double clamp (double value, double min, double max) {
+    public static double clamp (double value, double min, double max) {
         if (value < min) return min;
         if (value > max) return max;
         return value;
     }
 
-    static public float lerp (float fromValue, float toValue, float progress) {
+    public static float lerp (float fromValue, float toValue, float progress) {
         return fromValue + (toValue - fromValue) * progress;
     }
 
-    static public double lerp (double fromValue, double toValue, double progress) {
+    public static double lerp (double fromValue, double toValue, double progress) {
+        return fromValue + (toValue - fromValue) * progress;
+    }
+
+    public static float smoothStep (float fromValue, float toValue, float progress) {
+        progress = clamp(progress, 0, 1);
+        progress = progress * progress * (3 - 2 * progress);
+        return fromValue + (toValue - fromValue) * progress;
+    }
+
+    public static double smoothStep (double fromValue, double toValue, double progress) {
+        progress = clamp(progress, 0, 1);
+        progress = progress * progress * (3 - 2 * progress);
         return fromValue + (toValue - fromValue) * progress;
     }
 
@@ -47,4 +59,13 @@ public class MathUtils {
     public static float fract(float f) {
         return f - floor(f);
     }
+
+    public static float roundPlaces(float value, int decimalPlaces) {
+        return Math.round(value * Math.pow(10, decimalPlaces)) / (float) Math.pow(10, decimalPlaces);
+    }
+
+    public static double roundPlaces(double value, int decimalPlaces) {
+        return Math.round(value * Math.pow(10, decimalPlaces)) / Math.pow(10, decimalPlaces);
+    }
+
 }

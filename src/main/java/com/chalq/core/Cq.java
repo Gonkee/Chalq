@@ -4,6 +4,7 @@ import com.chalq.util.Color;
 import org.lwjgl.nanovg.NVGColor;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 
 import static org.lwjgl.nanovg.NanoVG.*;
 import static org.lwjgl.opengl.GL11.*;
@@ -15,29 +16,37 @@ public class Cq {
 
     public static float time = 0;
     public static float delta = 0;
-
+    public static float frameTime = 0;
     private static boolean initialized = false;
     private static long nvg;
     private static NVGColor color;
-//    private static NVGColor bgColor;
+
+    private static final ArrayList<Object> preventGarbageCollect = new ArrayList<>();
+
+    public enum TextAlignH { LEFT, CENTER, RIGHT }
+    public enum TextAlignV { TOP, CENTER, BOTTOM }
+
+    private static int alignH = NVG_ALIGN_CENTER;
+    private static int alignV = NVG_ALIGN_MIDDLE;
 
     protected static void init(long nvg, Color bgColor) {
+        Cq.nvg = nvg;
         initialized = true;
 
-        Cq.nvg = nvg;
         glClearColor(bgColor.r, bgColor.g, bgColor.b, 1);
         color = NVGColor.create();
-        color.r(1);
-        color.g(1);
-        color.b(1);
-        color.a(1);
 
         ByteBuffer fontBuffer = IOUtils.ioResourceToByteBuffer("bahnschrift.ttf", 40 * 1024);
+        preventGarbageCollect.add(fontBuffer);
         int font = nvgCreateFontMem(nvg, "bahnschrift", fontBuffer, 0);
+
+        // initial settings
+        setColor(1, 1, 1, 1);
+        textSettings(40, TextAlignH.CENTER, TextAlignV.CENTER);
     }
 
     private static void checkInit() {
-        if (!initialized) throw new IllegalStateException("Chalq has not been initialized! Create a CqWindow to initialize Chalq");
+        if (!initialized) throw new IllegalStateException("Chalq has not been initialized! Make sure CqWindow is fully initialized");
     }
 
     private static void fill() {
@@ -46,9 +55,38 @@ public class Cq {
     }
 
     private static void stroke(float strokeWidth) {
+        nvgLineCap(nvg, NVG_ROUND);
         nvgStrokeColor(nvg, color);
         nvgStrokeWidth(nvg, strokeWidth);
         nvgStroke(nvg);
+    }
+
+    public static void textSettings(float fontSize, TextAlignH alignH, TextAlignV alignV) {
+        checkInit();
+        nvgFontSize(nvg, fontSize);
+        switch (alignH) {
+            case LEFT:
+                Cq.alignH = NVG_ALIGN_LEFT;
+                break;
+            case CENTER:
+                Cq.alignH = NVG_ALIGN_CENTER;
+                break;
+            case RIGHT:
+                Cq.alignH = NVG_ALIGN_RIGHT;
+                break;
+        }
+        switch (alignV) {
+            case TOP:
+                Cq.alignV = NVG_ALIGN_TOP;
+                break;
+            case CENTER:
+                Cq.alignV = NVG_ALIGN_MIDDLE;
+                break;
+            case BOTTOM:
+                Cq.alignV = NVG_ALIGN_BOTTOM;
+                break;
+        }
+        nvgTextAlign(nvg, Cq.alignH | Cq.alignV);
     }
 
     public static void setColor(float r, float g, float b, float a) {
@@ -155,12 +193,9 @@ public class Cq {
         stroke(strokeWidth);
     }
 
-    public static void text(String text, float x, float y, float fontSize) {
+    public static void text(String text, float x, float y) {
         checkInit();
-        nvgBeginPath(nvg);
-        nvgFontSize(nvg, fontSize);
         nvgFontFace(nvg, "bahnschrift");
-        nvgTextAlign(nvg, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
         nvgFillColor(nvg, color);
         nvgText(nvg, x, y, text);
     }

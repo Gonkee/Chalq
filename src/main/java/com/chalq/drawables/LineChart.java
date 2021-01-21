@@ -9,12 +9,16 @@ import static com.chalq.core.Cq.*;
 
 public class LineChart implements Drawable {
 
+    private static final int MAX_GRAPH_DETAIL = 100;
+
     public final boolean stack;
     public final String xAxisLabel;
     public final String yAxisLabel;
     public boolean fill = false;
     public boolean yAxisStartAtZero = false;
     public boolean topAndBottomSpace = false;
+    public float minXUnitsToFillGraph = 10;
+    public int entriesPerXUnit = 1;
 
     private Color[] colors = null;
     private ArrayList<Float> data = new ArrayList<>();
@@ -63,6 +67,7 @@ public class LineChart implements Drawable {
             yAxisMaxValue = Math.max(yAxisMaxValue, max);
             yAxisMinValue = Math.min(yAxisMinValue, min);
         }
+
     }
 
 
@@ -100,24 +105,38 @@ public class LineChart implements Drawable {
             }
         }
 
-        final int numberOfDataPoints = data.size() / colors.length;
-        if (numberOfDataPoints > 1) {
+
+        final int numDataPoints = data.size() / colors.length;
+        final int numVertices = Math.min(numDataPoints, MAX_GRAPH_DETAIL);
+
+        float contentHorizontalScale = (width / numDataPoints);
+        float scaleCap = minXUnitsToFillGraph > 0 ? width / minXUnitsToFillGraph : Float.MAX_VALUE;
+        if (contentHorizontalScale > scaleCap) contentHorizontalScale = scaleCap;
+        float contentHorizontalBounds = numDataPoints * contentHorizontalScale;
+
+        if (numVertices > 1) {
             for (int i = colors.length - 1; i >= 0; i--) {
                 setColor(colors[i]);
 
                 float[] vertices;
-                if (fill) vertices = new float[(numberOfDataPoints + 2) * 2];
-                else vertices = new float[numberOfDataPoints * 2];
+                if (fill) vertices = new float[(numVertices + 2) * 2];
+                else vertices = new float[numVertices * 2];
 
                 int p = 0;
-                for (int dataID = 0; dataID < numberOfDataPoints; dataID++) {
-                    vertices[p++] = x + (width * dataID / (numberOfDataPoints - 1) );
+                for (int g = 0; g < numVertices; g++) {
+                    vertices[p++] = x + (contentHorizontalBounds * g / (numVertices - 1) ); // x coordinate
 
-                    float verticalPos = (data.get(dataID * colors.length + i) - yAxisBottom) / (yAxisTop - yAxisBottom);
+                    float dataPos = (float) g / numVertices * numDataPoints;
+                    int lDataID = MathUtils.floor(dataPos);
+                    int rDataID = MathUtils.clamp(lDataID + 1, 0, numDataPoints - 1);
+                    float lerpFac = MathUtils.fract(dataPos);
+
+                    float finalDataSample = MathUtils.lerp( data.get(lDataID * colors.length + i), data.get(rDataID * colors.length + i), lerpFac);
+                    float verticalPos = (finalDataSample - yAxisBottom) / (yAxisTop - yAxisBottom);
                     vertices[p++] = y + height - (verticalPos * height);
                 }
                 if (fill) {
-                    vertices[p++] = x + width;
+                    vertices[p++] = x + contentHorizontalBounds;
                     vertices[p++] = y + height;
                     vertices[p++] = x;
                     vertices[p++] = y + height;
@@ -128,25 +147,47 @@ public class LineChart implements Drawable {
 
         setColor(Color.WHITE);
         float lineWidth = 5;
-        line(x, y, x, y + height + lineWidth / 2, lineWidth);
-        line(x - lineWidth / 2, y + height, x + width, y + height, lineWidth);
+        line(x, y, x, y + height, lineWidth);
+        line(x, y + height, x + width, y + height, lineWidth);
 
         int closestPowOf10 = (int) (Math.log10(yAxisTop - yAxisBottom) - 0.5);
         float increment = (float) Math.pow(10, closestPowOf10);
         while (increment < (yAxisTop - yAxisBottom) / 8) increment *= 2;
 
+        textSettings(30, TextAlignH.RIGHT, TextAlignV.CENTER);
         for (int i = MathUtils.floor(yAxisMinValue / increment); (i - 1) * increment < yAxisMaxValue; i++ ) {
             float value = increment * i;
             float verticalPos = (value - yAxisBottom) / (yAxisTop - yAxisBottom);
             if (verticalPos <= 1 && verticalPos >= 0) {
                 float yValue = y + height - (verticalPos * height);
                 line(x - 20, yValue, x, yValue, lineWidth);
-
-                // currently buggy, causes crashes
-//                float textWidth = getTextWidth("" + value, 30);
-//                text("" + value, x - textWidth - 30, yValue, 30);
+                text("" + value, x - 30, yValue);
             }
         }
+
+        int numXUnits = numDataPoints / entriesPerXUnit;
+        int xAxisIncrement = 1;
+        boolean x5 = true;
+        while (numXUnits / xAxisIncrement > 9) {
+            xAxisIncrement *= x5 ? 5 : 2;
+            x5 = !x5;
+        }
+
+        textSettings(30, TextAlignH.CENTER, TextAlignV.TOP);
+        for (int i = 0; i <= numXUnits; i += xAxisIncrement) {
+            float horizontalPos = (float) i * entriesPerXUnit / (numDataPoints - 1);
+            if (horizontalPos >= 0 && horizontalPos <= 1) {
+                float xPos = x + (contentHorizontalBounds * horizontalPos); // x coordinate
+                line(xPos, y + height, xPos, y + height + 20, lineWidth);
+                text("" + i, xPos, y + height + 30);
+            }
+        }
+
+        textSettings(40, TextAlignH.CENTER, TextAlignV.BOTTOM);
+        text(yAxisLabel, x, y - 30);
+        textSettings(40, TextAlignH.CENTER, TextAlignV.TOP);
+        text(xAxisLabel, x + width / 2, y + height + 70);
+
     }
 
 }

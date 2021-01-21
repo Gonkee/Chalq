@@ -40,6 +40,7 @@ public class CqWindow {
 
         final long nvg = NanoVGGL3.nvgCreate(config.antialiasing ? NanoVGGL3.NVG_ANTIALIAS : 0);
         Cq.init(nvg, config.backgroundColor);
+        scene.init();
 
         long lastTick = System.nanoTime();
         final long interval = 1000000000 / fps;
@@ -53,6 +54,8 @@ public class CqWindow {
                 NanoVG.nvgBeginFrame(nvg, width, height, 1);
                 scene.update();
                 NanoVG.nvgEndFrame(nvg);
+
+                Cq.frameTime = (System.nanoTime() - lastTick) / 1000000000f;
 
                 glfwSwapBuffers(window);
                 glfwPollEvents();
