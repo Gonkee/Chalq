@@ -18,6 +18,8 @@ public class Dot {
     float startEmitRing = 0;
     boolean emittingRing = false;
 
+    boolean haveBeenInfected = false;
+    int ageOfInfection = 0;
     int R0 = 0;
     int R0S = 0;
 
@@ -74,6 +76,8 @@ public class Dot {
                     if (s.state == STATE_SUSCEPTIBLE) {
                         R0S++;
                         s.state = STATE_INFECTIOUS;
+                        s.haveBeenInfected = true;
+                        s.ageOfInfection = s.age;
                         emitRing(elapsed);
                     }
                 }
@@ -92,7 +96,7 @@ public class Dot {
     }
 
     public boolean predictedRAvailable() {
-        return state == STATE_INFECTIOUS && daysInfected > 3;
+        return state == STATE_INFECTIOUS && daysInfected > diseaseSim.daysToRecover / 2;
     }
 
     public float getPredictedR0() {
@@ -102,4 +106,5 @@ public class Dot {
     public float getPredictedR0S() {
         return (float) R0S * diseaseSim.daysToRecover / daysInfected;
     }
+
 }

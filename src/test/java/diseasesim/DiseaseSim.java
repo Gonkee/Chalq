@@ -11,10 +11,10 @@ public class DiseaseSim {
     Dot[] simDots;
 
     final int totalPopulation = 1000;
-    final float infectProbPerDay = 0.07f;
-    final float transRadius = 24;
+    final float infectProbPerDay = 0.03f;
+    final float transRadius = 30;
     final int initialInfectedCount = 10;
-    final int daysPerSec = 5;
+    final int daysPerSec = 3;
     final int daysToRecover = 20;
     final int daysToLoseImmunity = 20000;
     final int dotLifeSpan = 200;
@@ -34,6 +34,7 @@ public class DiseaseSim {
     int rCount = 0;
     float avgPredictedR0 = 0;
     float avgPredictedR0S = 0;
+    float avgAgeOfInfection = 0;
 
     public DiseaseSim() {
         simDots = new Dot[totalPopulation];
@@ -67,20 +68,30 @@ public class DiseaseSim {
             float sumR0S = 0;
             int predictedRSamples = 0;
 
+            int ageOfInfectionSamples = 0;
+            int sumAgeOfInfection = 0;
+
             for (Dot s : simDots) {
                 if (s.state == Dot.STATE_SUSCEPTIBLE) sCount++;
                 if (s.state == Dot.STATE_INFECTIOUS) iCount++;
                 if (s.state == Dot.STATE_RECOVERED) rCount++;
-                if (s.predictedRAvailable()) {
-                    sumR0 += s.getPredictedR0();
-                    sumR0S += s.getPredictedR0S();
+                if (s.state == Dot.STATE_RECOVERED) {
+                    sumR0 += s.R0;
+                    sumR0S += s.R0S;
                     predictedRSamples++;
+                }
+                if (s.state == Dot.STATE_INFECTIOUS) {
+                    sumAgeOfInfection += s.ageOfInfection;
+                    ageOfInfectionSamples++;
                 }
             }
 
             if (predictedRSamples == 0) predictedRSamples = 1;
             avgPredictedR0 = sumR0 / predictedRSamples;
             avgPredictedR0S = sumR0S / predictedRSamples;
+
+            if (ageOfInfectionSamples == 0) ageOfInfectionSamples = 1;
+            avgAgeOfInfection = (float) sumAgeOfInfection / ageOfInfectionSamples;
 
             toAddToChart = true;
 
