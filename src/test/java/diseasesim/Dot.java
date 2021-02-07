@@ -5,6 +5,7 @@ public class Dot {
     public static final int STATE_SUSCEPTIBLE = 0;
     public static final int STATE_INFECTIOUS = 1;
     public static final int STATE_RECOVERED = 2;
+    public static final int STATE_VACCINATED = 3;
 
     int state = STATE_SUSCEPTIBLE;
     float x, y;
@@ -56,9 +57,17 @@ public class Dot {
 
     public void stateCheck(Dot[] simDots, float elapsed) {
         age++;
-        if (age >= diseaseSim.dotLifeSpan) {
-            diseaseSim.killDot(arrayID);
-            return;
+
+        if (diseaseSim.exponentialDistribution) {
+            if (diseaseSim.rand.nextFloat() < diseaseSim.probOfDeathPerDay) {
+                diseaseSim.killDot(arrayID, age);
+                return;
+            }
+        } else {
+            if (age >= diseaseSim.dotLifeSpan) {
+                diseaseSim.killDot(arrayID, age);
+                return;
+            }
         }
 
         if (state == STATE_SUSCEPTIBLE) {
@@ -82,7 +91,7 @@ public class Dot {
                     }
                 }
             }
-        } else {
+        } else if (state == STATE_RECOVERED) {
             daysInfected = 0;
             daysRecovered++;
             if (daysRecovered >= diseaseSim.daysToLoseImmunity) state = STATE_SUSCEPTIBLE;

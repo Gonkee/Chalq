@@ -2,6 +2,8 @@
 package com.chalq.util;
 
 
+import com.chalq.math.MathUtils;
+
 public class Color {
 
     public static final Color WHITE = new Color(1, 1, 1, 1);

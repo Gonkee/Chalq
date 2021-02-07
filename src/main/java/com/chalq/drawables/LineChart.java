@@ -1,7 +1,7 @@
 package com.chalq.drawables;
 
 import com.chalq.util.Color;
-import com.chalq.util.MathUtils;
+import com.chalq.math.MathUtils;
 
 import java.util.ArrayList;
 

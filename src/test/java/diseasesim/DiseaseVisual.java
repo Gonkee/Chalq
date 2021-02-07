@@ -6,7 +6,7 @@ import com.chalq.core.CqScene;
 import com.chalq.core.CqWindow;
 import com.chalq.drawables.LineChart;
 import com.chalq.util.Color;
-import com.chalq.util.MathUtils;
+import com.chalq.math.MathUtils;
 
 import static com.chalq.core.Cq.*;
 import static diseasesim.Dot.*;
@@ -18,16 +18,23 @@ public class DiseaseVisual extends CqScene {
         config.width = 1920;
         config.height = 1080;
         config.backgroundColor = new Color(0.102f, 0.137f, 0.2f, 1f);
-        CqWindow window = new CqWindow(config, new DiseaseVisual());
+        new CqWindow(config, new DiseaseVisual());
     }
 
-    private static final Color SUSCEPTIBLE = new Color("#2c90e8");
-    private static final Color INFECTIOUS = new Color("#e82c2c");
-    private static final Color RECOVERED = new Color("#4d4d4d");
+    final Color yellow = new Color("#56B0FF");
+    final Color orange = new Color("#FF5151");
+
+    private static final Color COLOR_SUSCEPTIBLE = new Color("#2c90e8");
+    private static final Color COLOR_INFECTIOUS = new Color("#e82c2c");
+    private static final Color COLOR_RECOVERED = new Color("#4d4d4d");
+    private static final Color COLOR_VACCINATED = new Color("#177506");
     LineChart chart;
     DiseaseSim mainSim;
 
-    DiseaseSim[] sims = new DiseaseSim[100];
+    DiseaseSim[] sims = new DiseaseSim[0];
+
+    float small0w;
+    float Rwidth;
 
     @Override
     public void init() {
@@ -37,14 +44,17 @@ public class DiseaseVisual extends CqScene {
             sims[i] = new DiseaseSim();
         }
 
-        chart = new LineChart(250, 230, 600, 600, "Time Passed", "Population State",  true);
-        chart.initLines(INFECTIOUS, RECOVERED, SUSCEPTIBLE);
+        chart = new LineChart(330, 180, 500, 500, "Time Passed", "Population State",  true);
+        chart.initLines(COLOR_INFECTIOUS, COLOR_VACCINATED, COLOR_RECOVERED, COLOR_SUSCEPTIBLE);
         chart.fill = true;
+
+        small0w = getTextWidth("0", 30) + 1;
+        Rwidth = getTextWidth("R", 40) + 1;
     }
 
     @Override
     public void update() {
-        delta *= 2;
+//        delta *= 3;
 
         clearFrame();
         mainSim.update();
@@ -52,7 +62,7 @@ public class DiseaseVisual extends CqScene {
             sim.update();
         }
         if (mainSim.toAddToChart) {
-            chart.addData(mainSim.iCount, mainSim.rCount, mainSim.sCount);
+            chart.addData(mainSim.iCount, mainSim.vCount, mainSim.rCount, mainSim.sCount);
             mainSim.toAddToChart = false;
         }
         drawSimScene(mainSim);
@@ -60,26 +70,80 @@ public class DiseaseVisual extends CqScene {
     }
 
     private void drawAvgStats() {
-        float sumR0 = mainSim.avgPredictedR0;
-        float sumR0S = mainSim.avgPredictedR0S;
-        float sumInfectAge = mainSim.avgAgeOfInfection;
-
-        for (DiseaseSim sim : sims) {
-            sumR0 += sim.avgPredictedR0;
-            sumR0S += sim.avgPredictedR0S;
-            sumInfectAge += sim.avgAgeOfInfection;
+        float sumR0 = 0;
+        float sumR0S = 0;
+        float sumInfectAge = 0;
+        float sumDeathAges = 0;
+        
+        int rSampleCount = 0;
+        int ageCount = 0;
+        int deathCount = 0;
+        
+        if (mainSim.predictedRSamples > 0) {
+            rSampleCount++;
+            sumR0 += mainSim.avgPredictedR0;
+            sumR0S += mainSim.avgPredictedR0S;
+        }
+        if (mainSim.ageOfInfectionSamples > 0) {
+            ageCount++;
+            sumInfectAge += mainSim.avgAgeOfInfection;
+        }
+        if (mainSim.numDeaths > 0) {
+            deathCount++;
+            sumDeathAges += mainSim.avgDeathAge;
         }
 
-        float avgPredictedR0 = sumR0 / (sims.length + 1);
-        float avgPredictedR0S = sumR0S / (sims.length + 1);
-        float avgInfectAge = sumInfectAge / (sims.length + 1);
+        for (DiseaseSim sim : sims) {
+
+            if (sim.predictedRSamples > 0) {
+                rSampleCount++;
+                sumR0 += sim.avgPredictedR0;
+                sumR0S += sim.avgPredictedR0S;
+            }
+            if (sim.ageOfInfectionSamples > 0) {
+                ageCount++;
+                sumInfectAge += sim.avgAgeOfInfection;
+            }
+            if (sim.numDeaths > 0) {
+                deathCount++;
+                sumDeathAges += sim.avgDeathAge;
+            }
+        }
+
+        float avgPredictedR0 = rSampleCount > 0 ? sumR0 / rSampleCount : 0;
+        float avgPredictedR0S = rSampleCount > 0 ? sumR0S / rSampleCount : 0;
+        float avgInfectAge = ageCount > 0 ? sumInfectAge / ageCount : 0;
+        float avgDeathAge = deathCount > 0 ? sumDeathAges / deathCount : 0;
+
+
+        setColor(yellow);
+
+        float row1Y = 830;
+        float row2Y = row1Y + 60;
+        float row3Y = row2Y + 60;
+        float leftX = 420;
+        float rightX = leftX + 190;
+
+        strokeRect(leftX - 20, row1Y - 15, 355, 192, 3);
+
+        
+        textSettings(40, TextAlignH.LEFT, TextAlignV.TOP);
+        text("R", leftX, row1Y);
+        text(": ", leftX + Rwidth + small0w, row1Y);
+        text("R", rightX, row1Y);
+        text("S: ", rightX + Rwidth + small0w, row1Y);
+        text("Age of Infection: ", leftX, row2Y);
+        text("Avg Lifespan: ", leftX, row3Y);
 
         textSettings(30, TextAlignH.LEFT, TextAlignV.TOP);
-        text("R0: " + MathUtils.roundPlaces(avgPredictedR0, 2), 250, 950);
-        text("R0S: " + MathUtils.roundPlaces(avgPredictedR0S, 2), 450, 950);
-        text("Age of Infection: " + MathUtils.roundPlaces(avgInfectAge, 2), 650, 950);
-        text("Frame time: " + MathUtils.roundPlaces(frameTime, 2), 350, 1000);
-        text("Theory FPS: " + MathUtils.roundPlaces(1 / frameTime, 2), 650, 1000);
+        text("0", leftX + Rwidth, row1Y + 15);
+        text("0", rightX + Rwidth, row1Y + 15);
+
+        setColor(orange);
+        text("" + MathUtils.roundPlaces(avgPredictedR0, 1), leftX + Rwidth + small0w + getTextWidth(": ", 40), row1Y);
+        text("" + MathUtils.roundPlaces(avgPredictedR0S, 1), rightX + Rwidth + small0w + getTextWidth("S: ", 40), row1Y);
+        text("" + MathUtils.roundPlaces(avgInfectAge, 1), leftX + getTextWidth("Age of Infection: ", 40), row2Y);
+        text("" + MathUtils.roundPlaces(avgDeathAge, 1), leftX + getTextWidth("Avg Lifespan: ", 40), row3Y);
 
     }
 
@@ -94,9 +158,10 @@ public class DiseaseVisual extends CqScene {
     }
 
     public void drawDot(Dot dot) {
-        if (dot.state == STATE_SUSCEPTIBLE) setColor(SUSCEPTIBLE);
-        if (dot.state == STATE_INFECTIOUS) setColor(INFECTIOUS);
-        if (dot.state == STATE_RECOVERED) setColor(RECOVERED);
+        if (dot.state == STATE_SUSCEPTIBLE) setColor(COLOR_SUSCEPTIBLE);
+        if (dot.state == STATE_INFECTIOUS) setColor(COLOR_INFECTIOUS);
+        if (dot.state == STATE_RECOVERED) setColor(COLOR_RECOVERED);
+        if (dot.state == STATE_VACCINATED) setColor(COLOR_VACCINATED);
         fillCircle(dot.x, dot.y, 5);
 
         if (dot.emittingRing) {
@@ -105,7 +170,7 @@ public class DiseaseVisual extends CqScene {
             } else {
                 float time = Cq.time - dot.startEmitRing;
                 float alpha = MathUtils.clamp( -2 * time * (time - 1) , 0, 0.3f);
-                setColor(INFECTIOUS.r, INFECTIOUS.g, INFECTIOUS.b, alpha);
+                setColor(COLOR_INFECTIOUS.r, COLOR_INFECTIOUS.g, COLOR_INFECTIOUS.b, alpha);
                 strokeCircle(dot.x, dot.y, 5 + (Cq.time - dot.startEmitRing) * dot.diseaseSim.transRadius, 4);
                 if (time > 1) dot.emittingRing = false;
             }
