@@ -40,6 +40,8 @@ public class CqWindow {
 
         final long nvg = NanoVGGL3.nvgCreate(config.antialiasing ? NanoVGGL3.NVG_ANTIALIAS : 0);
         Cq.init(nvg, config.backgroundColor);
+        Cq.width = config.width;
+        Cq.height = config.height;
         scene.init();
 
         long lastTick = System.nanoTime();

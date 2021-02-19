@@ -21,6 +21,11 @@ public class Cq {
     private static long nvg;
     private static NVGColor color;
 
+    protected static int width;
+    protected static int height;
+    public static int getFrameWidth() { return width; }
+    public static int getFrameHeight() { return height; }
+
     private static final ArrayList<Object> preventGarbageCollect = new ArrayList<>();
 
     public enum TextAlignH { LEFT, CENTER, RIGHT }

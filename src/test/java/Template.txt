@@ -1,0 +1,26 @@
+import com.chalq.core.Cq;
+import com.chalq.core.CqConfig;
+import com.chalq.core.CqScene;
+import com.chalq.core.CqWindow;
+import com.chalq.util.Color;
+
+public class Template extends CqScene {
+
+    public static void main(String[] args) {
+        CqConfig config = new CqConfig();
+        config.width = 1920;
+        config.height = 1080;
+        config.backgroundColor = new Color(0.102f, 0.137f, 0.2f, 1f);
+        config.antialiasing = true;
+        new CqWindow(config, new Template());
+    }
+
+    @Override
+    public void init() {
+    }
+
+    @Override
+    public void update() {
+        Cq.clearFrame();
+    }
+}
