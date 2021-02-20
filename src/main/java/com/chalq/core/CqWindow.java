@@ -54,7 +54,7 @@ public class CqWindow {
                 lastTick = System.nanoTime();
 
                 NanoVG.nvgBeginFrame(nvg, width, height, 1);
-                scene.update();
+                scene.updateScene();
                 NanoVG.nvgEndFrame(nvg);
 
                 Cq.frameTime = (System.nanoTime() - lastTick) / 1000000000f;

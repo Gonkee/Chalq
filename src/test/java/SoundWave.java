@@ -3,6 +3,7 @@ import com.chalq.core.CqConfig;
 import com.chalq.core.CqScene;
 import com.chalq.core.CqWindow;
 import com.chalq.drawables.graph.GraphPlotter;
+import com.chalq.math.Vec2;
 import com.chalq.util.Color;
 
 import static com.chalq.core.Cq.*;
@@ -28,7 +29,10 @@ public class SoundWave extends CqScene {
     public void init() {
         wave = new GraphPlotter(getFrameWidth() / 2f - width / 2 - 20, getFrameHeight() / 2f - height / 2 + 150, width, height,
                 -2 * (float)Math.PI, 2 * (float)Math.PI, -2, 2);
-        wave.addFunction(GraphPlotter.toParametric(this::wave, false), -2 * (float)Math.PI, 2 * (float)Math.PI, Color.WHITE);
+        wave.addFunction(GraphPlotter.toParametric(this::wave, false), -2 * (float)Math.PI, 2 * (float)Math.PI, Color.WHITE, true);
+
+        addDrawable(wave);
+        interpolate(wave.pos, new Vec2(200, 200), time + 3, 2);
     }
 
     @Override
@@ -48,11 +52,11 @@ public class SoundWave extends CqScene {
                 fillCircle(dotX, dotY, 5);
             }
         }
-        wave.updateAllGraphs();
-        wave.draw();
     }
 
     private float wave(float in) {
+
+
         return (float) Math.sin(in - time * 3 - Math.PI / 2) / 1.5f;
     }
 

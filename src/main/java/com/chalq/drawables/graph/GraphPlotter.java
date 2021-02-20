@@ -1,7 +1,7 @@
 package com.chalq.drawables.graph;
 
 import com.chalq.core.Cq;
-import com.chalq.drawables.Drawable;
+import com.chalq.core.Drawable;
 import com.chalq.math.MathUtils;
 import com.chalq.math.Vec2;
 import com.chalq.util.Color;
@@ -9,15 +9,16 @@ import com.chalq.util.Color;
 import java.util.ArrayList;
 import java.util.function.Function;
 
-public class GraphPlotter implements Drawable {
+public class GraphPlotter extends Drawable {
 
     private final ArrayList<Function<Float, Vec2>> functions = new ArrayList<>();
     private final ArrayList<Float> minInputs = new ArrayList<>();
     private final ArrayList<Float> maxInputs = new ArrayList<>();
     private final ArrayList<float[]> curves = new ArrayList<>();
     private final ArrayList<Color> curveColors = new ArrayList<>();
+    private final ArrayList<Boolean> liveUpdateFlags = new ArrayList<>();
 
-    private float x, y, width, height;
+    private float width, height;
     private float xAxisMin, xAxisMax;
     private float yAxisMin, yAxisMax;
 
@@ -36,8 +37,8 @@ public class GraphPlotter implements Drawable {
                         float xAxisMin, float xAxisMax,
                         float yAxisMin, float yAxisMax )
     {
-        this.x = x;
-        this.y = y;
+        this.pos.x = x;
+        this.pos.y = y;
         this.width = width;
         this.height = height;
 
@@ -47,35 +48,40 @@ public class GraphPlotter implements Drawable {
         this.yAxisMax = yAxisMax;
     }
 
-    public int addFunction(Function<Float, Vec2> function, float minInput, float maxInput, Color color) {
+    public int addFunction(Function<Float, Vec2> function, float minInput, float maxInput, Color color, boolean liveUpdate) {
         int newFunctionID = functions.size();
         functions.add(function);
         minInputs.add(minInput);
         maxInputs.add(maxInput);
         curves.add(new float[levelOfDetail * 2]);
         curveColors.add(color);
+        liveUpdateFlags.add(liveUpdate);
         updateGraph(newFunctionID);
         return newFunctionID;
     }
 
-    public void updateAllGraphs() {
-        for (int i = 0; i < functions.size(); i++) updateGraph(i);
-    }
 
-    public void updateGraph(int index) {
+    private void updateGraph(int index) {
         for (int vID = 0; vID < levelOfDetail; vID++) {
             float input = MathUtils.lerp(minInputs.get(index), maxInputs.get(index), (float) vID / levelOfDetail);
             Vec2 result = functions.get(index).apply(input);
-            curves.get(index) [vID * 2    ] = x + (result.x - xAxisMin) / (xAxisMax - xAxisMin) * width;
-            curves.get(index) [vID * 2 + 1] = y + height - (result.y - yAxisMin) / (yAxisMax - yAxisMin) * height;
+            curves.get(index) [vID * 2    ] = pos.x + (result.x - xAxisMin) / (xAxisMax - xAxisMin) * width;
+            curves.get(index) [vID * 2 + 1] = pos.y + height - (result.y - yAxisMin) / (yAxisMax - yAxisMin) * height;
         }
     }
 
     @Override
-    public void draw() {
+    protected void draw() {
         for (int i = 0; i < functions.size(); i++) {
             Cq.setColor(curveColors.get(i));
             Cq.strokePolyline(curves.get(i), curveWidth);
+        }
+    }
+
+    @Override
+    protected void update() {
+        for (int i = 0; i < functions.size(); i++) {
+            if (liveUpdateFlags.get(i)) updateGraph(i);
         }
     }
 }

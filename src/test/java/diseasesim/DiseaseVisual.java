@@ -47,6 +47,7 @@ public class DiseaseVisual extends CqScene {
         chart = new LineChart(330, 180, 500, 500, "Time Passed", "Population State",  true);
         chart.initLines(COLOR_INFECTIOUS, COLOR_VACCINATED, COLOR_RECOVERED, COLOR_SUSCEPTIBLE);
         chart.fill = true;
+        addDrawable(chart);
 
         small0w = getTextWidth("0", 30) + 1;
         Rwidth = getTextWidth("R", 40) + 1;
@@ -154,7 +155,6 @@ public class DiseaseVisual extends CqScene {
             drawDot(s);
         }
 
-        chart.draw();
     }
 
     public void drawDot(Dot dot) {
