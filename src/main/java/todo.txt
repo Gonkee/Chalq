@@ -1,0 +1,4 @@
+
+- make everything into "drawable" objects which hold their own attributes
+- scale, rotation, translation, etc for drawables
+- "traceable" paths that can draw a path up to a certain percentage (supports basic paths like lines, arcs)

@@ -1,5 +1,7 @@
 package com.chalq.core;
 
+import com.chalq.math.MathUtils;
+import com.chalq.math.Vec2;
 import com.chalq.util.Color;
 import org.lwjgl.nanovg.NVGColor;
 
@@ -145,6 +147,35 @@ public class Cq {
         nvgMoveTo(nvg, x1, y1);
         nvgLineTo(nvg, x2, y2);
         stroke(strokeWidth);
+    }
+
+    public static void arcClockwise(float x1, float y1, float x2, float y2, float angleDegrees, float strokeWidth) {
+
+        angleDegrees %= 360;
+        if (angleDegrees < 0) angleDegrees += 360;
+
+        Vec2 to2ndPt = new Vec2(x2 - x1, y2 - y1);
+        float chordLength = to2ndPt.len();
+        if (chordLength == 0) return;
+
+        float chordToRadiusRatio = 2 * (float) Math.sin(MathUtils.degreesToRadians * angleDegrees / 2);
+        if (chordToRadiusRatio != 0) {
+            float radius = chordLength / chordToRadiusRatio;
+
+            // must normalize then scale, setLength() only does positive values, messing up angles larger than 180 (cosine < 0)
+            Vec2 chordMidpointToCenter = new Vec2(to2ndPt).rotate(90).nor().scl( radius * (float) Math.cos(MathUtils.degreesToRadians * angleDegrees / 2) );
+            Vec2 center = new Vec2( (x1 + x2) / 2, (y1 + y2) / 2 ).add( chordMidpointToCenter );
+            float ang1 = new Vec2(x1 - center.x, y1 - center.y).angle() * MathUtils.degreesToRadians;
+            float ang2 = new Vec2(x2 - center.x, y2 - center.y).angle() * MathUtils.degreesToRadians;
+
+            checkInit();
+            nvgBeginPath(nvg);
+            nvgMoveTo(nvg, x1, y1);
+            nvgArc(nvg, center.x, center.y, radius, ang1, ang2, NVG_CW);
+            stroke(strokeWidth);
+        } else {
+            line(x1, y1, x2, y2, strokeWidth);
+        }
     }
 
     public static void fillRect(float x, float y, float width, float height) {
