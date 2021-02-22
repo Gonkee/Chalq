@@ -1,7 +1,7 @@
 package com.chalq.drawables.graph;
 
 import com.chalq.core.Cq;
-import com.chalq.core.Drawable;
+import com.chalq.core.Object2D;
 import com.chalq.math.MathUtils;
 import com.chalq.math.Vec2;
 import com.chalq.util.Color;
@@ -9,7 +9,7 @@ import com.chalq.util.Color;
 import java.util.ArrayList;
 import java.util.function.Function;
 
-public class GraphPlotter extends Drawable {
+public class GraphPlotter extends Object2D {
 
     private final ArrayList<Function<Float, Vec2>> functions = new ArrayList<>();
     private final ArrayList<Float> minInputs = new ArrayList<>();

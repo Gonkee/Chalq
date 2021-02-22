@@ -5,7 +5,9 @@ import com.chalq.core.CqWindow;
 import com.chalq.drawables.Arrow;
 import com.chalq.drawables.graph.GraphPlotter;
 import com.chalq.math.Vec2;
+import com.chalq.object2d.Rectangle;
 import com.chalq.util.Color;
+
 
 import static com.chalq.core.Cq.*;
 
@@ -16,6 +18,7 @@ public class SoundWave extends CqScene {
     float height = 200;
 
     GraphPlotter wave;
+    Rectangle rect;
 
     public static void main(String[] args) {
         CqConfig config = new CqConfig();
@@ -38,6 +41,12 @@ public class SoundWave extends CqScene {
         Arrow arrow = new Arrow(300, 50, 100, 20, 5);
         arrow.arcAngle = -270;
         addDrawable(arrow);
+
+        rect = new Rectangle(500, 300, 200, 200);
+        addDrawable(rect);
+//        interpolate(rect.scale, new Vec2(0.5f, 0.5f), time + 1.5f, 1);
+//        interpolate(rect.scale, new Vec2(5f, 5f), time + 2.5f, 1);
+        interpolate(rect.traceProgress, 1, time + 1.5f, 2);
 
     }
 

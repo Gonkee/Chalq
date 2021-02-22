@@ -1,6 +1,6 @@
 package com.chalq.drawables;
 
-import com.chalq.core.Drawable;
+import com.chalq.core.Object2D;
 import com.chalq.util.Color;
 import com.chalq.math.MathUtils;
 
@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 import static com.chalq.core.Cq.*;
 
-public class LineChart extends Drawable {
+public class LineChart extends Object2D {
 
     private static final int MAX_GRAPH_DETAIL = 100;
 

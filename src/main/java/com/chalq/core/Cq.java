@@ -20,7 +20,7 @@ public class Cq {
     public static float delta = 0;
     public static float frameTime = 0;
     private static boolean initialized = false;
-    private static long nvg;
+    public static long nvg;
     private static NVGColor color;
 
     protected static int width;
@@ -61,7 +61,7 @@ public class Cq {
         nvgFill(nvg);
     }
 
-    private static void stroke(float strokeWidth) {
+    public static void stroke(float strokeWidth) {
         nvgLineCap(nvg, NVG_ROUND);
         nvgStrokeColor(nvg, color);
         nvgStrokeWidth(nvg, strokeWidth);

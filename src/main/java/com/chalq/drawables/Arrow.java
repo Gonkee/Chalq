@@ -1,10 +1,10 @@
 package com.chalq.drawables;
 
 import com.chalq.core.Cq;
-import com.chalq.core.Drawable;
+import com.chalq.core.Object2D;
 import com.chalq.math.Vec2;
 
-public class Arrow extends Drawable {
+public class Arrow extends Object2D {
 
     public float width;
     public final Vec2 pointVector = new Vec2();

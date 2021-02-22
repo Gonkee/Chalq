@@ -8,10 +8,10 @@ import java.util.ArrayList;
 
 public abstract class CqScene {
 
-    private ArrayList<Drawable> drawables = new ArrayList<>();
+    private ArrayList<Object2D> drawables = new ArrayList<>();
     private ArrayList<Interpolation> interpolations = new ArrayList<>();
 
-    private abstract class Interpolation {
+    private static abstract class Interpolation {
         public float startTime, duration;
         public boolean started = false;
         private Interpolation(float startTime, float duration) {
@@ -21,7 +21,7 @@ public abstract class CqScene {
         public abstract boolean update();
     }
 
-    private class ScalarInterpolation extends Interpolation {
+    private static class ScalarInterpolation extends Interpolation {
         private final Scalar value;
         private final float end;
 
@@ -54,7 +54,7 @@ public abstract class CqScene {
         }
     }
 
-    private class Vec2Interpolation extends Interpolation {
+    private static class Vec2Interpolation extends Interpolation {
         private final Vec2 value;
         private final float endX, endY;
         private float startX, startY;
@@ -94,7 +94,7 @@ public abstract class CqScene {
 
     public abstract void update();
 
-    public int addDrawable(Drawable drawable) {
+    public int addDrawable(Object2D drawable) {
         int id = drawables.size();
         drawables.add(drawable);
         return id;
@@ -105,7 +105,7 @@ public abstract class CqScene {
     }
 
     protected void updateScene() {
-        for (Drawable d : drawables) {
+        for (Object2D d : drawables) {
             if (d != null) {
                 if (d.awake) d.update();
                 d.draw();

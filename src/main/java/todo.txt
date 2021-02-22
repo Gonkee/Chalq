@@ -2,3 +2,13 @@
 - make everything into "drawable" objects which hold their own attributes
 - scale, rotation, translation, etc for drawables
 - "traceable" paths that can draw a path up to a certain percentage (supports basic paths like lines, arcs)
+
+path components:
+- line
+- circle
+- arc
+
+trace bezier paths like after effects
+
+make TracePath follow Object2D scale, translation, rotation, etc
+generalise tracepath workflow to all polygons etc, not just rectangle
