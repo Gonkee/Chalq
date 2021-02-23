@@ -11,10 +11,10 @@ public class TracePath {
     private float totalLength;
     private float progress;
 
-    private float[] vertices = new float[0];
-    private float[] cumulativeLengths = new float[0];
+    private float[] vertices = new float[0]; // size = (number of segments + 1) * 2
+    private float[] cumulativeLengths = new float[0]; // size = number of segments + 1
 
-    private int completeSegments;
+    private int completeSegments; // max size = number of segments
     private float incompleteSegmentLength;
 
     public TracePath(float[] vertices) {
