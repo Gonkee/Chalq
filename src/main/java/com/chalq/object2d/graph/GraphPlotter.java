@@ -71,7 +71,7 @@ public class GraphPlotter extends Object2D {
     }
 
     @Override
-    protected void draw() {
+    public void draw(long nvg) {
         for (int i = 0; i < functions.size(); i++) {
             Cq.setColor(curveColors.get(i));
             Cq.strokePolyline(curves.get(i), curveWidth);

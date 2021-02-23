@@ -108,7 +108,7 @@ public abstract class CqScene {
         for (Object2D d : drawables) {
             if (d != null) {
                 if (d.awake) d.update();
-                d.draw();
+                d.draw(Cq.nvg);
             }
         }
         for (int i = interpolations.size() - 1; i >= 0; i--) {

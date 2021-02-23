@@ -57,7 +57,7 @@ public class Cq {
     }
 
     private static void fill() {
-        nvgFillColor(nvg, color);
+        nvgFillColor(nvg,  color);
         nvgFill(nvg);
     }
 

@@ -5,6 +5,8 @@ import com.chalq.core.CqWindow;
 import com.chalq.object2d.Arrow;
 import com.chalq.object2d.graph.GraphPlotter;
 import com.chalq.math.Vec2;
+import com.chalq.object2d.path2d.Line;
+import com.chalq.object2d.shape2d.Circle;
 import com.chalq.object2d.shape2d.Rectangle;
 import com.chalq.util.Color;
 
@@ -31,47 +33,63 @@ public class SoundWave extends CqScene {
 
     @Override
     public void init() {
-        wave = new GraphPlotter(getFrameWidth() / 2f - width / 2 - 20, getFrameHeight() / 2f - height / 2 + 150, width, height,
-                -2 * (float)Math.PI, 2 * (float)Math.PI, -2, 2);
-        wave.addFunction(GraphPlotter.toParametric(this::wave, false), -2 * (float)Math.PI, 2 * (float)Math.PI, Color.WHITE, true);
+//        wave = new GraphPlotter(getFrameWidth() / 2f - width / 2 - 20, getFrameHeight() / 2f - height / 2 + 150, width, height,
+//                -2 * (float)Math.PI, 2 * (float)Math.PI, -2, 2);
+//        wave.addFunction(GraphPlotter.toParametric(this::wave, false), -2 * (float)Math.PI, 2 * (float)Math.PI, Color.WHITE, true);
+//
+//        addDrawable(wave);
 
-        addDrawable(wave);
-        interpolate(wave.pos, new Vec2(200, 200), time + 2, 2);
+        GraphPlotter circleGraph = new GraphPlotter(getFrameWidth() / 2f - width / 2 - 20, getFrameHeight() / 2f - height / 2 - 150, width, width,
+                -2, 2, -2, 2);
+        circleGraph.addFunction(this::circleFunc, 0, 400, Color.WHITE, true);
 
-        Arrow arrow = new Arrow(300, 50, 100, 20, 5);
-        arrow.arcAngle = -270;
-        addDrawable(arrow);
+        addDrawable(circleGraph);
+//        interpolate(wave.pos, new Vec2(200, 200), time + 2, 2);
+//
+//        Arrow arrow = new Arrow(300, 50, 100, 20, 5);
+//        arrow.arcAngle = -270;
+//        addDrawable(arrow);
 
         rect = new Rectangle(500, 300, 200, 200);
-        addDrawable(rect);
+        rect.fill = true;
+        rect.fillColor = new Color(1, 1, 0, 0.5f);
+        rect.outline.traceProgress.val = 1f;
+
+//        rect.popUpSlow(this, 1, 500, 500);
+        rect.addAndTrace(this, 500, 500);
+//        addDrawable(rect);
 //        interpolate(rect.scale, new Vec2(0.5f, 0.5f), time + 1.5f, 1);
 //        interpolate(rect.scale, new Vec2(5f, 5f), time + 2.5f, 1);
-        interpolate(rect.traceProgress, 1, time + 1.5f, 2);
+//        interpolate(rect.outline.traceProgress, 1, time + 1.5f, 2);
 
+//        addDrawable(new Line(100, 600, 0, 300));
+
+//        Circle circle = new Circle(600, 800, 50);
+//        addDrawable(circle);
+//        interpolate(circle.outline.traceProgress, 1, time + 1.5f, 2);
     }
 
     @Override
     public void update() {
 
-        clearFrame();
 
-        int columns = 20;
-        int rows = 10;
-
-        float dotsPerPeriod = 10;
-        for (int i = 0; i < columns; i++) {
-            float offsetX = (float) Math.sin(i / dotsPerPeriod * 2 * Math.PI - time * 3) * width / columns * 0.8f;
-            for (int g = 0; g < rows; g++) {
-                float dotX = (getFrameWidth() / 2f - width / 2) + width * ((float) i / columns) + offsetX;
-                float dotY = (getFrameHeight() / 2f - height / 2) + height * ((float) g / rows) - 80;
-                fillCircle(dotX, dotY, 5);
-            }
-        }
-
-        Cq.arcClockwise(1500, 600, 1500, 500, -270, 4);
-        Cq.setColor(1, 0, 0, 1);
-        Cq.fillCircle(1500, 600, 10);
-        Cq.fillCircle(1500, 500, 10);
+//        int columns = 20;
+//        int rows = 10;
+//
+//        float dotsPerPeriod = 10;
+//        for (int i = 0; i < columns; i++) {
+//            float offsetX = (float) Math.sin(i / dotsPerPeriod * 2 * Math.PI - time * 3) * width / columns * 0.8f;
+//            for (int g = 0; g < rows; g++) {
+//                float dotX = (getFrameWidth() / 2f - width / 2) + width * ((float) i / columns) + offsetX;
+//                float dotY = (getFrameHeight() / 2f - height / 2) + height * ((float) g / rows) - 80;
+//                fillCircle(dotX, dotY, 5);
+//            }
+//        }
+//
+//        Cq.arcClockwise(1500, 600, 1500, 500, -270, 4);
+//        Cq.setColor(1, 0, 0, 1);
+//        Cq.fillCircle(1500, 600, 10);
+//        Cq.fillCircle(1500, 500, 10);
 
 
     }
@@ -82,4 +100,7 @@ public class SoundWave extends CqScene {
         return (float) Math.sin(in - time * 3 - Math.PI / 2) / 1.5f;
     }
 
+    private Vec2 circleFunc(float t) {
+        return new Vec2(0, 1).rotate(t);
+    }
 }

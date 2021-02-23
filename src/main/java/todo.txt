@@ -12,3 +12,8 @@ trace bezier paths like after effects
 
 make TracePath follow Object2D scale, translation, rotation, etc
 generalise tracepath workflow to all polygons etc, not just rectangle
+
+##################
+localToGlobal function - used for all penXXX functions (e.g. penBeginPath, penLineTo)
+which are just the nvg functions but with vectors gone through local to global space transform
+###############

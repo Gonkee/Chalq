@@ -19,7 +19,7 @@ public class Arrow extends Object2D {
     }
 
     @Override
-    protected void draw() {
+    public void draw(long nvg) {
         if (arcAngle > 0) {
             Cq.arcClockwise(pos.x, pos.y, pos.x + pointVector.x, pos.y + pointVector.y, arcAngle, width);
         } else if (arcAngle < 0) {

@@ -73,7 +73,7 @@ public class LineChart extends Object2D {
 
 
     @Override
-    protected void draw() {
+    public void draw(long nvg) {
 
         // setting the y axis scale
         float yAxisBottom;

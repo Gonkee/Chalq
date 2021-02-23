@@ -54,6 +54,7 @@ public class CqWindow {
                 lastTick = System.nanoTime();
 
                 NanoVG.nvgBeginFrame(nvg, width, height, 1);
+                Cq.clearFrame();
                 scene.updateScene();
                 NanoVG.nvgEndFrame(nvg);
 
