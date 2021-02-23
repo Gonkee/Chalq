@@ -1,4 +1,4 @@
-package com.chalq.drawables;
+package com.chalq.object2d.path2d;
 
 import com.chalq.core.Cq;
 import com.chalq.math.MathUtils;
@@ -6,7 +6,7 @@ import com.chalq.math.MathUtils;
 import static com.chalq.core.Cq.nvg;
 import static org.lwjgl.nanovg.NanoVG.*;
 
-public class TracePath {
+public class PolyPath extends Path2D{
 
     private float totalLength;
     private float progress;
@@ -17,7 +17,7 @@ public class TracePath {
     private int completeSegments; // max size = number of segments
     private float incompleteSegmentLength;
 
-    public TracePath(float[] vertices) {
+    public PolyPath(float[] vertices) {
         setPath(vertices);
     }
     
@@ -45,6 +45,7 @@ public class TracePath {
         setProgress(progress);
     }
 
+    @Override
     public void setProgress(float progress) {
         this.progress = MathUtils.clamp(progress, 0, 1);
         float portionLength = totalLength * this.progress;
@@ -81,4 +82,13 @@ public class TracePath {
         Cq.stroke(4);
     }
 
+    @Override
+    protected void update() {
+
+    }
+
+    @Override
+    public void trace() {
+
+    }
 }

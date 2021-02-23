@@ -1,4 +1,4 @@
-package com.chalq.drawables.graph;
+package com.chalq.object2d.graph;
 
 import com.chalq.core.Cq;
 import com.chalq.core.Object2D;

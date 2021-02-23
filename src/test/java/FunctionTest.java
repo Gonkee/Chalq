@@ -2,8 +2,7 @@ import com.chalq.core.Cq;
 import com.chalq.core.CqConfig;
 import com.chalq.core.CqScene;
 import com.chalq.core.CqWindow;
-import com.chalq.drawables.graph.GraphPlotter;
-import com.chalq.math.Vec2;
+import com.chalq.object2d.graph.GraphPlotter;
 import com.chalq.util.Color;
 
 public class FunctionTest extends CqScene {

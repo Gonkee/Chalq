@@ -1,4 +1,4 @@
-package com.chalq.drawables;
+package com.chalq.object2d;
 
 import com.chalq.core.Object2D;
 import com.chalq.util.Color;

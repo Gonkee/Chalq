@@ -4,7 +4,7 @@ import com.chalq.core.Cq;
 import com.chalq.core.CqConfig;
 import com.chalq.core.CqScene;
 import com.chalq.core.CqWindow;
-import com.chalq.drawables.LineChart;
+import com.chalq.object2d.LineChart;
 import com.chalq.util.Color;
 import com.chalq.math.MathUtils;
 
