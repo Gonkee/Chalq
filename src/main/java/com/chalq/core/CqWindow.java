@@ -55,7 +55,9 @@ public class CqWindow {
 
                 NanoVG.nvgBeginFrame(nvg, width, height, 1);
                 Cq.clearFrame();
-                scene.updateScene();
+                scene.processInterpolations();
+                scene.drawRecursive(nvg);
+                scene.updateRecursive(); // update later, as custom drawing should be on top of drawn objects
                 NanoVG.nvgEndFrame(nvg);
 
                 Cq.frameTime = (System.nanoTime() - lastTick) / 1000000000f;

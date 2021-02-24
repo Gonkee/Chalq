@@ -4,8 +4,6 @@ package com.chalq.object2d.shape2d;
 
 import com.chalq.object2d.path2d.ArcPath;
 
-import static org.lwjgl.nanovg.NanoVG.*;
-
 public class Circle extends Shape2D {
 
     public float radius;
@@ -20,9 +18,9 @@ public class Circle extends Shape2D {
     }
 
     @Override
-    protected void fillShape(long nvg) {
-        nvgBeginPath(nvg);
-        nvgCircle(nvg, pos.x, pos.y, radius);
-        fill(nvg);
+    public void draw(long nvg) {
+        penBeginPath(nvg);
+//        penCircle(nvg, pos.x, pos.y, radius);
+        penFillPath(nvg);
     }
 }

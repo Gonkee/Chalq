@@ -25,7 +25,7 @@ public class FunctionTest extends CqScene {
         plotter = new GraphPlotter(200, 200, 800, 400, -10, 10, -5, 5);
         plotter.addFunction(GraphPlotter.toParametric(this::f, false), -10, 10, new Color(1, 0, 0, 1), true);
         plotter.addFunction(GraphPlotter.toParametric(this::g, false), -10, 10, new Color("#56B0FF"), true);
-        addDrawable(plotter);
+        addChild(plotter);
     }
 
     @Override

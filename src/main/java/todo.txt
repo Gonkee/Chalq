@@ -17,3 +17,8 @@ generalise tracepath workflow to all polygons etc, not just rectangle
 localToGlobal function - used for all penXXX functions (e.g. penBeginPath, penLineTo)
 which are just the nvg functions but with vectors gone through local to global space transform
 ###############
+
+maybe use a "Traceable" interface for the tracing functionality, instead of in Shape2D,
+so that other stuff like graph plotters can be traced too?
+
+only allow interpolation of specific attributes to remove the need of mutable scalars?

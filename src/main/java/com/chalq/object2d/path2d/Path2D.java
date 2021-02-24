@@ -19,4 +19,9 @@ public abstract class Path2D extends Object2D {
     public abstract void setProgress(float progress);
 
 
+    @Override
+    protected void update() {
+        setProgress(traceProgress.val);
+    }
+
 }

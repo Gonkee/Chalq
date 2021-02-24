@@ -3,8 +3,6 @@ package com.chalq.object2d.shape2d;
 import com.chalq.math.Vec2;
 import com.chalq.object2d.path2d.PolyPath;
 
-import static org.lwjgl.nanovg.NanoVG.*;
-
 public class Rectangle extends Shape2D {
 
     public final Vec2 size = new Vec2();
@@ -16,24 +14,30 @@ public class Rectangle extends Shape2D {
         size.x = width;
         size.y = height;
         outline = new PolyPath(new float[] {
-                pos.x, pos.y,
-                pos.x + width, pos.y,
-                pos.x + width, pos.y + height,
-                pos.x, pos.y + height,
-                pos.x, pos.y,
+                0, 0,
+                width, 0,
+                width, height,
+                0, height,
+                0, 0,
         } );
+
+        addChild(outline);
     }
 
+    @Override
+    protected void update() {
+
+    }
 
     @Override
-    protected void fillShape(long nvg) {
-        nnvgBeginPath(nvg);
-        nvgMoveTo(nvg, pos.x, pos.y);
-        nvgLineTo(nvg, pos.x + size.x, pos.y);
-        nvgLineTo(nvg, pos.x + size.x, pos.y + size.y);
-        nvgLineTo(nvg, pos.x, pos.y + size.y);
-        nvgLineTo(nvg, pos.x, pos.y);
-        setColor(fillColor);
-        fill(nvg);
+    public void draw(long nvg) {
+        penBeginPath(nvg);
+        penMoveTo(nvg, 0, 0);
+        penLineTo(nvg, size.x, 0);
+        penLineTo(nvg, size.x, size.y);
+        penLineTo(nvg, 0, size.y);
+        penLineTo(nvg, 0, 0);
+        penSetColor(fillColor);
+        penFillPath(nvg);
     }
 }

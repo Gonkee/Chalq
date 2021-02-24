@@ -2,7 +2,6 @@ package com.chalq.object2d.path2d;
 
 import com.chalq.math.Vec2;
 
-import static org.lwjgl.nanovg.NanoVG.*;
 
 public class Line extends Path2D{
 
@@ -25,14 +24,14 @@ public class Line extends Path2D{
     @Override
     public void draw(long nvg) {
 
-        nvgBeginPath(nvg);
-        nvgMoveTo(nvg, pos.x, pos.y);
+        penBeginPath(nvg);
+        penMoveTo(nvg, pos.x, pos.y);
 
         switch (strokeStyle) {
             case SOLID:
-                nvgLineTo(nvg, pos.x + travel.x, pos.y + travel.y);
-                setColor(color);
-                stroke(nvg, strokeWidth);
+                penLineTo(nvg, pos.x + travel.x, pos.y + travel.y);
+                penSetColor(color);
+                penStrokePath(nvg, strokeWidth);
                 break;
             case DASHED:
                 break;
@@ -41,8 +40,4 @@ public class Line extends Path2D{
         }
     }
 
-    @Override
-    protected void update() {
-
-    }
 }

@@ -3,13 +3,23 @@ package com.chalq.core;
 import com.chalq.math.MathUtils;
 import com.chalq.math.Scalar;
 import com.chalq.math.Vec2;
+import com.chalq.object2d.shape2d.Shape2D;
 
 import java.util.ArrayList;
 
-public abstract class CqScene {
+public class CqScene extends Object2D {
 
-    private ArrayList<Object2D> drawables = new ArrayList<>();
     private ArrayList<Interpolation> interpolations = new ArrayList<>();
+
+    @Override
+    public final void draw(long nvg) {
+
+    }
+
+    @Override
+    protected void update() {
+
+    }
 
     private static abstract class Interpolation {
         public float startTime, duration;
@@ -90,32 +100,26 @@ public abstract class CqScene {
     }
 
 
-    public abstract void init();
+    public void init() {
 
-    public abstract void update();
-
-    public int addDrawable(Object2D drawable) {
-        int id = drawables.size();
-        drawables.add(drawable);
-        return id;
     }
 
-    public void removeDrawable(int id) {
-        drawables.set(id, null);
-    }
 
-    protected void updateScene() {
-        for (Object2D d : drawables) {
-            if (d != null) {
-                if (d.awake) d.update();
-                d.draw(Cq.nvg);
-            }
-        }
+
+//    protected void updateScene() {
+//        for (Object2D d : drawables) {
+//            if (d != null) {
+//                if (d.awake) d.updateRecursive();
+//                d.drawRecursive(Cq.nvg);
+//            }
+//        }
+//
+//        update();
+//    }
+    protected void processInterpolations() {
         for (int i = interpolations.size() - 1; i >= 0; i--) {
             if (interpolations.get(i).update()) interpolations.remove(i);
         }
-
-        update();
     }
 
     public void interpolate(Scalar value, float to, float startTime, float duration) {
@@ -125,4 +129,29 @@ public abstract class CqScene {
     public void interpolate(Vec2 value, Vec2 to, float startTime, float duration) {
         interpolations.add(new Vec2Interpolation(value, to, startTime, duration));
     }
+
+    public void popUpObjectSlow(Object2D object2D, float targetScale, float x, float y) {
+        addChild(object2D);
+        object2D.pos.x = x;
+        object2D.pos.y = y;
+        object2D.scale.set(0, 0);
+        interpolate(object2D.scale, new Vec2(targetScale, targetScale), Cq.time, 0.8f);
+    }
+
+    public void popUpObjectFast(Object2D object2D, float targetScale, float x, float y) {
+        addChild(object2D);
+        object2D.pos.x = x;
+        object2D.pos.y = y;
+        object2D.scale.set(0, 0);
+        interpolate(object2D.scale, new Vec2(targetScale, targetScale), Cq.time, 0.2f);
+    }
+
+    public void traceObject(Shape2D shape, float x, float y) {
+        addChild(shape);
+        shape.pos.x = x;
+        shape.pos.y = y;
+        shape.outline.traceProgress.val = 0;
+        interpolate(shape.outline.traceProgress, 1, Cq.time, 0.8f);
+    }
+
 }

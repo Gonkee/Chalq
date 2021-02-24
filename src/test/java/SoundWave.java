@@ -43,7 +43,7 @@ public class SoundWave extends CqScene {
                 -2, 2, -2, 2);
         circleGraph.addFunction(this::circleFunc, 0, 400, Color.WHITE, true);
 
-        addDrawable(circleGraph);
+        popUpObjectSlow(circleGraph, 1, 500, 200);
 //        interpolate(wave.pos, new Vec2(200, 200), time + 2, 2);
 //
 //        Arrow arrow = new Arrow(300, 50, 100, 20, 5);
@@ -51,12 +51,11 @@ public class SoundWave extends CqScene {
 //        addDrawable(arrow);
 
         rect = new Rectangle(500, 300, 200, 200);
-        rect.fill = true;
         rect.fillColor = new Color(1, 1, 0, 0.5f);
         rect.outline.traceProgress.val = 1f;
 
-//        rect.popUpSlow(this, 1, 500, 500);
-        rect.addAndTrace(this, 500, 500);
+        traceObject(rect, 500, 500);
+//        rect.addAndTrace(this, 500, 300);
 //        addDrawable(rect);
 //        interpolate(rect.scale, new Vec2(0.5f, 0.5f), time + 1.5f, 1);
 //        interpolate(rect.scale, new Vec2(5f, 5f), time + 2.5f, 1);

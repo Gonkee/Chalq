@@ -3,7 +3,6 @@ package com.chalq.object2d.path2d;
 import com.chalq.core.Cq;
 import com.chalq.math.MathUtils;
 
-import static org.lwjgl.nanovg.NanoVG.*;
 
 public class PolyPath extends Path2D{
 
@@ -64,10 +63,10 @@ public class PolyPath extends Path2D{
     @Override
     public void draw(long nvg) {
 //        checkInit();
-        nvgBeginPath(nvg);
-        nvgMoveTo(nvg, vertices[0], vertices[1]);
+        penBeginPath(nvg);
+        penMoveTo(nvg, vertices[0], vertices[1]);
         for (int i = 2; i <= completeSegments * 2; i += 2) {
-            nvgLineTo(nvg, vertices[i], vertices[i + 1]);
+            penLineTo(nvg, vertices[i], vertices[i + 1]);
         }
         // there's 1 more cumulative length than maximum complete segments
         if (completeSegments < cumulativeLengths.length - 1) {
@@ -77,14 +76,10 @@ public class PolyPath extends Path2D{
 
             float finalX = vertices[completeSegments * 2] + finalXdiff / finalDist * incompleteSegmentLength;
             float finalY = vertices[completeSegments * 2 + 1] + finalYdiff / finalDist * incompleteSegmentLength;
-            nvgLineTo(nvg, finalX, finalY);
+            penLineTo(nvg, finalX, finalY);
         }
         Cq.stroke(4);
     }
 
-    @Override
-    protected void update() {
-
-    }
 
 }
