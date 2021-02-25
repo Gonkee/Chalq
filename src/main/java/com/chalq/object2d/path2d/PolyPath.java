@@ -7,7 +7,6 @@ import com.chalq.math.MathUtils;
 public class PolyPath extends Path2D{
 
     private float totalLength;
-    private float progress;
 
     private float[] vertices = new float[0]; // size = (number of segments + 1) * 2
     private float[] cumulativeLengths = new float[0]; // size = number of segments + 1
@@ -40,13 +39,14 @@ public class PolyPath extends Path2D{
                 cumulativeLengths[i / 2] = totalLength;
             }
         }
-        setProgress(progress);
+        setTraceProgress(traceProgress.val);
     }
 
     @Override
-    public void setProgress(float progress) {
-        this.progress = MathUtils.clamp(progress, 0, 1);
-        float portionLength = totalLength * this.progress;
+    public void setTraceProgress(float progress) {
+        super.setTraceProgress(progress);
+        this.traceProgress.val = MathUtils.clamp(progress, 0, 1);
+        float portionLength = totalLength * this.traceProgress.val;
         incompleteSegmentLength = 0;
         for (int i = 0; i < cumulativeLengths.length; i++) {
             // i >= 1, because cumulativeLengths[i] == 0

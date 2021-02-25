@@ -25,7 +25,7 @@ public class Rectangle extends Shape2D {
     }
 
     @Override
-    protected void update() {
+    public void update() {
 
     }
 

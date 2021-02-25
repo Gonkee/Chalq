@@ -3,6 +3,7 @@ package com.chalq.core;
 import com.chalq.math.MathUtils;
 import com.chalq.math.Scalar;
 import com.chalq.math.Vec2;
+import com.chalq.object2d.Traceable;
 import com.chalq.object2d.shape2d.Shape2D;
 
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ public class CqScene extends Object2D {
     }
 
     @Override
-    protected void update() {
+    public void update() {
 
     }
 
@@ -146,12 +147,12 @@ public class CqScene extends Object2D {
         interpolate(object2D.scale, new Vec2(targetScale, targetScale), Cq.time, 0.2f);
     }
 
-    public void traceObject(Shape2D shape, float x, float y) {
-        addChild(shape);
-        shape.pos.x = x;
-        shape.pos.y = y;
-        shape.outline.traceProgress.val = 0;
-        interpolate(shape.outline.traceProgress, 1, Cq.time, 0.8f);
+    public void traceObject(Traceable traceable, float x, float y) {
+        addChild(traceable);
+        traceable.getPos().x = x;
+        traceable.getPos().y = y;
+        traceable.setTraceProgress(0);
+        interpolate(traceable.getTraceProgress(), 1, Cq.time, 0.8f);
     }
 
 }

@@ -13,10 +13,6 @@ public class ArcPath extends Path2D{
         this.radius = radius;
     }
 
-    @Override
-    public void setProgress(float progress) {
-        this.traceProgress.val = MathUtils.clamp(progress, 0, 1);
-    }
 
     @Override
     public void draw(long nvg) {
@@ -27,7 +23,7 @@ public class ArcPath extends Path2D{
     }
 
     @Override
-    protected void update() {
+    public void update() {
 
     }
 }

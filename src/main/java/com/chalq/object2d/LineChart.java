@@ -192,7 +192,7 @@ public class LineChart extends Object2D {
     }
 
     @Override
-    protected void update() {
+    public void update() {
 
     }
 

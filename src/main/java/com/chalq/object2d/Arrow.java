@@ -2,9 +2,10 @@ package com.chalq.object2d;
 
 import com.chalq.core.Cq;
 import com.chalq.core.Object2D;
+import com.chalq.math.Scalar;
 import com.chalq.math.Vec2;
 
-public class Arrow extends Object2D {
+public class Arrow extends Object2D implements Traceable{
 
     public float width;
     public final Vec2 pointVector = new Vec2();
@@ -40,7 +41,17 @@ public class Arrow extends Object2D {
     }
 
     @Override
-    protected void update() {
+    public void update() {
 
+    }
+
+    @Override
+    public void setTraceProgress(float progress) {
+        
+    }
+
+    @Override
+    public Scalar getTraceProgress() {
+        return null;
     }
 }

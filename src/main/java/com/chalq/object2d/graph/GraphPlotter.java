@@ -79,7 +79,7 @@ public class GraphPlotter extends Object2D {
     }
 
     @Override
-    protected void update() {
+    public void update() {
         for (int i = 0; i < functions.size(); i++) {
             if (liveUpdateFlags.get(i)) updateGraph(i);
         }

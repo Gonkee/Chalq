@@ -15,10 +15,6 @@ public class Line extends Path2D{
         travel.y = travelY;
     }
 
-    @Override
-    public void setProgress(float progress) {
-
-    }
 
 
     @Override
