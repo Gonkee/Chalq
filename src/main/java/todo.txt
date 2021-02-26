@@ -20,3 +20,7 @@ maybe use a "Traceable" interface for the tracing functionality, instead of in S
 so that other stuff like graph plotters can be traced too?
 
 only allow interpolation of specific attributes to remove the need of mutable scalars?
+
+use matrix? to be able to get scale, rotation, translation separately
+
+ArcPath class for arrows etc.

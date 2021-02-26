@@ -1,5 +1,6 @@
 package com.chalq.core;
 
+import com.chalq.math.Scalar;
 import com.chalq.math.Vec2;
 import com.chalq.object2d.Drawable;
 import com.chalq.util.Color;
@@ -22,7 +23,7 @@ public abstract class Object2D implements Drawable {
     public boolean visible = true;
     public boolean awake = true;
     public final Vec2 pos = new Vec2();
-    public final Vec2 scale = new Vec2(1, 1);
+    public Scalar scale = new Scalar(1);
     public float rotationRad = 0;
 
     @Override
@@ -71,7 +72,7 @@ public abstract class Object2D implements Drawable {
     }
 
     @Override
-    public Vec2 getScale() {
+    public Scalar getScale() {
         return scale;
     }
 
@@ -84,8 +85,8 @@ public abstract class Object2D implements Drawable {
         }
 
         // scaling
-        x *= scale.x;
-        y *= scale.y;
+        x *= scale.val;
+        y *= scale.val;
 
         // rotation
         float cos = (float)Math.cos(rotationRad);
@@ -94,12 +95,28 @@ public abstract class Object2D implements Drawable {
         y = x * sin + y * cos;
 
         // translation
-        x += parent == null ? pos.x : pos.x * parent.getScale().x;
-        y += parent == null ? pos.y : pos.y * parent.getScale().y;
+        x += parent == null ? pos.x : pos.x * parent.getScale().val;
+        y += parent == null ? pos.y : pos.y * parent.getScale().val;
 
         return new Vec2(x, y);
     }
-    
+
+    @Override
+    public float applyScale(float dist) {
+        if (parent != null) {
+            dist = parent.applyScale(dist);
+        }
+        return dist * scale.val;
+    }
+
+    @Override
+    public float applyRotation(float rotation) {
+        if (parent != null) {
+            rotation = parent.applyRotation(rotation);
+        }
+        return rotation + this.rotationRad;
+    }
+
     protected void penBeginPath(long nvg) {
         nvgBeginPath(nvg);
     }
@@ -138,6 +155,14 @@ public abstract class Object2D implements Drawable {
         Object2D.penColor.g(color.g);
         Object2D.penColor.b(color.b);
         Object2D.penColor.a(color.a);
+    }
+
+    protected void penArcClockWise(long nvg, float x, float y, float radius, float startAng, float endAng) {
+        Vec2 global = applyTransform(x, y);
+        radius = applyScale(radius);
+        startAng = applyRotation(startAng);
+        endAng = applyRotation(endAng);
+        nvgArc(nvg, x, y, radius, startAng, endAng, NVG_CW);
     }
 
 }

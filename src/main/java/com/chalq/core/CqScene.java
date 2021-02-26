@@ -135,16 +135,16 @@ public class CqScene extends Object2D {
         addChild(object2D);
         object2D.pos.x = x;
         object2D.pos.y = y;
-        object2D.scale.set(0, 0);
-        interpolate(object2D.scale, new Vec2(targetScale, targetScale), Cq.time, 0.8f);
+        object2D.scale.val = 0;
+        interpolate(object2D.scale, targetScale, Cq.time, 0.8f);
     }
 
     public void popUpObjectFast(Object2D object2D, float targetScale, float x, float y) {
         addChild(object2D);
         object2D.pos.x = x;
         object2D.pos.y = y;
-        object2D.scale.set(0, 0);
-        interpolate(object2D.scale, new Vec2(targetScale, targetScale), Cq.time, 0.2f);
+        object2D.scale.val = 0;
+        interpolate(object2D.scale, targetScale, Cq.time, 0.2f);
     }
 
     public void traceObject(Traceable traceable, float x, float y) {
