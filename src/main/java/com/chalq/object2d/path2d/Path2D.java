@@ -16,7 +16,7 @@ public abstract class Path2D extends Object2D implements Traceable {
     public float strokeWidth = 4;
     public Color color = new Color(1, 1, 1, 1);
 
-    public final Scalar traceProgress = new Scalar(0);
+    public final Scalar traceProgress = new Scalar(1);
 
 
 

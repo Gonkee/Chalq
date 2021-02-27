@@ -1,12 +1,9 @@
-import com.chalq.core.Cq;
 import com.chalq.core.CqConfig;
 import com.chalq.core.CqScene;
 import com.chalq.core.CqWindow;
-import com.chalq.object2d.Arrow;
+import com.chalq.object2d.ArcArrow;
 import com.chalq.object2d.graph.GraphPlotter;
 import com.chalq.math.Vec2;
-import com.chalq.object2d.path2d.Line;
-import com.chalq.object2d.shape2d.Circle;
 import com.chalq.object2d.shape2d.Rectangle;
 import com.chalq.util.Color;
 
@@ -46,8 +43,8 @@ public class SoundWave extends CqScene {
         popUpObjectSlow(circleGraph, 1, 500, 200);
 //        interpolate(wave.pos, new Vec2(200, 200), time + 2, 2);
 //
-        Arrow arrow = new Arrow(300, 50, 100, 20, 270, 5);
-        traceObject(arrow, 300, 50);
+        ArcArrow arrow = new ArcArrow(300, 150, 100, 20, -120, 5);
+        popUpObjectSlow(arrow, 1, 300, 150);
 
         rect = new Rectangle(500, 300, 200, 200);
         rect.fillColor = new Color(1, 1, 0, 0.5f);
@@ -69,7 +66,7 @@ public class SoundWave extends CqScene {
 
     @Override
     public void update() {
-
+//        Cq.arcClockwise(500, 500, 600, 600, 180, 5);
 
 //        int columns = 20;
 //        int rows = 10;
@@ -99,6 +96,6 @@ public class SoundWave extends CqScene {
     }
 
     private Vec2 circleFunc(float t) {
-        return new Vec2(0, 1).rotate(t);
+        return new Vec2(0, 1).rotateDeg(t);
     }
 }

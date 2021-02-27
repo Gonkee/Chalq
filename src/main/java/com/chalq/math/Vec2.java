@@ -304,7 +304,7 @@ public class Vec2 {
 
     /** Rotates the Vec2 by the given angle, counter-clockwise assuming the y-axis points up.
      * @param degrees the angle in degrees */
-    public Vec2 rotate (float degrees) {
+    public Vec2 rotateDeg(float degrees) {
         return rotateRad(degrees * MathUtils.degreesToRadians);
     }
 
@@ -312,7 +312,7 @@ public class Vec2 {
      * @param degrees the angle in degrees
      * @param reference center Vec2 */
     public Vec2 rotateAround (Vec2 reference, float degrees) {
-        return this.sub(reference).rotate(degrees).add(reference);
+        return this.sub(reference).rotateDeg(degrees).add(reference);
     }
 
     /** Rotates the Vec2 by the given angle, counter-clockwise assuming the y-axis points up.

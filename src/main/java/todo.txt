@@ -24,3 +24,5 @@ only allow interpolation of specific attributes to remove the need of mutable sc
 use matrix? to be able to get scale, rotation, translation separately
 
 ArcPath class for arrows etc.
+
+add delay option for showing objects

@@ -157,12 +157,20 @@ public abstract class Object2D implements Drawable {
         Object2D.penColor.a(color.a);
     }
 
-    protected void penArcClockWise(long nvg, float x, float y, float radius, float startAng, float endAng) {
+    protected void penArc(long nvg, float x, float y, float radius, float startAng, float endAng, boolean clockWise) {
         Vec2 global = applyTransform(x, y);
         radius = applyScale(radius);
         startAng = applyRotation(startAng);
         endAng = applyRotation(endAng);
-        nvgArc(nvg, x, y, radius, startAng, endAng, NVG_CW);
+
+        if (clockWise) nvgArc(nvg, global.x, global.y, radius, startAng, endAng, NVG_CW);
+        else           nvgArc(nvg, global.x, global.y, radius, startAng, endAng, NVG_CCW);
+    }
+
+    protected void penCircle(long nvg, float x, float y, float radius) {
+        Vec2 global = applyTransform(x, y);
+        radius = applyScale(radius);
+        nvgCircle(nvg, global.x, global.y, radius);
     }
 
 }

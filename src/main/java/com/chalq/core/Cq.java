@@ -163,7 +163,7 @@ public class Cq {
             float radius = chordLength / chordToRadiusRatio;
 
             // must normalize then scale, setLength() only does positive values, messing up angles larger than 180 (cosine < 0)
-            Vec2 chordMidpointToCenter = new Vec2(to2ndPt).rotate(90).nor().scl( radius * (float) Math.cos(MathUtils.degreesToRadians * angleDegrees / 2) );
+            Vec2 chordMidpointToCenter = new Vec2(to2ndPt).rotateDeg(90).nor().scl( radius * (float) Math.cos(MathUtils.degreesToRadians * angleDegrees / 2) );
             Vec2 center = new Vec2( (x1 + x2) / 2, (y1 + y2) / 2 ).add( chordMidpointToCenter );
             float ang1 = new Vec2(x1 - center.x, y1 - center.y).angle() * MathUtils.degreesToRadians;
             float ang2 = new Vec2(x2 - center.x, y2 - center.y).angle() * MathUtils.degreesToRadians;

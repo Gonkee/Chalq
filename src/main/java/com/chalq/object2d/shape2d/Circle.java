@@ -10,7 +10,7 @@ public class Circle extends Shape2D {
     public float radius;
 
     public Circle(float x, float y, float radius) {
-        outline = new ArcPath(x, y, radius);
+        outline = new ArcPath(x, y, radius, 0, 2 * (float) Math.PI, true);
     }
 
     @Override
