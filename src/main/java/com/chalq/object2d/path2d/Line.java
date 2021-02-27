@@ -25,7 +25,7 @@ public class Line extends Path2D{
 
         switch (strokeStyle) {
             case SOLID:
-                penLineTo(nvg, pos.x + travel.x, pos.y + travel.y);
+                penLineTo(nvg, pos.x + travel.x * traceProgress.val, pos.y + travel.y * traceProgress.val);
                 penSetColor(color);
                 penStrokePath(nvg, strokeWidth);
                 break;
@@ -36,4 +36,8 @@ public class Line extends Path2D{
         }
     }
 
+    @Override
+    public Vec2 getLocalTracePosition() {
+        return new Vec2(pos.x + travel.x * traceProgress.val, pos.y + travel.y * traceProgress.val);
+    }
 }

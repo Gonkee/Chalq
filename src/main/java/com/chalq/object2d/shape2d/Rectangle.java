@@ -40,4 +40,9 @@ public class Rectangle extends Shape2D {
         penSetColor(fillColor);
         penFillPath(nvg);
     }
+
+    @Override
+    public Vec2 getLocalTracePosition() {
+        return outline.getLocalTracePosition();
+    }
 }

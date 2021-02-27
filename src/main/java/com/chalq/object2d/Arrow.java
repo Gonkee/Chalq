@@ -5,6 +5,9 @@ import com.chalq.core.Object2D;
 import com.chalq.math.MathUtils;
 import com.chalq.math.Scalar;
 import com.chalq.math.Vec2;
+import com.chalq.object2d.path2d.ArcPath;
+import com.chalq.object2d.path2d.Line;
+import com.chalq.object2d.path2d.Path2D;
 import com.chalq.util.Color;
 
 import static org.lwjgl.nanovg.NanoVG.NVG_CW;
@@ -16,13 +19,19 @@ public class Arrow extends Object2D implements Traceable{
     public float arcAngle = 0;
 
     private final Scalar traceProgress = new Scalar(1);
+    private final Path2D path;
 
-    public Arrow(float x, float y, float pointX, float pointY, float width) {
+    public Arrow(float x, float y, float pointX, float pointY, float arcAngle, float width) {
         this.pos.x = x;
         this.pos.y = y;
         this.pointVector.x = pointX;
         this.pointVector.y = pointY;
         this.width = width;
+        if (arcAngle != 0) {
+            path = new ArcPath(x, y, x + pointX, y + pointY, arcAngle);
+        } else {
+            path = new Line(x, y, x + pointX, y + pointY);
+        }
     }
 
     @Override
@@ -30,28 +39,29 @@ public class Arrow extends Object2D implements Traceable{
 
         // TODO: janky as hell betta clean up later
 
-        float x1 = pos.x;
-        float y1 = pos.y;
-        float x2 = pos.x + pointVector.x;
-        float y2 = pos.y + pointVector.y;
-
-
-        if (arcAngle > 0) {
-            drawArc(nvg, pos.x, pos.y, pos.x + pointVector.x, pos.y + pointVector.y, arcAngle, width);
-        } else if (arcAngle < 0) {
-            drawArc(nvg, pos.x + pointVector.x, pos.y + pointVector.y, pos.x, pos.y, -arcAngle, width);
-        } else {
-            Cq.line(pos.x, pos.y, pos.x + pointVector.x, pos.y + pointVector.y, width);
-        }
-
-        float rotationDueToArc = 180 - 90 - (180 - arcAngle) / 2;
-
-        Vec2 tipDir = new Vec2(pointVector).nor().rotate(rotationDueToArc);
-
-        Vec2 tipV1 = new Vec2(tipDir).scl(width * 2).add(pos).add(pointVector);
-        Vec2 tipV2 = new Vec2(tipDir).scl(width * 2).rotate(-120).add(pos).add(pointVector);
-        Vec2 tipV3 = new Vec2(tipDir).scl(width * 2).rotate( 120).add(pos).add(pointVector);
-        Cq.fillPolygon(new float[] {tipV1.x, tipV1.y, tipV2.x, tipV2.y, tipV3.x, tipV3.y});
+        path.draw(nvg);
+//        float x1 = pos.x;
+//        float y1 = pos.y;
+//        float x2 = pos.x + pointVector.x;
+//        float y2 = pos.y + pointVector.y;
+//
+//
+//        if (arcAngle > 0) {
+//            drawArc(nvg, pos.x, pos.y, pos.x + pointVector.x, pos.y + pointVector.y, arcAngle, width);
+//        } else if (arcAngle < 0) {
+//            drawArc(nvg, pos.x + pointVector.x, pos.y + pointVector.y, pos.x, pos.y, -arcAngle, width);
+//        } else {
+//            Cq.line(pos.x, pos.y, pos.x + pointVector.x, pos.y + pointVector.y, width);
+//        }
+//
+//        float rotationDueToArc = 180 - 90 - (180 - arcAngle) / 2;
+//
+//        Vec2 tipDir = new Vec2(pointVector).nor().rotate(rotationDueToArc);
+//
+//        Vec2 tipV1 = new Vec2(tipDir).scl(width * 2).add(pos).add(pointVector);
+//        Vec2 tipV2 = new Vec2(tipDir).scl(width * 2).rotate(-120).add(pos).add(pointVector);
+//        Vec2 tipV3 = new Vec2(tipDir).scl(width * 2).rotate( 120).add(pos).add(pointVector);
+//        Cq.fillPolygon(new float[] {tipV1.x, tipV1.y, tipV2.x, tipV2.y, tipV3.x, tipV3.y});
     }
 
     private void drawArc(long nvg, float x1, float y1, float x2, float y2, float angleDegrees, float strokeWidth) {
@@ -97,5 +107,10 @@ public class Arrow extends Object2D implements Traceable{
     @Override
     public Scalar getTraceProgress() {
         return traceProgress;
+    }
+
+    @Override
+    public Vec2 getLocalTracePosition() {
+        return null;
     }
 }

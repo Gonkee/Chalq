@@ -46,8 +46,7 @@ public class SoundWave extends CqScene {
         popUpObjectSlow(circleGraph, 1, 500, 200);
 //        interpolate(wave.pos, new Vec2(200, 200), time + 2, 2);
 //
-        Arrow arrow = new Arrow(300, 50, 100, 20, 5);
-        arrow.arcAngle = -270;
+        Arrow arrow = new Arrow(300, 50, 100, 20, 270, 5);
         traceObject(arrow, 300, 50);
 
         rect = new Rectangle(500, 300, 200, 200);

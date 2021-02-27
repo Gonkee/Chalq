@@ -2,6 +2,7 @@ package com.chalq.object2d.shape2d;
 
 
 
+import com.chalq.math.Vec2;
 import com.chalq.object2d.path2d.ArcPath;
 
 public class Circle extends Shape2D {
@@ -22,5 +23,10 @@ public class Circle extends Shape2D {
         penBeginPath(nvg);
 //        penCircle(nvg, pos.x, pos.y, radius);
         penFillPath(nvg);
+    }
+
+    @Override
+    public Vec2 getLocalTracePosition() {
+        return null;
     }
 }

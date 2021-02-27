@@ -2,6 +2,7 @@ package com.chalq.object2d.path2d;
 
 import com.chalq.core.Cq;
 import com.chalq.math.MathUtils;
+import com.chalq.math.Vec2;
 
 
 public class PolyPath extends Path2D{
@@ -56,6 +57,22 @@ public class PolyPath extends Path2D{
                 incompleteSegmentLength = portionLength - cumulativeLengths[i - 1];
                 break;
             }
+        }
+    }
+
+    @Override
+    public Vec2 getLocalTracePosition() {
+        // there's 1 more cumulative length than maximum complete segments
+        if (completeSegments < cumulativeLengths.length - 1) {
+            float finalXdiff = vertices[completeSegments * 2 + 2] - vertices[completeSegments * 2];
+            float finalYdiff = vertices[completeSegments * 2 + 3] - vertices[completeSegments * 2 + 1];
+            float finalDist = (float) Math.sqrt(finalXdiff * finalXdiff + finalYdiff * finalYdiff);
+
+            float finalX = vertices[completeSegments * 2] + finalXdiff / finalDist * incompleteSegmentLength;
+            float finalY = vertices[completeSegments * 2 + 1] + finalYdiff / finalDist * incompleteSegmentLength;
+            return new Vec2(finalX, finalY);
+        } else {
+            return new Vec2(vertices[vertices.length - 2], vertices[vertices.length - 1]);
         }
     }
 
