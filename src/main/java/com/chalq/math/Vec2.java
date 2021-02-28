@@ -48,6 +48,14 @@ public class Vec2 {
         return x * x + y * y;
     }
 
+    public Vec2 transform(Mat3 m) {
+        float tx = m.m00 * x + m.m10 * y + m.m20;
+        float ty = m.m01 * x + m.m11 * y + m.m21;
+        x = tx;
+        y = ty;
+        return this;
+    }
+
     
     public Vec2 set (Vec2 v) {
         x = v.x;

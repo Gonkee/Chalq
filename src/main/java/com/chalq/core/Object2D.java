@@ -1,5 +1,6 @@
 package com.chalq.core;
 
+import com.chalq.math.Mat3;
 import com.chalq.math.Scalar;
 import com.chalq.math.Vec2;
 import com.chalq.object2d.Drawable;
@@ -19,6 +20,13 @@ public abstract class Object2D implements Drawable {
     public Drawable parent = null;
     public ArrayList<Drawable> children = new ArrayList<>();
     private int sceneID = -1;
+
+    private final Mat3 localTransform   = new Mat3();
+    private final Mat3 globalTransform  = new Mat3();
+    private final Mat3 localTranslation = new Mat3();
+    private final Mat3 localScale       = new Mat3();
+    private final Mat3 localRotation    = new Mat3();
+
 
     public boolean visible = true;
     public boolean awake = true;
@@ -74,6 +82,26 @@ public abstract class Object2D implements Drawable {
     @Override
     public Scalar getScale() {
         return scale;
+    }
+
+    public void setRotationRad(float rotationRad) {
+        this.rotationRad = rotationRad;
+        float sin = (float) Math.sin(rotationRad);
+        float cos = (float) Math.cos(rotationRad);
+        localRotation.m00 = cos;
+        localRotation.m10 = -sin;
+        localRotation.m01 = sin;
+        localRotation.m11 = cos;
+    }
+
+    private void updateLocalTransform() {
+        localTransform.set(localScale);
+        Mat3.multiply(localRotation, localTransform, localTransform);
+        Mat3.multiply(localTranslation, localTransform, localTransform);
+    }
+
+    private void updateGlobalTransform() {
+
     }
 
     @Override

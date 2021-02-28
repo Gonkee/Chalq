@@ -2,12 +2,14 @@ package com.chalq.object2d.path2d;
 
 import com.chalq.math.MathUtils;
 import com.chalq.math.Vec2;
+import com.chalq.util.Color;
 
 
 public class ArcPath extends Path2D{
 
     private float radius, startAng, endAng;
     private boolean clockWise;
+
 
     public ArcPath(float centerX, float centerY, float radius, float startAng, float endAng, boolean clockWise) {
         pos.x = centerX;
@@ -47,15 +49,36 @@ public class ArcPath extends Path2D{
         } else {
             new IllegalArgumentException("Angle cannot be 0").printStackTrace();
         }
+        System.out.println("start: " + startRelativePos());
+        System.out.println("end: " + endRelativePos());
     }
 
 
     @Override
     public void draw(long nvg) {
         penBeginPath(nvg);
-        penArc(nvg, pos.x, pos.y, radius, startAng, MathUtils.lerp(startAng, endAng, traceProgress.val), clockWise);
+        penArc(nvg, 0, 0, radius, startAng, MathUtils.lerp(startAng, endAng, traceProgress.val), clockWise);
         penSetColor(color);
         penStrokePath(nvg, strokeWidth);
+
+        Vec2 start = startRelativePos();
+        Vec2 end = endRelativePos();
+
+        penSetColor(new Color(1, 1, 0, 1));
+        penBeginPath(nvg);
+        penCircle(nvg, 0, 0, 5);
+        penFillPath(nvg);
+
+        penSetColor(new Color(1, 0, 1, 1));
+        penBeginPath(nvg);
+        penCircle(nvg, start.x, start.y, 5);
+        penFillPath(nvg);
+
+        penSetColor(new Color(1, 0.5f, 0.5f, 1));
+        penBeginPath(nvg);
+        penCircle(nvg, end.x, end.y, 5);
+        penFillPath(nvg);
+
     }
 
     @Override
@@ -65,7 +88,15 @@ public class ArcPath extends Path2D{
 
     @Override
     public Vec2 getLocalTracePosition() {
-        return new Vec2(0, radius).rotateRad(MathUtils.lerp(startAng, endAng, traceProgress.val));//.add(pos);
+        return new Vec2(radius, 0).rotateRad(MathUtils.lerp(startAng, endAng, traceProgress.val));
+    }
+
+    public Vec2 startRelativePos() {
+        return new Vec2(radius, 0).rotateRad(startAng);
+    }
+
+    public Vec2 endRelativePos() {
+        return new Vec2(radius, 0).rotateRad(endAng);
     }
 
     public float tangentAngAtStart() {
@@ -80,7 +111,4 @@ public class ArcPath extends Path2D{
         return MathUtils.lerp(startAng, endAng, traceProgress.val) + (float) Math.PI / 2;
     }
 
-//    public Vec2 startRelativePos() {
-//
-//    }
 }

@@ -40,9 +40,9 @@ public class ArcArrow extends Object2D implements Traceable{
         Vec2 pathTracePos = path.getLocalTracePosition();
 //        Vec2 tipDir = new Vec2(pointVector).nor().rotate(rotationDueToArc);
 
-        Vec2 tipV1 = new Vec2(0, width * 2).rotateDeg(arrowTipRotation      ).add(pathTracePos);
-        Vec2 tipV2 = new Vec2(0, width * 2).rotateDeg(arrowTipRotation - 120).add(pathTracePos);
-        Vec2 tipV3 = new Vec2(0, width * 2).rotateDeg(arrowTipRotation + 120).add(pathTracePos);
+        Vec2 tipV1 = new Vec2(0, width * 2).rotateDeg(arrowTipRotation      ).add(pathTracePos).add(path.pos);
+        Vec2 tipV2 = new Vec2(0, width * 2).rotateDeg(arrowTipRotation - 120).add(pathTracePos).add(path.pos);
+        Vec2 tipV3 = new Vec2(0, width * 2).rotateDeg(arrowTipRotation + 120).add(pathTracePos).add(path.pos);
 
         penBeginPath(nvg);
         penMoveTo(nvg, tipV1.x, tipV1.y);
@@ -55,7 +55,9 @@ public class ArcArrow extends Object2D implements Traceable{
         penBeginPath(nvg);
         penCircle(nvg, 0, 0, 5);
         penCircle(nvg, pointVector.x, pointVector.y, 5);
+        penCircle(nvg, path.pos.x, path.pos.y, 5);
         penFillPath(nvg);
+
 //        Cq.fillPolygon(new float[] {tipV1.x, tipV1.y, tipV2.x, tipV2.y, tipV3.x, tipV3.y});
     }
 

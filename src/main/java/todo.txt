@@ -26,3 +26,6 @@ use matrix? to be able to get scale, rotation, translation separately
 ArcPath class for arrows etc.
 
 add delay option for showing objects
+
+position of an object should be unknown to itself, but known only to its parent
+- position should never be used when drawing locally / dealing with local space

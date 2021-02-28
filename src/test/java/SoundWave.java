@@ -30,6 +30,9 @@ public class SoundWave extends CqScene {
 
     @Override
     public void init() {
+        System.out.println("divide by 0");
+        System.out.println();
+//        System.out.println(1 / 0);
 //        wave = new GraphPlotter(getFrameWidth() / 2f - width / 2 - 20, getFrameHeight() / 2f - height / 2 + 150, width, height,
 //                -2 * (float)Math.PI, 2 * (float)Math.PI, -2, 2);
 //        wave.addFunction(GraphPlotter.toParametric(this::wave, false), -2 * (float)Math.PI, 2 * (float)Math.PI, Color.WHITE, true);
@@ -43,7 +46,7 @@ public class SoundWave extends CqScene {
         popUpObjectSlow(circleGraph, 1, 500, 200);
 //        interpolate(wave.pos, new Vec2(200, 200), time + 2, 2);
 //
-        ArcArrow arrow = new ArcArrow(300, 150, 100, 20, -120, 5);
+        ArcArrow arrow = new ArcArrow(300, 150, 100, 20, 120, 5);
         popUpObjectSlow(arrow, 1, 300, 150);
 
         rect = new Rectangle(500, 300, 200, 200);
