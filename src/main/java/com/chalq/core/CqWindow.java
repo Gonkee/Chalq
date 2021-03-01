@@ -1,5 +1,6 @@
 package com.chalq.core;
 
+import com.chalq.math.Mat3;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.nanovg.NVGColor;
 import org.lwjgl.nanovg.NanoVG;
@@ -44,6 +45,8 @@ public class CqWindow {
         Cq.height = config.height;
         scene.init();
 
+        Mat3 identity = new Mat3();
+
         long lastTick = System.nanoTime();
         final long interval = 1000000000 / fps;
         while (!glfwWindowShouldClose(window)) {
@@ -56,7 +59,7 @@ public class CqWindow {
                 NanoVG.nvgBeginFrame(nvg, width, height, 1);
                 Cq.clearFrame();
                 scene.processInterpolations();
-                scene.drawRecursive(nvg);
+                scene.drawRecursive(nvg, identity, false);
                 scene.updateRecursive(); // update later, as custom drawing should be on top of drawn objects
                 NanoVG.nvgEndFrame(nvg);
 

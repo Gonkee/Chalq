@@ -23,22 +23,88 @@ public abstract class Object2D implements Drawable {
 
     private final Mat3 localTransform   = new Mat3();
     private final Mat3 globalTransform  = new Mat3();
-    private final Mat3 localTranslation = new Mat3();
-    private final Mat3 localScale       = new Mat3();
-    private final Mat3 localRotation    = new Mat3();
+    private final Vec2 pos = new Vec2();
+    private final Vec2 scale = new Vec2(1, 1);
+    private float rotationRad = 0;
+    private boolean globalTransformDirty = true;
 
+    private final Vec2 tempGlobal = new Vec2();
 
     public boolean visible = true;
     public boolean awake = true;
-    public final Vec2 pos = new Vec2();
-    public Scalar scale = new Scalar(1);
-    public float rotationRad = 0;
 
     @Override
-    public final void drawRecursive(long nvg) {
+    public Vec2 getScale() {
+        return scale;
+    }
+    @Override
+    public Vec2 getPos() {
+        return pos;
+    }
+    @Override
+    public float getRotation() {
+        return rotationRad;
+    }
+
+    @Override
+    public void setScale(float x, float y) {
+        scale.set(x, y);
+        updateLocalTransform();
+    }
+
+    @Override
+    public void setPos(float x, float y) {
+        pos.set(x, y);
+        updateLocalTransform();
+    }
+
+    @Override
+    public void setRotation(float ang) {
+        this.rotationRad = ang;
+        updateLocalTransform();
+    }
+
+    /*
+        x, y = translation
+        u, v = scale
+        a = angle
+
+        scale -> rotate -> translate (multiplying from right to left)
+        | 1 , 0 , x |   | cos(a) , -sin(a) , 0 |   | u , 0 , 0 |
+        | 0 , 1 , y | * | sin(a) ,  cos(a) , 0 | * | 0 , v , 0 |
+        | 0 , 0 , 1 |   |   0    ,    0    , 1 |   | 0 , 0 , 1 |
+
+        = | u * cos(a) , -v * sin(a) , x |
+          | u * sin(a) ,  v * cos(a) , y |
+          |     0      ,      0      , 1 |
+     */
+
+    private void updateLocalTransform() {
+        localTransform.m20 = pos.x;
+        localTransform.m21 = pos.y;
+        float sin = (float) Math.sin(rotationRad);
+        float cos = (float) Math.cos(rotationRad);
+        localTransform.m00 = cos * scale.x;
+        localTransform.m10 = -sin * scale.y;
+        localTransform.m01 = sin * scale.x;
+        localTransform.m11 = cos * scale.y;
+        globalTransformDirty = true;
+    }
+
+    private void updateGlobalTransform(Mat3 parentTransform) {
+        Mat3.multiply(parentTransform, localTransform, globalTransform);
+        globalTransformDirty = false;
+    }
+
+    @Override
+    public final void drawRecursive(long nvg, Mat3 parentTransform, boolean dirty) {
         if (visible) {
+            dirty |= globalTransformDirty;
+            if (dirty) {
+                updateGlobalTransform(parentTransform);
+            }
             draw(nvg);
-            for (Drawable child : children) child.drawRecursive(nvg);
+            for (Drawable child : children) child.drawRecursive(nvg, globalTransform, dirty);
         }
     }
 
@@ -74,89 +140,19 @@ public abstract class Object2D implements Drawable {
         this.parent = drawable;
     }
 
-    @Override
-    public Vec2 getPos() {
-        return pos;
-    }
-
-    @Override
-    public Scalar getScale() {
-        return scale;
-    }
-
-    public void setRotationRad(float rotationRad) {
-        this.rotationRad = rotationRad;
-        float sin = (float) Math.sin(rotationRad);
-        float cos = (float) Math.cos(rotationRad);
-        localRotation.m00 = cos;
-        localRotation.m10 = -sin;
-        localRotation.m01 = sin;
-        localRotation.m11 = cos;
-    }
-
-    private void updateLocalTransform() {
-        localTransform.set(localScale);
-        Mat3.multiply(localRotation, localTransform, localTransform);
-        Mat3.multiply(localTranslation, localTransform, localTransform);
-    }
-
-    private void updateGlobalTransform() {
-
-    }
-
-    @Override
-    public Vec2 applyTransform(float x, float y) {
-        if (parent != null) {
-            Vec2 parentTransformed = parent.applyTransform(x, y);
-            x = parentTransformed.x;
-            y = parentTransformed.y;
-        }
-
-        // scaling
-        x *= scale.val;
-        y *= scale.val;
-
-        // rotation
-        float cos = (float)Math.cos(rotationRad);
-        float sin = (float)Math.sin(rotationRad);
-        x = x * cos - y * sin;
-        y = x * sin + y * cos;
-
-        // translation
-        x += parent == null ? pos.x : pos.x * parent.getScale().val;
-        y += parent == null ? pos.y : pos.y * parent.getScale().val;
-
-        return new Vec2(x, y);
-    }
-
-    @Override
-    public float applyScale(float dist) {
-        if (parent != null) {
-            dist = parent.applyScale(dist);
-        }
-        return dist * scale.val;
-    }
-
-    @Override
-    public float applyRotation(float rotation) {
-        if (parent != null) {
-            rotation = parent.applyRotation(rotation);
-        }
-        return rotation + this.rotationRad;
-    }
 
     protected void penBeginPath(long nvg) {
         nvgBeginPath(nvg);
     }
     
     protected void penMoveTo(long nvg, float x, float y) {
-        Vec2 global = applyTransform(x, y);
-        nvgMoveTo(nvg, global.x, global.y);
+        tempGlobal.set(x, y).transform(globalTransform);
+        nvgMoveTo(nvg, tempGlobal.x, tempGlobal.y);
     }
 
     protected void penLineTo(long nvg, float x, float y) {
-        Vec2 global = applyTransform(x, y);
-        nvgLineTo(nvg, global.x, global.y);
+        tempGlobal.set(x, y).transform(globalTransform);
+        nvgLineTo(nvg, tempGlobal.x, tempGlobal.y);
     }
 
     protected void penStrokePath(long nvg, float strokeWidth) {
@@ -185,20 +181,20 @@ public abstract class Object2D implements Drawable {
         Object2D.penColor.a(color.a);
     }
 
-    protected void penArc(long nvg, float x, float y, float radius, float startAng, float endAng, boolean clockWise) {
-        Vec2 global = applyTransform(x, y);
-        radius = applyScale(radius);
-        startAng = applyRotation(startAng);
-        endAng = applyRotation(endAng);
-
-        if (clockWise) nvgArc(nvg, global.x, global.y, radius, startAng, endAng, NVG_CW);
-        else           nvgArc(nvg, global.x, global.y, radius, startAng, endAng, NVG_CCW);
-    }
-
-    protected void penCircle(long nvg, float x, float y, float radius) {
-        Vec2 global = applyTransform(x, y);
-        radius = applyScale(radius);
-        nvgCircle(nvg, global.x, global.y, radius);
-    }
+//    protected void penArc(long nvg, float x, float y, float radius, float startAng, float endAng, boolean clockWise) {
+//        Vec2 global = applyTransform(x, y);
+//        radius = applyScale(radius);
+//        startAng = applyRotation(startAng);
+//        endAng = applyRotation(endAng);
+//
+//        if (clockWise) nvgArc(nvg, global.x, global.y, radius, startAng, endAng, NVG_CW);
+//        else           nvgArc(nvg, global.x, global.y, radius, startAng, endAng, NVG_CCW);
+//    }
+//
+//    protected void penCircle(long nvg, float x, float y, float radius) {
+//        Vec2 global = applyTransform(x, y);
+//        radius = applyScale(radius);
+//        nvgCircle(nvg, global.x, global.y, radius);
+//    }
 
 }

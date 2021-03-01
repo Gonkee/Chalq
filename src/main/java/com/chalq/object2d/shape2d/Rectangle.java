@@ -9,8 +9,7 @@ public class Rectangle extends Shape2D {
 
 
     public Rectangle(float x, float y, float width, float height) {
-        pos.x = x;
-        pos.y = y;
+        setPos(x, y);
         size.x = width;
         size.y = height;
         outline = new PolyPath(new float[] {

@@ -11,7 +11,7 @@ import com.chalq.util.Color;
 
 public abstract class Shape2D extends Object2D implements Traceable {
 
-    public Color fillColor = new Color(1, 1, 1, 1);
+    public Color fillColor = new Color(1, 1, 1, 0);
 
     public Path2D outline;
 

@@ -4,7 +4,6 @@ import com.chalq.core.Cq;
 import com.chalq.core.CqConfig;
 import com.chalq.core.CqScene;
 import com.chalq.core.CqWindow;
-import com.chalq.object2d.LineChart;
 import com.chalq.util.Color;
 import com.chalq.math.MathUtils;
 
@@ -28,7 +27,7 @@ public class DiseaseVisual extends CqScene {
     private static final Color COLOR_INFECTIOUS = new Color("#e82c2c");
     private static final Color COLOR_RECOVERED = new Color("#4d4d4d");
     private static final Color COLOR_VACCINATED = new Color("#177506");
-    LineChart chart;
+//    LineChart chart;
     DiseaseSim mainSim;
 
     DiseaseSim[] sims = new DiseaseSim[0];
@@ -44,10 +43,10 @@ public class DiseaseVisual extends CqScene {
             sims[i] = new DiseaseSim();
         }
 
-        chart = new LineChart(330, 180, 500, 500, "Time Passed", "Population State",  true);
-        chart.initLines(COLOR_INFECTIOUS, COLOR_VACCINATED, COLOR_RECOVERED, COLOR_SUSCEPTIBLE);
-        chart.fill = true;
-        addChild(chart);
+//        chart = new LineChart(330, 180, 500, 500, "Time Passed", "Population State",  true);
+//        chart.initLines(COLOR_INFECTIOUS, COLOR_VACCINATED, COLOR_RECOVERED, COLOR_SUSCEPTIBLE);
+//        chart.fill = true;
+//        addChild(chart);
 
         small0w = getTextWidth("0", 30) + 1;
         Rwidth = getTextWidth("R", 40) + 1;
@@ -63,7 +62,7 @@ public class DiseaseVisual extends CqScene {
             sim.update();
         }
         if (mainSim.toAddToChart) {
-            chart.addData(mainSim.iCount, mainSim.vCount, mainSim.rCount, mainSim.sCount);
+//            chart.addData(mainSim.iCount, mainSim.vCount, mainSim.rCount, mainSim.sCount);
             mainSim.toAddToChart = false;
         }
         drawSimScene(mainSim);

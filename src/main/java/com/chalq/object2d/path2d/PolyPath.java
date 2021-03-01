@@ -79,7 +79,6 @@ public class PolyPath extends Path2D{
 
     @Override
     public void draw(long nvg) {
-//        checkInit();
         penBeginPath(nvg);
         penMoveTo(nvg, vertices[0], vertices[1]);
         for (int i = 2; i <= completeSegments * 2; i += 2) {
