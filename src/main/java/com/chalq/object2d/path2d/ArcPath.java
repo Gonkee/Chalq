@@ -9,10 +9,10 @@ import java.util.Arrays;
 
 public class ArcPath extends Path2D{
 
-    private float radius, startAng, endAng;
+    private float radius, startAng, endAng, traceAng;
     private int clockWise; // 1 = clockwise, -1 = counter clockwise
 
-    // temp vectors so new Vec2s don't need to constantly be created
+    // temp vector
     private final Vec2 tv1 = new Vec2();
 
     private final float[] bezier1 = new float[8];
@@ -22,6 +22,14 @@ public class ArcPath extends Path2D{
 
 
     public ArcPath(float centerX, float centerY, float radius, float startAng, float endAng, boolean clockWise) {
+        set(centerX, centerY, radius, startAng, endAng, clockWise);
+    }
+
+    public ArcPath(float x1, float y1, float x2, float y2, float angleDegrees) {
+        set(x1, y1, x2, y2, angleDegrees);
+    }
+
+    public void set(float centerX, float centerY, float radius, float startAng, float endAng, boolean clockWise) {
         setPos(centerX, centerY);
         this.startAng = startAng * MathUtils.degreesToRadians;
         this.endAng = endAng * MathUtils.degreesToRadians;
@@ -30,9 +38,9 @@ public class ArcPath extends Path2D{
         computeBeziers();
     }
 
-    public ArcPath(float x1, float y1, float x2, float y2, float angleDegrees) {
+    public void set(float x1, float y1, float x2, float y2, float angleDegrees){
 
-        clockWise = angleDegrees > 0 ? 1 : -1;
+        clockWise = angleDegrees < 0 ? 1 : -1;
         angleDegrees %= 360;
         if (angleDegrees < 0) angleDegrees += 360;
 
@@ -59,14 +67,20 @@ public class ArcPath extends Path2D{
         } else {
             new IllegalArgumentException("Angle cannot be 0").printStackTrace();
         }
-        System.out.println("start: " + startRelativePos());
-        System.out.println("end: " + endRelativePos());
+        computeBeziers();
+    }
+
+    @Override
+    public void setTraceProgress(float progress) {
+        super.setTraceProgress(progress);
         computeBeziers();
     }
 
     private void computeBeziers() {
         float angDiff = clockWise * (startAng - endAng);
         if (angDiff < 0) angDiff += 2 * Math.PI;
+        angDiff *= traceProgress.val;
+        traceAng = startAng + angDiff * -clockWise;
 
         float x1, y1;
         // rotate negative if clockwise, positive if counter clockwise
@@ -94,10 +108,6 @@ public class ArcPath extends Path2D{
         tv1.rotateRad( angDiff / 4 * -clockWise );
         
         acuteArcBezier(x1, y1, tv1.x, tv1.y, bezier4);
-        System.out.println(Arrays.toString(bezier1));
-        System.out.println(Arrays.toString(bezier2));
-        System.out.println(Arrays.toString(bezier3));
-        System.out.println(Arrays.toString(bezier4));
     }
 
     private void acuteArcBezier(float x1, float y1, float x2, float y2, float[] bezier) {
@@ -123,32 +133,8 @@ public class ArcPath extends Path2D{
         penBezierTo(nvg, bezier2[2], bezier2[3], bezier2[4], bezier2[5], bezier2[6], bezier2[7]);
         penBezierTo(nvg, bezier3[2], bezier3[3], bezier3[4], bezier3[5], bezier3[6], bezier3[7]);
         penBezierTo(nvg, bezier4[2], bezier4[3], bezier4[4], bezier4[5], bezier4[6], bezier4[7]);
-//        penLineTo(nvg, bezier1[6], bezier1[7]);
-//        penLineTo(nvg, bezier2[6], bezier2[7]);
-//        penLineTo(nvg, bezier3[6], bezier3[7]);
-//        penLineTo(nvg, bezier4[6], bezier4[7]);
-//        penArc(nvg, 0, 0, radius, startAng, MathUtils.lerp(startAng, endAng, traceProgress.val), clockWise);
         penSetColor(color);
         penStrokePath(nvg, strokeWidth);
-
-        Vec2 start = startRelativePos();
-        Vec2 end = endRelativePos();
-//
-        penSetColor(new Color(1, 1, 0, 1));
-        penBeginPath(nvg);
-        penCircle(nvg, 0, 0, 5);
-        penFillPath(nvg);
-
-        penSetColor(new Color(1, 0, 1, 1));
-        penBeginPath(nvg);
-        penCircle(nvg, start.x, start.y, 5);
-        penFillPath(nvg);
-
-        penSetColor(new Color(1, 0.5f, 0.5f, 1));
-        penBeginPath(nvg);
-        penCircle(nvg, end.x, end.y, 5);
-        penFillPath(nvg);
-
     }
 
     @Override
@@ -158,7 +144,7 @@ public class ArcPath extends Path2D{
 
     @Override
     public Vec2 getLocalTracePosition() {
-        return new Vec2(radius, 0).rotateRad(MathUtils.lerp(startAng, endAng, traceProgress.val));
+        return new Vec2(radius, 0).rotateRad(traceAng);
     }
 
     public Vec2 startRelativePos() {
@@ -178,7 +164,7 @@ public class ArcPath extends Path2D{
     }
 
     public float tangentAngAtTrace() {
-        return MathUtils.lerp(startAng, endAng, traceProgress.val) + (float) Math.PI / 2;
+        return traceAng + (float) Math.PI / 2;
     }
 
 }

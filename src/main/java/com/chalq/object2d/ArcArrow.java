@@ -17,9 +17,13 @@ public class ArcArrow extends Object2D implements Traceable{
 
     private final ArcPath path;
 
+    // so that new ones don't have to be constantly made
+    private final Vec2 tipV1 = new Vec2();
+    private final Vec2 tipV2 = new Vec2();
+    private final Vec2 tipV3 = new Vec2();
+
     public ArcArrow(float x, float y, float pointX, float pointY, float arcAngle, float width) {
-        this.pos.x = x;
-        this.pos.y = y;
+        setPos(x, y);
         this.pointVector.x = pointX;
         this.pointVector.y = pointY;
         this.width = width;
@@ -34,15 +38,13 @@ public class ArcArrow extends Object2D implements Traceable{
         penSetColor(new Color(1, 1, 1, 1));
 
         path.draw(nvg);
-//
-//        float rotationDueToArc = 180 - 90 - (180 - arcAngle) / 2;
         float arrowTipRotation = path.tangentAngAtTrace();
         Vec2 pathTracePos = path.getLocalTracePosition();
-//        Vec2 tipDir = new Vec2(pointVector).nor().rotate(rotationDueToArc);
+        Vec2 pathPos = path.getPos();
 
-        Vec2 tipV1 = new Vec2(0, width * 2).rotateDeg(arrowTipRotation      ).add(pathTracePos).add(path.pos);
-        Vec2 tipV2 = new Vec2(0, width * 2).rotateDeg(arrowTipRotation - 120).add(pathTracePos).add(path.pos);
-        Vec2 tipV3 = new Vec2(0, width * 2).rotateDeg(arrowTipRotation + 120).add(pathTracePos).add(path.pos);
+        tipV1.set(width * 2, 0).rotateRad(arrowTipRotation).add(pathTracePos).add(pathPos);
+        tipV2.set(width * 2, 0).rotateRad(arrowTipRotation - 120 * MathUtils.degreesToRadians).add(pathTracePos).add(pathPos);
+        tipV3.set(width * 2, 0).rotateRad(arrowTipRotation + 120 * MathUtils.degreesToRadians).add(pathTracePos).add(pathPos);
 
         penBeginPath(nvg);
         penMoveTo(nvg, tipV1.x, tipV1.y);
@@ -50,15 +52,6 @@ public class ArcArrow extends Object2D implements Traceable{
         penLineTo(nvg, tipV3.x, tipV3.y);
         penLineTo(nvg, tipV1.x, tipV1.y);
         penFillPath(nvg);
-
-        penSetColor(new Color(1, 0, 0, 1));
-        penBeginPath(nvg);
-        penCircle(nvg, 0, 0, 5);
-        penCircle(nvg, pointVector.x, pointVector.y, 5);
-        penCircle(nvg, path.pos.x, path.pos.y, 5);
-        penFillPath(nvg);
-
-//        Cq.fillPolygon(new float[] {tipV1.x, tipV1.y, tipV2.x, tipV2.y, tipV3.x, tipV3.y});
     }
 
 
@@ -69,7 +62,7 @@ public class ArcArrow extends Object2D implements Traceable{
 
     @Override
     public void setTraceProgress(float progress) {
-        path.traceProgress.val = MathUtils.clamp(progress, 0, 1);
+        path.setTraceProgress(progress);
     }
 
     @Override

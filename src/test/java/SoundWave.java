@@ -2,6 +2,7 @@ import com.chalq.core.CqConfig;
 import com.chalq.core.CqScene;
 import com.chalq.core.CqWindow;
 import com.chalq.math.Mat3;
+import com.chalq.object2d.ArcArrow;
 import com.chalq.object2d.graph.GraphPlotter;
 import com.chalq.math.Vec2;
 import com.chalq.object2d.path2d.ArcPath;
@@ -21,6 +22,7 @@ public class SoundWave extends CqScene {
 
     GraphPlotter wave;
     Rectangle rect1;
+    ArcArrow arc;
 
     public static void main(String[] args) {
         CqConfig config = new CqConfig();
@@ -58,15 +60,15 @@ public class SoundWave extends CqScene {
         Rectangle rect3 = new Rectangle(70, 0, 30, 30);
         Rectangle rect4 = new Rectangle(0, 100, 10, 10);
         rect1.addChild(rect2);
-        rect2.addChild(rect3);
-        rect3.addChild(rect4);
+//        rect2.addChild(rect3);
+//        rect3.addChild(rect4);
 
         addChild(rect1);
         rect1.setPos(900, 500);
         rect1.setOffset(-50, -80);
 
 
-        ArcPath arc = new ArcPath(600, 300, 50, 0, 270, false);
+        arc = new ArcArrow(600, 300, 100, 0, 270, 5);
         addChild(arc);
 //        Random random = new Random();
 //        for (int i = 0; i < 1000; i++) {
@@ -96,6 +98,8 @@ public class SoundWave extends CqScene {
 //        float scl = (float) Math.sin(time) / 4 + 0.75f;
 //        rect1.setScale(scl, scl);
         rect1.setRotation((float)Math.cos(time) * 2);
+
+        arc.setTraceProgress((float) Math.sin(time) / 4 + 0.75f);
 //        Cq.arcClockwise(500, 500, 600, 600, 180, 5);
 
 //        int columns = 20;
