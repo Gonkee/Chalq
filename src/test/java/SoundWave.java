@@ -4,6 +4,7 @@ import com.chalq.core.CqWindow;
 import com.chalq.math.Mat3;
 import com.chalq.object2d.graph.GraphPlotter;
 import com.chalq.math.Vec2;
+import com.chalq.object2d.path2d.ArcPath;
 import com.chalq.object2d.shape2d.Rectangle;
 import com.chalq.util.Color;
 
@@ -62,11 +63,15 @@ public class SoundWave extends CqScene {
 
         addChild(rect1);
         rect1.setPos(900, 500);
+        rect1.setOffset(-50, -80);
 
-        Random random = new Random();
-        for (int i = 0; i < 1000; i++) {
-            addChild(new Rectangle(100 + random.nextInt(1500), 100 + random.nextInt(800), 30,30));
-        }
+
+        ArcPath arc = new ArcPath(600, 300, 50, 0, 270, false);
+        addChild(arc);
+//        Random random = new Random();
+//        for (int i = 0; i < 1000; i++) {
+//            addChild(new Rectangle(100 + random.nextInt(1500), 100 + random.nextInt(800), 30,30));
+//        }
 //        rect.addAndTrace(this, 500, 300);
 //        addDrawable(rect);
 //        interpolate(rect.scale, new Vec2(0.5f, 0.5f), time + 1.5f, 1);
@@ -86,10 +91,10 @@ public class SoundWave extends CqScene {
 
         if (frameTime > 0.01) System.out.println("stutter: " + frameTime + " sec");
 
-        rect1.setPos(500 + (float) Math.sin(time) * 300, 500);
-
-        float scl = (float) Math.sin(time) / 4 + 0.75f;
-        rect1.setScale(scl, scl);
+//        rect1.setPos(500 + (float) Math.sin(time) * 300, 500);
+//
+//        float scl = (float) Math.sin(time) / 4 + 0.75f;
+//        rect1.setScale(scl, scl);
         rect1.setRotation((float)Math.cos(time) * 2);
 //        Cq.arcClockwise(500, 500, 600, 600, 180, 5);
 

@@ -29,3 +29,5 @@ add delay option for showing objects
 
 position of an object should be unknown to itself, but known only to its parent
 - position should never be used when drawing locally / dealing with local space
+
+figure out the rotation (clockwise / counter, where is 0 rotation, rad / deg) - arcs
