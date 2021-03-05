@@ -63,13 +63,13 @@ public class SoundWave extends CqScene {
 //        rect2.addChild(rect3);
 //        rect3.addChild(rect4);
 
-        addChild(rect1);
+        traceObject(rect1, 0.5f);
         rect1.setPos(900, 500);
         rect1.setOffset(-50, -80);
 
 
         arc = new ArcArrow(600, 300, 100, 0, 270, 5);
-        addChild(arc);
+        traceObject(arc, 1);
 //        Random random = new Random();
 //        for (int i = 0; i < 1000; i++) {
 //            addChild(new Rectangle(100 + random.nextInt(1500), 100 + random.nextInt(800), 30,30));
@@ -99,7 +99,7 @@ public class SoundWave extends CqScene {
 //        rect1.setScale(scl, scl);
         rect1.setRotation((float)Math.cos(time) * 2);
 
-        arc.setTraceProgress((float) Math.sin(time) / 4 + 0.75f);
+//        arc.setTraceProgress((float) Math.sin(time) / 4 + 0.75f);
 //        Cq.arcClockwise(500, 500, 600, 600, 180, 5);
 
 //        int columns = 20;

@@ -22,11 +22,11 @@ public abstract class Object2D implements Drawable {
 
     private final Mat3 localTransform   = new Mat3();
     private final Mat3 globalTransform  = new Mat3();
-    private boolean globalTransformDirty = true;
+    private boolean dirty = true;
 
-    private final Vec2 offset = new Vec2();
-    private final Vec2 pos = new Vec2();
-    private final Vec2 scale = new Vec2(1, 1);
+    private float x, y;
+    private float offsetX, offsetY;
+    private float scaleX = 1, scaleY = 1;
     private float rotationRad = 0;
 
     // temp vectors so new Vec2s don't need to constantly be created
@@ -38,44 +38,66 @@ public abstract class Object2D implements Drawable {
     public boolean awake = true;
 
     @Override
-    public Vec2 getScale() {
-        return scale;
-    }
-    @Override
-    public Vec2 getPos() {
-        return pos;
-    }
-    public Vec2 getOffset() {
-        return offset;
-    }
-    @Override
     public float getRotation() {
         return rotationRad;
     }
 
     @Override
     public void setScale(float x, float y) {
-        scale.set(x, y);
-        updateLocalTransform();
+        this.scaleX = x;
+        this.scaleY = y;
+        dirty = true;
     }
 
     @Override
     public void setPos(float x, float y) {
-        pos.set(x, y);
-        updateLocalTransform();
+        this.x = x;
+        this.y = y;
+        dirty = true;
     }
 
+    @Override
     public void setOffset(float x, float y) {
-        offset.set(x, y);
-        updateLocalTransform();
+        this.offsetX = x;
+        this.offsetY = y;
+        dirty = true;
     }
 
     @Override
     public void setRotation(float ang) {
         this.rotationRad = ang;
-        updateLocalTransform();
+        dirty = true;
     }
 
+    @Override
+    public float getX() {
+        return x;
+    }
+
+    @Override
+    public float getY() {
+        return y;
+    }
+
+    @Override
+    public float getOffsetX() {
+        return offsetX;
+    }
+
+    @Override
+    public float getOffsetY() {
+        return offsetY;
+    }
+
+    @Override
+    public float getScaleX() {
+        return scaleX;
+    }
+
+    @Override
+    public float getScaleY() {
+        return scaleY;
+    }
     /*
         (p, q) = offset
         (x, y) = translation
@@ -96,25 +118,26 @@ public abstract class Object2D implements Drawable {
         float sin = (float) Math.sin(rotationRad);
         float cos = (float) Math.cos(rotationRad);
         // element naming format: mXY (coordinates start at 0)
-        localTransform.m20 = (offset.x * scale.x * cos) - (offset.y * scale.y * sin) + pos.x;
-        localTransform.m21 = (offset.x * scale.x * sin) + (offset.y * scale.y * cos) + pos.y;
-        localTransform.m00 = cos * scale.x;
-        localTransform.m10 = -sin * scale.y;
-        localTransform.m01 = sin * scale.x;
-        localTransform.m11 = cos * scale.y;
-        globalTransformDirty = true;
+        localTransform.m20 = (offsetX * scaleX * cos) - (offsetY * scaleY * sin) + x;
+        localTransform.m21 = (offsetX * scaleX * sin) + (offsetY * scaleY * cos) + y;
+        localTransform.m00 = cos * scaleX;
+        localTransform.m10 = -sin * scaleY;
+        localTransform.m01 = sin * scaleX;
+        localTransform.m11 = cos * scaleY;
+        dirty = true;
     }
 
     private void updateGlobalTransform(Mat3 parentTransform) {
         Mat3.multiply(parentTransform, localTransform, globalTransform);
-        globalTransformDirty = false;
+        dirty = false;
     }
 
     @Override
     public final void drawRecursive(long nvg, Mat3 parentTransform, boolean dirty) {
         if (visible) {
-            dirty |= globalTransformDirty;
+            dirty |= this.dirty;
             if (dirty) {
+                updateLocalTransform();
                 updateGlobalTransform(parentTransform);
             }
             draw(nvg);

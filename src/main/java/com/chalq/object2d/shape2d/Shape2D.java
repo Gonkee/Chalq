@@ -21,7 +21,7 @@ public abstract class Shape2D extends Object2D implements Traceable {
     }
 
     @Override
-    public Scalar getTraceProgress() {
+    public float getTraceProgress() {
         return outline.getTraceProgress();
     }
 }

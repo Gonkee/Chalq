@@ -16,22 +16,21 @@ public abstract class Path2D extends Object2D implements Traceable {
     public float strokeWidth = 4;
     public Color color = new Color(1, 1, 1, 1);
 
-    public final Scalar traceProgress = new Scalar(1);
+    private float traceProgress = 1;
 
 
 
     @Override
     public void update() {
-        setTraceProgress(traceProgress.val);
     }
 
     @Override
     public void setTraceProgress(float progress) {
-        traceProgress.val = MathUtils.clamp(progress, 0, 1);
+        traceProgress = MathUtils.clamp(progress, 0, 1);
     }
 
     @Override
-    public Scalar getTraceProgress() {
+    public float getTraceProgress() {
         return traceProgress;
     }
 }

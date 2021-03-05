@@ -20,11 +20,11 @@ public class Line extends Path2D{
     public void draw(long nvg) {
 
         penBeginPath(nvg);
-        penMoveTo(nvg, getPos().x, getPos().y);
+        penMoveTo(nvg, getX(), getY());
 
         switch (strokeStyle) {
             case SOLID:
-                penLineTo(nvg, getPos().x + travel.x * traceProgress.val, getPos().y + travel.y * traceProgress.val);
+                penLineTo(nvg, getX() + travel.x * getTraceProgress(), getY() + travel.y * getTraceProgress());
                 penSetColor(color);
                 penStrokePath(nvg, strokeWidth);
                 break;
@@ -37,6 +37,6 @@ public class Line extends Path2D{
 
     @Override
     public Vec2 getLocalTracePosition() {
-        return new Vec2(getPos().x + travel.x * traceProgress.val, getPos().y + travel.y * traceProgress.val);
+        return new Vec2(getX() + travel.x * getTraceProgress(), getY() + travel.y * getTraceProgress());
     }
 }

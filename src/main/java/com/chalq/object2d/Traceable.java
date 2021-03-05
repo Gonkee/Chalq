@@ -7,7 +7,7 @@ public interface Traceable extends Drawable{
 
     void setTraceProgress(float progress);
 
-    Scalar getTraceProgress();
+    float getTraceProgress();
 
     Vec2 getLocalTracePosition();
 

@@ -40,11 +40,11 @@ public class ArcArrow extends Object2D implements Traceable{
         path.draw(nvg);
         float arrowTipRotation = path.tangentAngAtTrace();
         Vec2 pathTracePos = path.getLocalTracePosition();
-        Vec2 pathPos = path.getPos();
+        Vec2 pathPos = new Vec2(path.getX(), path.getY());
 
-        tipV1.set(width * 2, 0).rotateRad(arrowTipRotation).add(pathTracePos).add(pathPos);
-        tipV2.set(width * 2, 0).rotateRad(arrowTipRotation - 120 * MathUtils.degreesToRadians).add(pathTracePos).add(pathPos);
-        tipV3.set(width * 2, 0).rotateRad(arrowTipRotation + 120 * MathUtils.degreesToRadians).add(pathTracePos).add(pathPos);
+        tipV1.set(width * 2 * path.getTraceProgress(), 0).rotateRad(arrowTipRotation).add(pathTracePos).add(pathPos);
+        tipV2.set(width * 2 * path.getTraceProgress(), 0).rotateRad(arrowTipRotation - 120 * MathUtils.degreesToRadians).add(pathTracePos).add(pathPos);
+        tipV3.set(width * 2 * path.getTraceProgress(), 0).rotateRad(arrowTipRotation + 120 * MathUtils.degreesToRadians).add(pathTracePos).add(pathPos);
 
         penBeginPath(nvg);
         penMoveTo(nvg, tipV1.x, tipV1.y);
@@ -66,8 +66,8 @@ public class ArcArrow extends Object2D implements Traceable{
     }
 
     @Override
-    public Scalar getTraceProgress() {
-        return path.traceProgress;
+    public float getTraceProgress() {
+        return path.getTraceProgress();
     }
 
     @Override

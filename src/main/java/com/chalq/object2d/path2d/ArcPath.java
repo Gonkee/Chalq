@@ -79,7 +79,7 @@ public class ArcPath extends Path2D{
     private void computeBeziers() {
         float angDiff = clockWise * (startAng - endAng);
         if (angDiff < 0) angDiff += 2 * Math.PI;
-        angDiff *= traceProgress.val;
+        angDiff *= getTraceProgress();
         traceAng = startAng + angDiff * -clockWise;
 
         float x1, y1;

@@ -40,14 +40,13 @@ public class PolyPath extends Path2D{
                 cumulativeLengths[i / 2] = totalLength;
             }
         }
-        setTraceProgress(traceProgress.val);
+        setTraceProgress(getTraceProgress());
     }
 
     @Override
     public void setTraceProgress(float progress) {
         super.setTraceProgress(progress);
-        this.traceProgress.val = MathUtils.clamp(progress, 0, 1);
-        float portionLength = totalLength * this.traceProgress.val;
+        float portionLength = totalLength * getTraceProgress();
         incompleteSegmentLength = 0;
         for (int i = 0; i < cumulativeLengths.length; i++) {
             // i >= 1, because cumulativeLengths[i] == 0

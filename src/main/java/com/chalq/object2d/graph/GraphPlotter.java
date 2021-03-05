@@ -64,8 +64,8 @@ public class GraphPlotter extends Object2D {
         for (int vID = 0; vID < levelOfDetail; vID++) {
             float input = MathUtils.lerp(minInputs.get(index), maxInputs.get(index), (float) vID / levelOfDetail);
             Vec2 result = functions.get(index).apply(input);
-            curves.get(index) [vID * 2    ] = getPos().x + (result.x - xAxisMin) / (xAxisMax - xAxisMin) * width;
-            curves.get(index) [vID * 2 + 1] = getPos().y + height - (result.y - yAxisMin) / (yAxisMax - yAxisMin) * height;
+            curves.get(index) [vID * 2    ] = getX() + (result.x - xAxisMin) / (xAxisMax - xAxisMin) * width;
+            curves.get(index) [vID * 2 + 1] = getY() + height - (result.y - yAxisMin) / (yAxisMax - yAxisMin) * height;
         }
     }
 

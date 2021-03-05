@@ -20,15 +20,17 @@ public interface Drawable {
 
     void setParent(Drawable drawable);
 
-//    Vec2 applyTransform(float x, float y);
 
-
-    Vec2 getScale();
-    void setScale(float x, float y);
-
-    Vec2 getPos();
-    void setPos(float x, float y);
-
+    float getX();
+    float getY();
+    float getOffsetX();
+    float getOffsetY();
+    float getScaleX();
+    float getScaleY();
     float getRotation();
+
+    void setPos(float x, float y);
+    void setOffset(float x, float y);
+    void setScale(float x, float y);
     void setRotation(float ang);
 }

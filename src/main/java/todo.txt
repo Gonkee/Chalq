@@ -2,9 +2,6 @@
 
 trace bezier paths like after effects
 
-
-only allow interpolation of specific attributes to remove the need of mutable scalars?
-
 add delay option for showing objects
 
 figure out the rotation (clockwise / counter, where is 0 rotation, rad / deg) - arcs
