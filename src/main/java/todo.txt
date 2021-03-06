@@ -2,9 +2,16 @@
 
 trace bezier paths like after effects
 
-add delay option for showing objects
 
 figure out the rotation (clockwise / counter, where is 0 rotation, rad / deg) - arcs
 
 circle
 text object
+
+interpolation easings
+
+text blurry - use text as svg instead?
+
+moving lerping functionality to each object, not the scene (for more customization)
+
+change graph plotter functionality to not rely on Cq

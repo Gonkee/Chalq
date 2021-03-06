@@ -29,6 +29,7 @@ public class ArcArrow extends Object2D implements Traceable{
         this.width = width;
 
         path = new ArcPath(0, 0, pointX, pointY, arcAngle);
+        path.strokeWidth = width;
         addChild(path);
     }
 
