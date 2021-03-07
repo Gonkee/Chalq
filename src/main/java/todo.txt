@@ -10,8 +10,16 @@ text object
 
 interpolation easings
 
-text blurry - use text as svg instead?
+use text as svg instead
+- text blurry right now
+- adds rotation functionality
+- can scale x & y independently
+- allows 3D text
 
 moving lerping functionality to each object, not the scene (for more customization)
 
 change graph plotter functionality to not rely on Cq
+
+have abstract/generic graph class for line graphs and function graphs
+
+function graph smoothing

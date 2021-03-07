@@ -2,16 +2,12 @@ import com.chalq.core.Cq;
 import com.chalq.core.CqConfig;
 import com.chalq.core.CqScene;
 import com.chalq.core.CqWindow;
-import com.chalq.math.Mat3;
-import com.chalq.object2d.ArcArrow;
+import com.chalq.object2d.Arrow;
 import com.chalq.object2d.graph.GraphPlotter;
 import com.chalq.math.Vec2;
-import com.chalq.object2d.path2d.ArcPath;
 import com.chalq.object2d.shape2d.Rectangle;
 import com.chalq.util.Color;
 
-
-import java.util.Random;
 
 import static com.chalq.core.Cq.*;
 
@@ -23,7 +19,7 @@ public class SoundWave extends CqScene {
 
     GraphPlotter wave;
     Rectangle rect1;
-    ArcArrow arc;
+    Arrow arc;
 
     public static void main(String[] args) {
         CqConfig config = new CqConfig();
@@ -39,12 +35,12 @@ public class SoundWave extends CqScene {
 //        System.out.println("divide by 0");
 //        System.out.println();
 //        System.out.println(1 / 0);
-        wave = new GraphPlotter(getFrameWidth() / 2f - width / 2 - 20, getFrameHeight() / 2f - height / 2 + 150, width, height,
+        wave = new GraphPlotter(getFrameWidth() / 2f - 700 / 2f + 20, getFrameHeight() / 2f - 400 / 2f, 700, 400,
                 0, 30, 0, 30);
-        wave.addFunction(GraphPlotter.toParametric(this::wave, false), 0, 30, new Color("#eb4034"), true);
+        wave.addFunction(GraphPlotter.toParametric(this::wave, false), 1, 29.9f, new Color("#eb4034"), true);
 
 
-        addChild(wave);
+        traceObject(wave, 2);
 
 //        GraphPlotter circleGraph = new GraphPlotter(getFrameWidth() / 2f - width / 2 - 20, getFrameHeight() / 2f - height / 2 - 150, width, width,
 //                -2, 2, -2, 2);
@@ -66,6 +62,7 @@ public class SoundWave extends CqScene {
 //        rect3.addChild(rect4);
 
 //        traceObject(rect1, 0.5f);
+//        addChild(rect1);
 //        rect1.setPos(900, 500);
 //        rect1.setOffset(-50, -80);
 //
@@ -73,10 +70,10 @@ public class SoundWave extends CqScene {
 //        arc = new ArcArrow(600, 300, 100, 0, 270, 5);
 //        traceObject(arc, 1);
 
-        ArcArrow a1 = new ArcArrow(960 - 300, 540 - 50, 270, 0, 120, 6);
-        ArcArrow a2 = new ArcArrow(960 + 30, 540 - 50, 270, 0, 120, 6);
-        traceObject(a1, 2);
-        traceObject(a2, 3.5f);
+//        Arrow a1 = new Arrow(960 - 300, 540 - 50, 270, 0, 0, 6);
+//        Arrow a2 = new Arrow(960 + 30, 540 - 50, 270, 0, 0, 6);
+//        traceObject(a1, 2);
+//        traceObject(a2, 3.5f);
 //        Random random = new Random();
 //        for (int i = 0; i < 1000; i++) {
 //            addChild(new Rectangle(100 + random.nextInt(1500), 100 + random.nextInt(800), 30,30));
@@ -106,11 +103,11 @@ public class SoundWave extends CqScene {
 //        rect1.setScale(scl, scl);
 //        rect1.setRotation((float)Math.cos(time) * 2);
 
-        Cq.textSettings(80, TextAlignH.CENTER, TextAlignV.CENTER);
-        Cq.setColor(Color.WHITE);
-        Cq.text("200Hz", 960 - 300, 540);
-        Cq.text("400Hz", 960, 540);
-        Cq.text("800Hz", 960 + 300, 540);
+//        Cq.textSettings(80, TextAlignH.CENTER, TextAlignV.CENTER);
+//        Cq.setColor(Color.WHITE);
+//        Cq.text("200Hz", 960 - 300, 540);
+//        Cq.text("400Hz", 960, 540);
+//        Cq.text("800Hz", 960 + 300, 540);
 
 //        arc.setTraceProgress((float) Math.sin(time) / 4 + 0.75f);
 //        Cq.arcClockwise(500, 500, 600, 600, 180, 5);
@@ -139,8 +136,8 @@ public class SoundWave extends CqScene {
     private float wave(float in) {
 
 
-//        return (float) Math.sin(in - time * 3 - Math.PI / 2) / 1.5f;
-        return (float) Math.pow(1.2, in);
+        return (float) Math.sin(in / 2 - time * 3 - Math.PI / 2) * 10 + 15;
+//        return (float) Math.pow(1.12, in);
     }
 
     private Vec2 circleFunc(float t) {

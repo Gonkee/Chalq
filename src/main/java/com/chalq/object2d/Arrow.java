@@ -9,26 +9,33 @@ import com.chalq.object2d.path2d.Line;
 import com.chalq.object2d.path2d.Path2D;
 import com.chalq.util.Color;
 
-public class ArcArrow extends Object2D implements Traceable{
+public class Arrow extends Object2D implements Traceable{
 
     public float width;
     public final Vec2 pointVector = new Vec2();
-    public float arcAngle = 0;
 
-    private final ArcPath path;
+    private final Path2D path;
+    private final boolean isArc;
 
     // so that new ones don't have to be constantly made
     private final Vec2 tipV1 = new Vec2();
     private final Vec2 tipV2 = new Vec2();
     private final Vec2 tipV3 = new Vec2();
 
-    public ArcArrow(float x, float y, float pointX, float pointY, float arcAngle, float width) {
+    public Arrow(float x, float y, float pointX, float pointY, float arcAngle, float width) {
         setPos(x, y);
         this.pointVector.x = pointX;
         this.pointVector.y = pointY;
         this.width = width;
 
-        path = new ArcPath(0, 0, pointX, pointY, arcAngle);
+        if (arcAngle == 0) {
+            path = new Line(0, 0, pointX, pointY);
+            isArc = false;
+        } else {
+            path = new ArcPath(0, 0, pointX, pointY, arcAngle);
+            isArc = true;
+        }
+
         path.strokeWidth = width;
         addChild(path);
     }
@@ -39,9 +46,10 @@ public class ArcArrow extends Object2D implements Traceable{
         penSetColor(new Color(1, 1, 1, 1));
 
         path.draw(nvg);
-        float arrowTipRotation = path.tangentAngAtTrace();
+
         Vec2 pathTracePos = path.getLocalTracePosition();
         Vec2 pathPos = new Vec2(path.getX(), path.getY());
+        float arrowTipRotation = isArc ? ((ArcPath) path).tangentAngAtTrace() : (float) Math.atan2(pointVector.y, pointVector.x);
 
         tipV1.set(width * 2 * path.getTraceProgress(), 0).rotateRad(arrowTipRotation).add(pathTracePos).add(pathPos);
         tipV2.set(width * 2 * path.getTraceProgress(), 0).rotateRad(arrowTipRotation - 120 * MathUtils.degreesToRadians).add(pathTracePos).add(pathPos);

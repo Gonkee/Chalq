@@ -1,7 +1,6 @@
 package com.chalq.object2d.path2d;
 
 import com.chalq.core.Cq;
-import com.chalq.math.MathUtils;
 import com.chalq.math.Vec2;
 
 
@@ -11,6 +10,8 @@ public class PolyPath extends Path2D{
 
     private float[] vertices = new float[0]; // size = (number of segments + 1) * 2
     private float[] cumulativeLengths = new float[0]; // size = number of segments + 1
+    private float finalX, finalY;
+    private boolean pathDirty = true;
 
     private int completeSegments; // max size = number of segments
     private float incompleteSegmentLength;
@@ -24,7 +25,18 @@ public class PolyPath extends Path2D{
         if (vertices.length % 2 != 0) throw new IllegalArgumentException("Path points must have even number of coordinates.");
         this.vertices = vertices.clone();
         cumulativeLengths = new float[vertices.length / 2];
+        pathDirty = true;
+    }
 
+    public void setVertexCoord(int coordID, float val) {
+        if (coordID < vertices.length) {
+            vertices[coordID] = val;
+            pathDirty = true;
+        }
+    }
+
+    private void updatePath() {
+        pathDirty = false;
         totalLength = 0;
         float x1, y1, x2, y2, segmentLength;
         for (int i = 0; i < vertices.length; i += 2) {
@@ -57,43 +69,36 @@ public class PolyPath extends Path2D{
                 break;
             }
         }
-    }
-
-    @Override
-    public Vec2 getLocalTracePosition() {
         // there's 1 more cumulative length than maximum complete segments
         if (completeSegments < cumulativeLengths.length - 1) {
             float finalXdiff = vertices[completeSegments * 2 + 2] - vertices[completeSegments * 2];
             float finalYdiff = vertices[completeSegments * 2 + 3] - vertices[completeSegments * 2 + 1];
             float finalDist = (float) Math.sqrt(finalXdiff * finalXdiff + finalYdiff * finalYdiff);
 
-            float finalX = vertices[completeSegments * 2] + finalXdiff / finalDist * incompleteSegmentLength;
-            float finalY = vertices[completeSegments * 2 + 1] + finalYdiff / finalDist * incompleteSegmentLength;
-            return new Vec2(finalX, finalY);
+            finalX = vertices[completeSegments * 2] + finalXdiff / finalDist * incompleteSegmentLength;
+            finalY = vertices[completeSegments * 2 + 1] + finalYdiff / finalDist * incompleteSegmentLength;
         } else {
-            return new Vec2(vertices[vertices.length - 2], vertices[vertices.length - 1]);
+            finalX = vertices[vertices.length - 2];
+            finalY = vertices[vertices.length - 1];
         }
     }
 
+    @Override
+    public Vec2 getLocalTracePosition() {
+        return new Vec2(finalX, finalY);
+    }
 
     @Override
     public void draw(long nvg) {
+        if (pathDirty) updatePath();
         penBeginPath(nvg);
         penMoveTo(nvg, vertices[0], vertices[1]);
         for (int i = 2; i <= completeSegments * 2; i += 2) {
             penLineTo(nvg, vertices[i], vertices[i + 1]);
         }
-        // there's 1 more cumulative length than maximum complete segments
-        if (completeSegments < cumulativeLengths.length - 1) {
-            float finalXdiff = vertices[completeSegments * 2 + 2] - vertices[completeSegments * 2];
-            float finalYdiff = vertices[completeSegments * 2 + 3] - vertices[completeSegments * 2 + 1];
-            float finalDist = (float) Math.sqrt(finalXdiff * finalXdiff + finalYdiff * finalYdiff);
-
-            float finalX = vertices[completeSegments * 2] + finalXdiff / finalDist * incompleteSegmentLength;
-            float finalY = vertices[completeSegments * 2 + 1] + finalYdiff / finalDist * incompleteSegmentLength;
-            penLineTo(nvg, finalX, finalY);
-        }
-        Cq.stroke(4);
+        penLineTo(nvg, finalX, finalY);
+        penSetColor(color);
+        penStrokePath(nvg, strokeWidth);
     }
 
 
