@@ -35,13 +35,21 @@ public class SoundWave extends CqScene {
 //        System.out.println("divide by 0");
 //        System.out.println();
 //        System.out.println(1 / 0);
-        wave = new GraphPlotter(getFrameWidth() / 2f - 700 / 2f + 20, getFrameHeight() / 2f - 400 / 2f, 700, 400,
-                0, 30, 0, 30);
-        wave.addFunction(GraphPlotter.toParametric(this::wave, false), 1, 29.9f, new Color("#eb4034"), true);
+//        wave = new GraphPlotter(getFrameWidth() / 2f - 700 / 2f + 20, getFrameHeight() / 2f - 400 / 2f, 700, 400,
+//                0, 30, 0, 30);
+//        wave.addFunction(GraphPlotter.toParametric(this::wave, false), 1, 29.9f, new Color("#eb4034"), true);
+//
+//
+//        traceObject(wave, 2);
 
+        GraphPlotter plotter = new GraphPlotter(getFrameWidth() / 2f - 1200 / 2f + 20, getFrameHeight() / 2f - 400 / 2f, 1200, 400, 0, 100, 0, 10);
+        plotter.addFunction(GraphPlotter.toParametric(this::f1, false), 0, 100, Color.WHITE, false);
+        plotter.addFunction(GraphPlotter.toParametric(this::f2, false), 0, 100, Color.WHITE, false);
+        plotter.addFunction(GraphPlotter.toParametric(this::fs, false), 0, 100, Color.WHITE, false);
 
-        traceObject(wave, 2);
-
+        plotter.setAxesVisible(false);
+//        popUpObjectSlow(plotter, 1, 0.5f);
+        addChild(plotter);
 //        GraphPlotter circleGraph = new GraphPlotter(getFrameWidth() / 2f - width / 2 - 20, getFrameHeight() / 2f - height / 2 - 150, width, width,
 //                -2, 2, -2, 2);
 //        circleGraph.addFunction(this::circleFunc, 0, 400, Color.WHITE, true);
@@ -143,4 +151,10 @@ public class SoundWave extends CqScene {
     private Vec2 circleFunc(float t) {
         return new Vec2(0, 1).rotateDeg(t);
     }
+
+    private float f1(float in) { return (float) Math.sin(in * 1) * 0.7f + 14; }
+    private float f2(float in) { return (float) Math.sin(in * 1.414213) * 0.7f + 7; }
+    private float fs(float in) { return (float) (Math.sin(in * 1) * 0.7f + Math.sin(in * 1.414213) * 0.7f); }
+
+
 }

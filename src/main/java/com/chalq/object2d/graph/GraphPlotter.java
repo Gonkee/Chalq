@@ -26,7 +26,7 @@ public class GraphPlotter extends Object2D implements Traceable {
     private float xAxisMin, xAxisMax;
     private float yAxisMin, yAxisMax;
 
-    private float curveWidth = 6;
+    private float curveWidth = 5;
     private int levelOfDetail = 100;
 
     public static Function<Float, Vec2> toParametric(Function<Float, Float> function, boolean inverse) {
@@ -53,6 +53,11 @@ public class GraphPlotter extends Object2D implements Traceable {
         this.xAxisMax = xAxisMax;
         this.yAxisMin = yAxisMin;
         this.yAxisMax = yAxisMax;
+    }
+
+    public void setAxesVisible(boolean visible) {
+        xAxis.visible = visible;
+        yAxis.visible = visible;
     }
 
     public int addFunction(Function<Float, Vec2> function, float minInput, float maxInput, Color color, boolean liveUpdate) {
@@ -91,11 +96,11 @@ public class GraphPlotter extends Object2D implements Traceable {
         }
 
         // temp
-        Cq.textSettings(50 * xAxis.getTraceProgress(), Cq.TextAlignH.CENTER, Cq.TextAlignV.TOP);
-        Cq.text("Soi", getX() + (width / 2 * xAxis.getTraceProgress()), getY() + height + 20 * xAxis.getTraceProgress());
-
-        Cq.textSettings(50 * yAxis.getTraceProgress(), Cq.TextAlignH.RIGHT, Cq.TextAlignV.CENTER);
-        Cq.text("Oi", getX() - 30 * yAxis.getTraceProgress(), getY() + height - height / 2 * yAxis.getTraceProgress());
+//        Cq.textSettings(50 * xAxis.getTraceProgress(), Cq.TextAlignH.CENTER, Cq.TextAlignV.TOP);
+//        Cq.text("Soi", getX() + (width / 2 * xAxis.getTraceProgress()), getY() + height + 20 * xAxis.getTraceProgress());
+//
+//        Cq.textSettings(50 * yAxis.getTraceProgress(), Cq.TextAlignH.RIGHT, Cq.TextAlignV.CENTER);
+//        Cq.text("Oi", getX() - 30 * yAxis.getTraceProgress(), getY() + height - height / 2 * yAxis.getTraceProgress());
     }
 
     @Override
