@@ -1,6 +1,7 @@
 package com.chalq.core;
 
 import com.chalq.math.Mat3;
+import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.nanovg.NVGColor;
 import org.lwjgl.nanovg.NanoVG;
@@ -32,6 +33,14 @@ public class CqWindow {
             glfwTerminate();
             throw new RuntimeException("Failed to create the GLFW window");
         }
+
+        glfwSetKeyCallback(window, new GLFWKeyCallback() {
+            @Override
+            public void invoke(long window, int key, int scancode, int action, int mods) {
+                if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE )
+                    glfwSetWindowShouldClose(window, true); // We will detect this in the rendering loop
+            }
+        });
 
         GLFWVidMode vidMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
         glfwSetWindowPos(window, (vidMode.width() - width) / 2, (vidMode.height() - height) / 2 );

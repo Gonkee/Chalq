@@ -1,14 +1,14 @@
 package com.chalq.math;
 
-public class Scalar {
+public class LerpVal {
 
     public float val;
 
-    public Scalar() {
+    public LerpVal() {
         val = 0;
     }
 
-    public Scalar(float value) {
+    public LerpVal(float value) {
         this.val = value;
     }
 

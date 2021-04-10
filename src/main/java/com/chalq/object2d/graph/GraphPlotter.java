@@ -27,7 +27,7 @@ public class GraphPlotter extends Object2D implements Traceable {
     private float yAxisMin, yAxisMax;
 
     private float curveWidth = 5;
-    private int levelOfDetail = 100;
+    private int levelOfDetail = 300;
 
     public static Function<Float, Vec2> toParametric(Function<Float, Float> function, boolean inverse) {
         if (inverse) {
@@ -60,7 +60,15 @@ public class GraphPlotter extends Object2D implements Traceable {
         yAxis.visible = visible;
     }
 
-    public int addFunction(Function<Float, Vec2> function, float minInput, float maxInput, Color color, boolean liveUpdate) {
+    public int addFunction(Function<Float, Float> function, float minInput, float maxInput, Color color, boolean liveUpdate) {
+        return addParametricFunction( (t) -> new Vec2(t, function.apply(t)) , minInput, maxInput, color, liveUpdate);
+    }
+
+    public int addInverseFunction(Function<Float, Float> function, float minInput, float maxInput, Color color, boolean liveUpdate) {
+        return addParametricFunction( (t) -> new Vec2(function.apply(t), t) , minInput, maxInput, color, liveUpdate);
+    }
+
+    public int addParametricFunction(Function<Float, Vec2> function, float minInput, float maxInput, Color color, boolean liveUpdate) {
         int newFunctionID = functions.size();
         functions.add(function);
         minInputs.add(minInput);
@@ -75,6 +83,8 @@ public class GraphPlotter extends Object2D implements Traceable {
         updateGraph(newFunctionID);
         return newFunctionID;
     }
+
+
 
 
     private void updateGraph(int index) {

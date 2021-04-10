@@ -2,7 +2,6 @@ package com.chalq.object2d;
 
 import com.chalq.core.Object2D;
 import com.chalq.math.MathUtils;
-import com.chalq.math.Scalar;
 import com.chalq.math.Vec2;
 import com.chalq.object2d.path2d.ArcPath;
 import com.chalq.object2d.path2d.Line;

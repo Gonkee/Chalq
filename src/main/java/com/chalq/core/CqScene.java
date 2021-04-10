@@ -1,5 +1,6 @@
 package com.chalq.core;
 
+import com.chalq.math.LerpVal;
 import com.chalq.math.MathUtils;
 import com.chalq.object2d.Drawable;
 import com.chalq.object2d.Traceable;
@@ -23,17 +24,17 @@ public class CqScene extends Object2D {
     private static class Interpolation {
 
         public enum Type {
-            POS_X, POS_Y, SCALE_X, SCALE_Y, OFFSET_X, OFFSET_Y, ROTATION, TRACE_PROGRESS
+            POS_X, POS_Y, SCALE_X, SCALE_Y, OFFSET_X, OFFSET_Y, ROTATION, TRACE_PROGRESS, CUSTOM
         }
 
-        private final Drawable subject;
+        private final Object subject;
         private final float startTime, duration, targetVal;
         private final Type type;
 
         private float startVal;
         private boolean started = false;
 
-        public Interpolation(Drawable subject, Type type, float targetVal, float startTime, float duration) {
+        public Interpolation(Object subject, Type type, float targetVal, float startTime, float duration) {
             this.subject = subject;
             this.type = type;
             this.targetVal = targetVal;
@@ -46,28 +47,31 @@ public class CqScene extends Object2D {
                 started = true;
                 switch (type) {
                     case POS_X:
-                        startVal = subject.getX();
+                        startVal = ((Drawable) subject).getX();
                         break;
                     case POS_Y:
-                        startVal = subject.getY();
+                        startVal = ((Drawable) subject).getY();
                         break;
                     case SCALE_X:
-                        startVal = subject.getScaleX();
+                        startVal = ((Drawable) subject).getScaleX();
                         break;
                     case SCALE_Y:
-                        startVal = subject.getScaleY();
+                        startVal = ((Drawable) subject).getScaleY();
                         break;
                     case OFFSET_X:
-                        startVal = subject.getOffsetX();
+                        startVal = ((Drawable) subject).getOffsetX();
                         break;
                     case OFFSET_Y:
-                        startVal = subject.getOffsetY();
+                        startVal = ((Drawable) subject).getOffsetY();
                         break;
                     case ROTATION:
-                        startVal = subject.getRotation();
+                        startVal = ((Drawable) subject).getRotation();
                         break;
                     case TRACE_PROGRESS:
                         startVal = ((Traceable) subject).getTraceProgress();
+                        break;
+                    case CUSTOM:
+                        startVal = ((LerpVal) subject).val;
                         break;
                 }
             }
@@ -87,28 +91,31 @@ public class CqScene extends Object2D {
             }
             switch (type) {
                 case POS_X:
-                    subject.setPos(current, subject.getY());
+                    ((Drawable) subject).setPos(current,  ((Drawable) subject).getY());
                     break;
                 case POS_Y:
-                    subject.setPos(subject.getX(), current);
+                    ((Drawable) subject).setPos( ((Drawable) subject).getX(), current);
                     break;
                 case SCALE_X:
-                    subject.setScale(current, subject.getScaleY());
+                    ((Drawable) subject).setScale(current,  ((Drawable) subject).getScaleY());
                     break;
                 case SCALE_Y:
-                    subject.setScale(subject.getScaleX(), current);
+                    ((Drawable) subject).setScale( ((Drawable) subject).getScaleX(), current);
                     break;
                 case OFFSET_X:
-                    subject.setOffset(current, subject.getOffsetY());
+                    ((Drawable) subject).setOffset(current,  ((Drawable) subject).getOffsetY());
                     break;
                 case OFFSET_Y:
-                    subject.setOffset(subject.getOffsetX(), current);
+                    ((Drawable) subject).setOffset( ((Drawable) subject).getOffsetX(), current);
                     break;
                 case ROTATION:
-                    subject.setRotation(current);
+                    ((Drawable) subject).setRotation(current);
                     break;
                 case TRACE_PROGRESS:
                     ((Traceable) subject).setTraceProgress(current);
+                    break;
+                case CUSTOM:
+                    ((LerpVal) subject).val = current;
                     break;
             }
             return done;
@@ -214,6 +221,10 @@ public class CqScene extends Object2D {
         for (int i = interpolations.size() - 1; i >= 0; i--) {
             if (interpolations.get(i).update()) interpolations.remove(i);
         }
+    }
+
+    public void lerpCustom(LerpVal value, float target, float startTime, float duration) {
+        interpolations.add(new Interpolation(value, Interpolation.Type.CUSTOM, target, startTime, duration));
     }
 
     public void lerpPos(Drawable subject, float targetX, float targetY, float startTime, float duration) {

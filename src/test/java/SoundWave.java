@@ -2,6 +2,8 @@ import com.chalq.core.Cq;
 import com.chalq.core.CqConfig;
 import com.chalq.core.CqScene;
 import com.chalq.core.CqWindow;
+import com.chalq.math.LerpVal;
+import com.chalq.math.MathUtils;
 import com.chalq.object2d.Arrow;
 import com.chalq.object2d.graph.GraphPlotter;
 import com.chalq.math.Vec2;
@@ -42,14 +44,27 @@ public class SoundWave extends CqScene {
 //
 //        traceObject(wave, 2);
 
-        GraphPlotter plotter = new GraphPlotter(getFrameWidth() / 2f - 1200 / 2f + 20, getFrameHeight() / 2f - 400 / 2f, 1200, 400, 0, 100, 0, 10);
-        plotter.addFunction(GraphPlotter.toParametric(this::f1, false), 0, 100, Color.WHITE, false);
-        plotter.addFunction(GraphPlotter.toParametric(this::f2, false), 0, 100, Color.WHITE, false);
-        plotter.addFunction(GraphPlotter.toParametric(this::fs, false), 0, 100, Color.WHITE, false);
+        GraphPlotter plotter = new GraphPlotter(getFrameWidth() / 2f - 700 / 2f, getFrameHeight() / 2f - 400 / 2f, 700, 400, 0, 3, 0, 10);
+//        plotter.addFunction(GraphPlotter.toParametric(this::w1, false), 0, 4 * (float) Math.PI, Color.WHITE, true);
+//        plotter.addFunction(GraphPlotter.toParametric(this::w2, false), 0, 4 * (float) Math.PI, Color.WHITE, true);
+//        plotter.addFunction(GraphPlotter.toParametric(this::w3, false), 0, 4 * (float) Math.PI, Color.WHITE, true);
+//        plotter.addFunction(GraphPlotter.toParametric(this::w4, false), 0, 4 * (float) Math.PI, Color.WHITE, true);
+//        plotter.addFunction(GraphPlotter.toParametric(this::w5, false), 0, 4 * (float) Math.PI, Color.WHITE, true);
+
+//        plotter.addFunction(GraphPlotter.toParametric(this::sine, false), 0, 6 * (float) Math.PI, Color.WHITE, true);
+//        plotter.addFunction(GraphPlotter.toParametric(this::triangle, false), 0, 6 * (float) Math.PI, Color.WHITE, true);
+//        plotter.addFunction(GraphPlotter.toParametric(this::square, false), 0, 6 * (float) Math.PI, Color.WHITE, true);
+//        plotter.addFunction(GraphPlotter.toParametric(this::saw, false), 0, 6 * (float) Math.PI, Color.WHITE, true);
+        plotter.addFunction(this::sawMorph, 0, 3, Color.WHITE, true);
+//        plotter.addFunction(GraphPlotter.toParametric(this::wave, false), 0, 2 * (float) Math.PI, Color.WHITE, true);
 
         plotter.setAxesVisible(false);
 //        popUpObjectSlow(plotter, 1, 0.5f);
         addChild(plotter);
+        lerpCustom(hm, 16, time + 4, 8);
+
+
+
 //        GraphPlotter circleGraph = new GraphPlotter(getFrameWidth() / 2f - width / 2 - 20, getFrameHeight() / 2f - height / 2 - 150, width, width,
 //                -2, 2, -2, 2);
 //        circleGraph.addFunction(this::circleFunc, 0, 400, Color.WHITE, true);
@@ -144,17 +159,127 @@ public class SoundWave extends CqScene {
     private float wave(float in) {
 
 
-        return (float) Math.sin(in / 2 - time * 3 - Math.PI / 2) * 10 + 15;
+        return (float) Math.sin(in * 3.5 - time * 3) * 2 + 5;
 //        return (float) Math.pow(1.12, in);
+    }
+
+    private float sine(float in) {
+        return (float) Math.sin(in - time * 3) + 20;
+    }
+    private float triangle(float in) {
+        float pi2 = (float) Math.PI * 2;
+        in -= time * 3;
+        in %= pi2;
+        if (in < 0) in += pi2;
+        in = in > pi2/2 ? pi2 - in : in;
+        in /= pi2/2;
+        in *= 2;
+        in -= 1;
+        return in + 15;
+    }
+    private float square(float in) {
+        float pi2 = (float) Math.PI * 2;
+        in -= time * 3;
+        in %= pi2;
+        if (in < 0) in += pi2;
+        in = in > pi2/2 ? 1 : -1;
+        return in + 10;
+    }
+    private float saw(float in) {
+        float pi2 = (float) Math.PI * 2;
+        in -= time * 3;
+        in %= pi2;
+        if (in < 0) in += pi2;
+        in = in / pi2 * 2 - 1;
+        return in + 5;
     }
 
     private Vec2 circleFunc(float t) {
         return new Vec2(0, 1).rotateDeg(t);
     }
 
-    private float f1(float in) { return (float) Math.sin(in * 1) * 0.7f + 14; }
-    private float f2(float in) { return (float) Math.sin(in * 1.414213) * 0.7f + 7; }
-    private float fs(float in) { return (float) (Math.sin(in * 1) * 0.7f + Math.sin(in * 1.414213) * 0.7f); }
+    private float f1(float in) { return (float) Math.sin(in * 4) * 0.7f + 14; }
+    private float f2(float in) { return (float) Math.sin(in * 5) * 0.7f + 7; }
+    private float fs(float in) { return (float) (Math.sin(in * 4) * 0.7f + Math.sin(in * 5) * 0.7f); }
 
+    LerpVal morphFac = new LerpVal();
+
+    private float w1(float in) { return (float) Math.sin((in - time * 1.5) * 1 ) * 0.7f; }
+    private float w2(float in) { return (float) Math.sin((in - time * 1.5) * 2 ) * 0.7f; }
+    private float w3(float in) { return (float) Math.sin((in - time * 1.5) * 3 ) * 0.7f; }
+    private float w4(float in) { return (float) Math.sin((in - time * 1.5) * 4 ) * 0.7f; }
+    private float w5(float in) { return (float) Math.sin((in - time * 1.5) * 5 ) * 0.7f; }
+
+    private float wsum(float in) {
+        return w1(in) + w2(in) + w3(in) + w4(in);
+    }
+
+    private float w1c(float in) { return MathUtils.lerp( wsum(in), w1(in), morphFac.val); }
+    private float w2c(float in) { return MathUtils.lerp( wsum(in), w2(in), morphFac.val); }
+    private float w3c(float in) { return MathUtils.lerp( wsum(in), w3(in), morphFac.val); }
+    private float w4c(float in) { return MathUtils.lerp( wsum(in), w4(in), morphFac.val); }
+
+    LerpVal hm = new LerpVal(1);
+
+    private float harmonic(float in) {
+        float h1 = (float) Math.sin(in);
+        float h2 = (float) Math.sin(in * 1.4142);
+        float h3 = (float) Math.sin(in * 2.1415);
+        float h4 = (float) Math.sin(in * 4.7878);
+        float h5 = (float) Math.sin(in * 6.656);
+
+        float result =
+                h1 * MathUtils.clamp(hm.val    , 0, 1) +
+                h2 * MathUtils.clamp(hm.val - 3, 0, 1) +
+                h3 * MathUtils.clamp(hm.val - 6, 0, 1) +
+                h4 * MathUtils.clamp(hm.val - 9, 0, 1) +
+                h5 * MathUtils.clamp(hm.val - 12, 0, 1) + 10;
+
+        return result;
+    }
+
+    private float squareMorph(float in) {
+
+        float sum = 0;
+        for (int k = 1; k <= (int) hm.val + 1; k++) {
+            double next = Math.sin(2 * Math.PI * (2 * k - 1) * in) / (2 * k - 1);
+            if (k < (int) hm.val + 1) {
+                sum += next;
+            } else {
+                sum += next * MathUtils.clamp(3 * (hm.val - (int) hm.val), 0, 1);
+            }
+        }
+
+        return sum * 4 / (float) Math.PI + 5;
+    }
+    private float triangleMorph(float in) {
+
+        float sum = 0;
+        for (int k = 1; k <= (int) hm.val + 1; k++) {
+            double next = Math.pow(-1, k) * Math.sin(2 * Math.PI * (2 * k - 1) * in) /  ( (2 * k - 1) * (2 * k - 1) );
+            if (k < (int) hm.val + 1) {
+                sum += next;
+            } else {
+                sum += next * MathUtils.clamp(3 * (hm.val - (int) hm.val), 0, 1);
+            }
+        }
+
+        return sum * 8 / (float) (Math.PI * Math.PI) + 5;
+    }
+
+    private float sawMorph(float in) {
+
+        float sum = 0;
+        for (int k = 1; k <= (int) hm.val + 1; k++) {
+            double next = Math.pow(-1, k) * Math.sin(2 * Math.PI * k * in) / k;
+            if (k < (int) hm.val + 1) {
+                sum += next;
+            } else {
+                sum += next * MathUtils.clamp(3 * (hm.val - (int) hm.val), 0, 1);
+            }
+        }
+
+        return sum * 2 / (float) (Math.PI) + 5;
+    }
 
 }
