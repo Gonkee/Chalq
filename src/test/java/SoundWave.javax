@@ -1,8 +1,6 @@
-import com.chalq.core.Cq;
 import com.chalq.core.CqConfig;
 import com.chalq.core.CqScene;
 import com.chalq.core.CqWindow;
-import com.chalq.math.LerpVal;
 import com.chalq.math.MathUtils;
 import com.chalq.object2d.Arrow;
 import com.chalq.object2d.graph.GraphPlotter;
@@ -61,7 +59,7 @@ public class SoundWave extends CqScene {
         plotter.setAxesVisible(false);
 //        popUpObjectSlow(plotter, 1, 0.5f);
         addChild(plotter);
-        lerpCustom(hm, 16, time + 4, 8);
+//        lerpCustom(hm, 16, time + 4, 8);
 
 
 

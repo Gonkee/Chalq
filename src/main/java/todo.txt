@@ -8,15 +8,12 @@ figure out the rotation (clockwise / counter, where is 0 rotation, rad / deg) - 
 circle
 text object
 
-interpolation easings
-
 use text as svg instead
 - text blurry right now
 - adds rotation functionality
 - can scale x & y independently
 - allows 3D text
 
-moving lerping functionality to each object, not the scene (for more customization)
 
 change graph plotter functionality to not rely on Cq
 

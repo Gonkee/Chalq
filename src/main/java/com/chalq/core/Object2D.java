@@ -70,6 +70,42 @@ public abstract class Object2D implements Drawable {
     }
 
     @Override
+    public void setX(float x) {
+        this.x = x;
+        dirty = true;
+    }
+
+    @Override
+    public void setY(float y) {
+        this.y = y;
+        dirty = true;
+    }
+
+    @Override
+    public void setOffsetX(float offsetX) {
+        this.offsetX = offsetX;
+        dirty = true;
+    }
+
+    @Override
+    public void setOffsetY(float offsetY) {
+        this.offsetY = offsetY;
+        dirty = true;
+    }
+
+    @Override
+    public void setScaleX(float scaleX) {
+        this.scaleX = scaleX;
+        dirty = true;
+    }
+
+    @Override
+    public void setScaleY(float scaleY) {
+        this.scaleY = scaleY;
+        dirty = true;
+    }
+
+    @Override
     public float getX() {
         return x;
     }
@@ -98,6 +134,7 @@ public abstract class Object2D implements Drawable {
     public float getScaleY() {
         return scaleY;
     }
+
     /*
         (p, q) = offset
         (x, y) = translation

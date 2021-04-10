@@ -1,5 +1,6 @@
 package com.chalq.object2d;
 
+import com.chalq.core.CqScene;
 import com.chalq.math.Mat3;
 
 public interface Drawable {
@@ -18,7 +19,6 @@ public interface Drawable {
 
     void setParent(Drawable drawable);
 
-
     float getX();
     float getY();
     float getOffsetX();
@@ -31,4 +31,12 @@ public interface Drawable {
     void setOffset(float x, float y);
     void setScale(float x, float y);
     void setRotation(float ang);
+
+    void setX(float x);
+    void setY(float y);
+    void setOffsetX(float offsetX);
+    void setOffsetY(float offsetY);
+    void setScaleX(float scaleX);
+    void setScaleY(float scaleY);
+
 }
