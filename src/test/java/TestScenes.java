@@ -17,6 +17,7 @@ public class TestScenes {
         config.height = 1080;
         config.backgroundColor = new Color(0.102f, 0.137f, 0.2f, 1f);
         config.antialiasing = true;
+        config.outputMP4Path = "vidout/yessir.mp4";
         new CqWindow(config, new Scene2());
     }
 

@@ -20,3 +20,5 @@ change graph plotter functionality to not rely on Cq
 have abstract/generic graph class for line graphs and function graphs
 
 function graph smoothing
+
+video encoding with better quality and on separate thread
