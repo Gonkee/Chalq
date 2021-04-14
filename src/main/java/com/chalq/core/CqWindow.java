@@ -1,6 +1,9 @@
 package com.chalq.core;
 
 import com.chalq.math.Mat3;
+import io.humble.video.*;
+import io.humble.video.awt.MediaPictureConverter;
+import io.humble.video.awt.MediaPictureConverterFactory;
 import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.nanovg.NVGColor;
@@ -10,6 +13,7 @@ import org.lwjgl.opengl.*;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -58,6 +62,48 @@ public class CqWindow {
         scene.init();
 
         Mat3 identity = new Mat3();
+
+        //  VID RECORDING
+        final Rational framerate = Rational.make(1, 60);
+        final Muxer muxer = Muxer.make("./lessgeddit.avi", null, "avi");
+        final MuxerFormat format = muxer.getFormat();
+        final Codec codec;
+        codec = Codec.findEncodingCodec(format.getDefaultVideoCodecId());
+
+        System.out.println("codec: " + codec);
+
+        Encoder encoder = Encoder.make(codec);
+        encoder.setWidth(1920);
+        encoder.setHeight(1080);
+        // We are going to use 420P as the format because that's what most video formats these days use
+        final PixelFormat.Type pixelformat = PixelFormat.Type.PIX_FMT_YUV420P;
+        encoder.setPixelFormat(pixelformat);
+        encoder.setTimeBase(framerate);
+
+        if (format.getFlag(MuxerFormat.Flag.GLOBAL_HEADER))
+            encoder.setFlag(Encoder.Flag.FLAG_GLOBAL_HEADER, true);
+
+        encoder.open(null, null);
+        muxer.addNewStream(encoder);
+        try {
+            muxer.open(null, null);
+        } catch (InterruptedException | IOException e) {
+            e.printStackTrace();
+        }
+
+        MediaPictureConverter converter = null;
+        final MediaPicture picture = MediaPicture.make(
+                encoder.getWidth(),
+                encoder.getHeight(),
+                pixelformat);
+        picture.setTimeBase(framerate);
+        long timestamp = 0;
+
+        System.out.println("quality: " + picture.getQuality());
+
+        final MediaPacket packet = MediaPacket.make();
+
+        int framesToEncode = 400;
 
         int[] pixelArray = new int[width * height];
         ByteBuffer pixelBuffer = ByteBuffer.allocateDirect(width * height * 3);
@@ -157,8 +203,28 @@ public class CqWindow {
                 System.out.println("sync time: " + String.format("%.4f", syncTime) + "read pixels: " + String.format("%.4f", readPixelTime));// + ", fill array: " + String.format("%.4f", fillArrayTime) + ", fill image:" + String.format("%.4f", fillImageTime) );
                 GL30.glBindBuffer(GL30.GL_PIXEL_PACK_BUFFER, 0); // unbind
 
+
+                /** This is LIKELY not in YUV420P format, so we're going to convert it using some handy utilities. */
+                if (converter == null)
+                    converter = MediaPictureConverterFactory.createConverter(image, picture);
+                converter.toPicture(picture, image, timestamp);
+                timestamp++;
+
+                do {
+                    encoder.encode(packet, picture);
+                    if (packet.isComplete())
+                        muxer.write(packet, false);
+                } while (packet.isComplete());
             }
         }
+
+        do {
+            encoder.encode(packet, null);
+            if (packet.isComplete())
+                muxer.write(packet,  false);
+        } while (packet.isComplete());
+
+        muxer.close();
 
         glfwDestroyWindow(window);
         glfwTerminate();
