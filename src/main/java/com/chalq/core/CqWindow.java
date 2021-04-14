@@ -9,6 +9,7 @@ import org.lwjgl.nanovg.NanoVGGL3;
 import org.lwjgl.opengl.*;
 
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
 import java.nio.ByteBuffer;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -61,6 +62,7 @@ public class CqWindow {
         int[] pixelArray = new int[width * height];
         ByteBuffer pixelBuffer = ByteBuffer.allocateDirect(width * height * 3);
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
+        byte[] pixelBytes = ( (DataBufferByte) image.getRaster().getDataBuffer() ).getData();
 
         // while one is receiving data from GPU, other is sending data to CPU (simultaneous = faster)
         int pbo1 = GL30.glGenBuffers();
@@ -102,7 +104,12 @@ public class CqWindow {
                         the rendering processes above
                      */
                     GL30.glBindBuffer(GL30.GL_PIXEL_PACK_BUFFER, pbo2);
-                    GL30.glGetBufferSubData(GL30.GL_PIXEL_PACK_BUFFER, 0, pixelArray); // could load into either array or buffer
+                    GL30.glGetBufferSubData(GL30.GL_PIXEL_PACK_BUFFER, 0, pixelBuffer); // could load into either array or buffer
+//                    pixelBuffer.get(pixelBytes);
+                    for (int i = 0; i < pixelBuffer.remaining(); i++) {
+                        pixelBytes[i] = pixelBuffer.get(i +  pixelBuffer.position());
+
+                    }
 //                        for (int i = 0; i < pixelArray.length; i++) {
 //                            // int in ARGB form
 //                            pixelArray[i] = 0xFF000000                          // A = 255
@@ -145,9 +152,11 @@ public class CqWindow {
 //                image.setRGB(0, 0, width, height, pixelArray, 0, width);
 //                fillImageTime = (System.nanoTime() - start) / 1000000000f;
 
-//                System.out.println("colour: " + pixelArray[1000]);
+//                System.out.println("colour: " + String.format("0x%08X", pixelArray[1000]));
+                System.out.println(String.format("0x%08X", image.getRGB(100, 100)));
                 System.out.println("sync time: " + String.format("%.4f", syncTime) + "read pixels: " + String.format("%.4f", readPixelTime));// + ", fill array: " + String.format("%.4f", fillArrayTime) + ", fill image:" + String.format("%.4f", fillImageTime) );
                 GL30.glBindBuffer(GL30.GL_PIXEL_PACK_BUFFER, 0); // unbind
+
             }
         }
 
