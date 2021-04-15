@@ -6,6 +6,10 @@ import com.chalq.math.MathUtils;
 import com.chalq.object2d.graph.GraphPlotter;
 import com.chalq.util.Color;
 
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
+import java.nio.ByteBuffer;
+
 import static com.chalq.core.Cq.*;
 import static com.chalq.core.Cq.time;
 
@@ -17,8 +21,15 @@ public class TestScenes {
         config.height = 1080;
         config.backgroundColor = new Color(0.102f, 0.137f, 0.2f, 1f);
         config.antialiasing = true;
-        config.outputMP4Path = "vidout/yessir.mp4";
+        config.outputMP4Path = "vidout/crf18.mp4";
         new CqWindow(config, new Scene2());
+
+//        BufferedImage image = new BufferedImage(1920, 1080, BufferedImage.TYPE_3BYTE_BGR);
+//        byte[] imageData = ( (DataBufferByte) image.getRaster().getDataBuffer() ).getData();
+//        System.out.println(imageData.length);
+//        ByteBuffer buffer = ByteBuffer.allocateDirect(1920 * 1080 * 3);
+//        System.out.println(1920 * 1080 * 3);
+//        System.out.println("buffer size: " + buffer.remaining());
     }
 
     static class Scene1 extends CqScene {

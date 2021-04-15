@@ -17,7 +17,7 @@ import static org.lwjgl.opengl.GL11.glReadPixels;
 
 class Recorder {
 
-    private final int width, height;
+    private final int width, height, w3;
     private final BufferedImage image;
     private final byte[] imageData;
     private final ByteBuffer buffer;
@@ -35,6 +35,7 @@ class Recorder {
     protected Recorder(int width, int height, String outputFile) {
         this.width = width;
         this.height = height;
+        w3 = 3 * width;
         image = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
         imageData = ( (DataBufferByte) image.getRaster().getDataBuffer() ).getData();
         buffer = ByteBuffer.allocateDirect(width * height * 3);
@@ -52,9 +53,12 @@ class Recorder {
         muxer = Muxer.make(outputFile, null, "mp4");
         Rational timeBase = Rational.make(1, 60);
         MuxerFormat format = muxer.getFormat();
-        Codec codec = Codec.findEncodingCodec(format.getDefaultVideoCodecId());
+        Codec codec = Codec.findEncodingCodecByName("libx264");
 
         System.out.println("codec: " + codec);
+
+        KeyValueBag encoderOptions = KeyValueBag.make();
+        encoderOptions.setValue("crf", "18");
 
         encoder = Encoder.make(codec);
         encoder.setWidth(1920);
@@ -67,7 +71,7 @@ class Recorder {
         if (format.getFlag(MuxerFormat.Flag.GLOBAL_HEADER))
             encoder.setFlag(Encoder.Flag.FLAG_GLOBAL_HEADER, true);
 
-        encoder.open(null, null);
+        encoder.open(encoderOptions, null);
         muxer.addNewStream(encoder);
         try {
             muxer.open(null, null);
@@ -78,32 +82,22 @@ class Recorder {
         picture = MediaPicture.make(encoder.getWidth(), encoder.getHeight(), pixelformat);
         picture.setTimeBase(timeBase);
 
-        picture.setQuality(20);
-        System.out.println("quality: " + picture.getQuality());
 
         packet = MediaPacket.make();
     }
 
     protected void recordFrame() {
         if (readSync != 0) {
-        /*
-            wait for pixel data to be done moving to PBO from previous tick (wait unlimited time to not
-            lose any frames) - takes less time as that action was performed on the GPU, at the same time as
-            the rendering processes above
-         */
+
             GL30.glBindBuffer(GL30.GL_PIXEL_PACK_BUFFER, pbo2);
-            GL30.glGetBufferSubData(GL30.GL_PIXEL_PACK_BUFFER, 0, buffer); // could load into either array or buffer
-//                    pixelBuffer.get(pixelBytes);
-            for (int i = 0; i < buffer.remaining(); i++) {
-                imageData[i] = buffer.get(i + buffer.position());
+            GL30.glGetBufferSubData(GL30.GL_PIXEL_PACK_BUFFER, 0, buffer);
+            // glReadPixels goes row by row, from bottom to top, but
+            // BufferedImage goes row by row, from top to bottom.
+            for (int y = 0; y < height; y++) {
+                for (int x = 0; x < w3; x++) {
+                    imageData[ y * w3 + x ] = buffer.get( (height - y - 1) * w3 + x );
+                }
             }
-//                        for (int i = 0; i < pixelArray.length; i++) {
-//                            // int in ARGB form
-//                            pixelArray[i] = 0xFF000000                          // A = 255
-//                                    | ( pixelBuffer.get(i * 3    ) << 16 )  // R
-//                                    | ( pixelBuffer.get(i * 3 + 1) <<  8 )  // G
-//                                    | ( pixelBuffer.get(i * 3 + 2) <<  0 ); // B
-//                        }
 
             int syncStatus = ARBSync.glClientWaitSync(readSync, 0, Long.MAX_VALUE);
             if (syncStatus == GL32.GL_ALREADY_SIGNALED || syncStatus == GL32.GL_CONDITION_SATISFIED) {
@@ -115,19 +109,11 @@ class Recorder {
             }
         }
         if (readSync == 0) {
-                    /*
-                        the pixel data is being moved to the Pixel Buffer Object (PBO), which is on the GPU,
-                        as opposed to directly to system memory, which will block the thread due to synchronisation
-                        between the CPU and GPU
-                     */
             GL30.glBindBuffer(GL30.GL_PIXEL_PACK_BUFFER, pbo1);
-            glReadPixels(0, 0, width, height, GL30.GL_BGR, GL_UNSIGNED_BYTE, 0); // was prev GL_RGB
+            glReadPixels(0, 0, width, height, GL30.GL_BGR, GL_UNSIGNED_BYTE, 0);
             readSync = ARBSync.glFenceSync(ARBSync.GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
         }
 
-//                System.out.println("colour: " + String.format("0x%08X", pixelArray[1000]));
-//                System.out.println(String.format("0x%08X", image.getRGB(100, 100)));
-//                System.out.println("sync time: " + String.format("%.4f", syncTime) + "read pixels: " + String.format("%.4f", readPixelTime));// + ", fill array: " + String.format("%.4f", fillArrayTime) + ", fill image:" + String.format("%.4f", fillImageTime) );
         GL30.glBindBuffer(GL30.GL_PIXEL_PACK_BUFFER, 0); // unbind
 
         /* This is LIKELY not in YUV420P format, so we're going to convert it using some handy utilities. */
