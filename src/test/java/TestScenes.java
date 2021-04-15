@@ -21,7 +21,7 @@ public class TestScenes {
         config.height = 1080;
         config.backgroundColor = new Color(0.102f, 0.137f, 0.2f, 1f);
         config.antialiasing = true;
-        config.outputMP4Path = "vidout/crf18.mp4";
+        config.outputMP4Path = "vidout/multithread.mp4";
         new CqWindow(config, new Scene2());
 
 //        BufferedImage image = new BufferedImage(1920, 1080, BufferedImage.TYPE_3BYTE_BGR);

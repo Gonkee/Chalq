@@ -79,7 +79,9 @@ public class CqWindow {
                 glfwSwapBuffers(window);
                 glfwPollEvents();
 
+//                long start = System.nanoTime();
                 if (recorder != null) recorder.recordFrame();
+//                System.out.println("recording time: " + ((System.nanoTime() - start) / 1000000000f));
             }
         }
         if (recorder != null) recorder.stopRecording();
