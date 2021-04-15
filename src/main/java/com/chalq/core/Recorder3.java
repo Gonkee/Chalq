@@ -16,7 +16,7 @@ import java.util.concurrent.Semaphore;
 import static org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE;
 import static org.lwjgl.opengl.GL11.glReadPixels;
 
-class Recorder{
+class Recorder3{
 
     private boolean running = true;
 //    private boolean toEncode = false;
@@ -41,7 +41,9 @@ class Recorder{
     private MediaPictureConverter converter = null;
     private long timestamp = 0;
 
-    protected Recorder(int width, int height, String outputFile) {
+    float pixelTime, encoderTime, recordingTime;
+
+    protected Recorder3(int width, int height, String outputFile) {
         this.width = width;
         this.height = height;
         w3 = 3 * width;
@@ -148,6 +150,8 @@ class Recorder{
 
         GL30.glBindBuffer(GL30.GL_PIXEL_PACK_BUFFER, 0); // unbind
 
+        recordingTime = (System.nanoTime() - start) / 1000000000f;
+//        System.out.println("rec: " + String.format("%.4f", recordingTime) + ", pix: " + String.format("%.4f", pixelTime) + ", enc: " + String.format("%.4f", encoderTime));
     }
 
     protected void stopRecording() {
@@ -155,58 +159,12 @@ class Recorder{
         mainSignal.release(2);
     }
 
-//    @Override
-//    public void run() {
-//        while (running) {
-//
-//            try {
-//                mainSignal.acquire(); // wait for next frame to be available to encode from main thread
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//
-//            long start = System.nanoTime();
-//            if (!running) break; // running may be set to false during the acquire phase, when the program is ended
-//
-//            // glReadPixels goes row by row, from bottom to top, but
-//            // BufferedImage goes row by row, from top to bottom.
-//            for (int y = 0; y < height; y++) {
-//                for (int x = 0; x < w3; x++) {
-//                    iData1[ y * w3 + x ] = buffer.get( (height - y - 1) * w3 + x );
-//                }
-//            }
-//            /* This is LIKELY not in YUV420P format, so we're going to convert it using some handy utilities. */
-//            if (converter == null)
-//                converter = MediaPictureConverterFactory.createConverter(image1, picture);
-//            converter.toPicture(picture, image1, timestamp);
-//            timestamp++;
-//
-//            do {
-//                encoder.encode(packet, picture);
-//                if (packet.isComplete())
-//                    muxer.write(packet, false);
-//            } while (packet.isComplete());
-//
-////            toEncode = false;
-//            encoderSignal.release(); // done encoding this frame, allow main thread to proceed with next frame
-////            System.out.println("encoding time: " + ((System.nanoTime() - start) / 1000000000f));
-//        }
-//
-//        // done encoding the video, finish up
-//        do {
-//            encoder.encode(packet, null);
-//            if (packet.isComplete())
-//                muxer.write(packet,  false);
-//        } while (packet.isComplete());
-//
-//        muxer.close();
-//    }
 
     private static class EncoderThread extends Thread {
 
-        private final Recorder r;
+        private final Recorder3 r;
 
-        public EncoderThread(Recorder recorder) {
+        public EncoderThread(Recorder3 recorder) {
             this.r = recorder;
         }
 
@@ -234,7 +192,7 @@ class Recorder{
                 } while (r.packet.isComplete());
 
                 r.encoderSignal.release();
-                System.out.println("encoder time: " + ((System.nanoTime() - start) / 1000000000f));
+                r.encoderTime = (System.nanoTime() - start) / 1000000000f;
             }
 
             // done encoding the video, finish up
@@ -251,9 +209,9 @@ class Recorder{
 
     private static class PixelThread extends Thread {
 
-        private final Recorder r;
+        private final Recorder3 r;
 
-        public PixelThread(Recorder recorder) {
+        public PixelThread(Recorder3 recorder) {
             this.r = recorder;
         }
 
@@ -274,7 +232,7 @@ class Recorder{
                     }
                 }
                 r.pixelSignal.release();
-                System.out.println("pixel time: " + ((System.nanoTime() - start) / 1000000000f));
+                r.pixelTime = (System.nanoTime() - start) / 1000000000f;
             }
         }
     }
