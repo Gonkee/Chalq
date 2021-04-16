@@ -50,8 +50,8 @@ public class CqWindow {
         Cq.height = config.height;
         scene.init();
 
-        Recorder2 recorder = null;
-        if (config.outputMP4Path != null) recorder = new Recorder2(width, height, config.outputMP4Path);
+        VideoRecorder recorder = null;
+        if (config.outputMP4Path != null) recorder = new VideoRecorder(width, height, config.outputMP4Path);
 
         Mat3 identity = new Mat3();
         long lastTick = System.nanoTime();
@@ -79,9 +79,7 @@ public class CqWindow {
                 glfwSwapBuffers(window);
                 glfwPollEvents();
 
-//                long start = System.nanoTime();
                 if (recorder != null) recorder.recordFrame();
-//                System.out.println("recording time: " + ((System.nanoTime() - start) / 1000000000f));
             }
         }
         if (recorder != null) recorder.stopRecording();

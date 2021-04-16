@@ -98,7 +98,7 @@ class Recorder3{
         picture.setTimeBase(timeBase);
 
 
-        packet = MediaPacket.make();
+        packet = MediaPacket.make(40000);
 
         pixelThread.start();
         encoderThread.start();
@@ -176,7 +176,6 @@ class Recorder3{
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                long start = System.nanoTime();
                 if (!r.running) break; // running may be set to false during the acquire phase, when the program is ended
 
                 /* This is LIKELY not in YUV420P format, so we're going to convert it using some handy utilities. */
@@ -185,14 +184,22 @@ class Recorder3{
                 r.converter.toPicture(r.picture, r.image2, r.timestamp);
                 r.timestamp++;
 
+
+//                int i = 0;
                 do {
+//                    long start = System.nanoTime();
                     r.encoder.encode(r.packet, r.picture);
+//                    float convertTime = (System.nanoTime() - start) / 1000000000f;
                     if (r.packet.isComplete())
                         r.muxer.write(r.packet, false);
+//                    r.encoderTime = (System.nanoTime() - start) / 1000000000f;
+//                    System.out.println("encoder: " + convertTime + ", muxer: " + (r.encoderTime - convertTime));
+//                    i++;
                 } while (r.packet.isComplete());
 
                 r.encoderSignal.release();
-                r.encoderTime = (System.nanoTime() - start) / 1000000000f;
+//                System.out.println("encode loops: " + i);
+//                if (r.encoderTime > 0.5f) System.out.println("convert: " + convertTime + ", encode: " + (r.encoderTime - convertTime));
             }
 
             // done encoding the video, finish up

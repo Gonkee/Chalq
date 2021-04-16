@@ -4,11 +4,13 @@ import com.chalq.core.CqScene;
 import com.chalq.core.CqWindow;
 import com.chalq.math.MathUtils;
 import com.chalq.object2d.graph.GraphPlotter;
+import com.chalq.object2d.shape2d.Rectangle;
 import com.chalq.util.Color;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.nio.ByteBuffer;
+import java.util.Random;
 
 import static com.chalq.core.Cq.*;
 import static com.chalq.core.Cq.time;
@@ -21,7 +23,7 @@ public class TestScenes {
         config.height = 1080;
         config.backgroundColor = new Color(0.102f, 0.137f, 0.2f, 1f);
         config.antialiasing = true;
-        config.outputMP4Path = "vidout/multithread.mp4";
+//        config.outputMP4Path = "vidout/thousandsquares.mp4";
         new CqWindow(config, new Scene2());
 
 //        BufferedImage image = new BufferedImage(1920, 1080, BufferedImage.TYPE_3BYTE_BGR);
@@ -60,6 +62,8 @@ public class TestScenes {
 
     static class Scene2 extends CqScene {
 
+        Rectangle[] rects = new Rectangle[1000];
+
         @Override
         public void init() {
             Easing easing = Easing.EASE_IN_OUT;
@@ -92,6 +96,19 @@ public class TestScenes {
                 interpolate(p4::setY, p4.getY(), p4.getY() + 350, time + 3, 1.5f, easing);
             }
             interpolate(this::setMorphFac, 0, 1, time + 3, 1.5f, easing);
+
+            Random random = new Random();
+            for (int i = 0; i < rects.length; i++) {
+                rects[i] = new Rectangle(random.nextInt(1920), random.nextInt(1080), 30, 30);
+                addChild(rects[i]);
+            }
+        }
+
+        @Override
+        public void update() {
+            for (Rectangle r : rects) {
+                r.setRotation(time);
+            }
         }
 
         float morphFac = 0;

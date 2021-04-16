@@ -16,17 +16,14 @@ import java.util.concurrent.Semaphore;
 import static org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE;
 import static org.lwjgl.opengl.GL11.glReadPixels;
 
-class Recorder2 extends Thread{
+class Recorder1{
 
     private boolean running = true;
-    //    private boolean toEncode = false;
-    private final Semaphore mainSignal = new Semaphore(0);
-    private final Semaphore encoderSignal = new Semaphore(0);
 
     private final int width, height, w3;
     private final ByteBuffer buffer;
-    private byte[] iData1;        // iData1 is for the buffer to write into
-    private BufferedImage image1; // image2 is to send to the encoder
+    private final BufferedImage image;
+    private final byte[] imageData;
 
     private int pbo1, pbo2;
     private long readSync;
@@ -40,15 +37,13 @@ class Recorder2 extends Thread{
 
     float pixelTime, encoderTime, recordingTime;
 
-    protected Recorder2(int width, int height, String outputFile) {
+    protected Recorder1(int width, int height, String outputFile) {
         this.width = width;
         this.height = height;
         w3 = 3 * width;
         buffer = ByteBuffer.allocateDirect(width * height * 3);
-
-        // while one is receiving data from buffer, other is sending data to encoder (simultaneous = faster)
-        image1 = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
-        iData1 = ( (DataBufferByte) image1.getRaster().getDataBuffer() ).getData();
+        image = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
+        imageData = ( (DataBufferByte) image.getRaster().getDataBuffer() ).getData();
 
         // while one is receiving data from GPU, other is sending data to CPU (simultaneous = faster)
         pbo1 = GL30.glGenBuffers();
@@ -94,27 +89,16 @@ class Recorder2 extends Thread{
 
 
         packet = MediaPacket.make();
-
-        start();
-        // kickstart first frame
-        encoderSignal.release();
     }
 
     protected void recordFrame() {
 
         long start = System.nanoTime();
-        try {
-//            pixelSignal.acquire(); // pixel thread must be done with 1 frame ago
-            encoderSignal.acquire(); // encoder thread must be done with 2 frames ago
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
 //        System.out.println("acquire time: " + ((System.nanoTime() - start) / 1000000000f));
 
         if (readSync != 0) {
             GL30.glBindBuffer(GL30.GL_PIXEL_PACK_BUFFER, pbo2);
             GL30.glGetBufferSubData(GL30.GL_PIXEL_PACK_BUFFER, 0, buffer);
-            mainSignal.release(); // immediately after loading data from GPU, start encoding current frame on encoder thread
 
             int syncStatus = ARBSync.glClientWaitSync(readSync, 0, Long.MAX_VALUE);
             if (syncStatus == GL32.GL_ALREADY_SIGNALED || syncStatus == GL32.GL_CONDITION_SATISFIED) {
@@ -124,8 +108,6 @@ class Recorder2 extends Thread{
                 pbo2 = temp;
                 readSync = 0;
             }
-        } else {
-            mainSignal.release();
         }
         if (readSync == 0) {
             GL30.glBindBuffer(GL30.GL_PIXEL_PACK_BUFFER, pbo1);
@@ -135,56 +117,33 @@ class Recorder2 extends Thread{
 
         GL30.glBindBuffer(GL30.GL_PIXEL_PACK_BUFFER, 0); // unbind
 
+        // glReadPixels goes row by row, from bottom to top, but
+        // BufferedImage goes row by row, from top to bottom.
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < w3; x++) {
+                imageData[ y * w3 + x ] = buffer.get( (height - y - 1) * w3 + x );
+            }
+        }
+        pixelTime = (System.nanoTime() - start) / 1000000000f;
+
+        start = System.nanoTime();
+        /* This is LIKELY not in YUV420P format, so we're going to convert it using some handy utilities. */
+        if (converter == null)
+            converter = MediaPictureConverterFactory.createConverter(image, picture);
+        converter.toPicture(picture, image, timestamp);
+        timestamp++;
+
+        do {
+            encoder.encode(packet, picture);
+            if (packet.isComplete())
+                muxer.write(packet, false);
+        } while (packet.isComplete());
+
         recordingTime = (System.nanoTime() - start) / 1000000000f;
 //        System.out.println("rec: " + String.format("%.4f", recordingTime) + ", pix: " + String.format("%.4f", pixelTime) + ", enc: " + String.format("%.4f", encoderTime));
     }
 
     protected void stopRecording() {
-        running = false;
-        mainSignal.release();
-    }
-
-    @Override
-    public void run() {
-        while (running) {
-
-            try {
-                mainSignal.acquire(); // wait for next frame to be available to encode from main thread
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            long start = System.nanoTime();
-            if (!running) break; // running may be set to false during the acquire phase, when the program is ended
-
-            // glReadPixels goes row by row, from bottom to top, but
-            // BufferedImage goes row by row, from top to bottom.
-            for (int y = 0; y < height; y++) {
-                for (int x = 0; x < w3; x++) {
-                    iData1[ y * w3 + x ] = buffer.get( (height - y - 1) * w3 + x );
-                }
-            }
-            pixelTime = (System.nanoTime() - start) / 1000000000f;
-
-            start = System.nanoTime();
-            /* This is LIKELY not in YUV420P format, so we're going to convert it using some handy utilities. */
-            if (converter == null)
-                converter = MediaPictureConverterFactory.createConverter(image1, picture);
-            converter.toPicture(picture, image1, timestamp);
-            timestamp++;
-
-            do {
-                encoder.encode(packet, picture);
-                if (packet.isComplete())
-                    muxer.write(packet, false);
-            } while (packet.isComplete());
-
-//            toEncode = false;
-            encoderSignal.release(); // done encoding this frame, allow main thread to proceed with next frame
-//            System.out.println("encoding time: " + ((System.nanoTime() - start) / 1000000000f));
-            encoderTime = (System.nanoTime() - start) / 1000000000f;
-        }
-
         // done encoding the video, finish up
         do {
             encoder.encode(packet, null);
@@ -194,6 +153,7 @@ class Recorder2 extends Thread{
 
         muxer.close();
     }
+
 
 
 }
