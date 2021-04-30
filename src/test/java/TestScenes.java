@@ -3,6 +3,7 @@ import com.chalq.core.CqConfig;
 import com.chalq.core.CqScene;
 import com.chalq.core.CqWindow;
 import com.chalq.math.MathUtils;
+import com.chalq.object2d.Particles;
 import com.chalq.object2d.graph.GraphPlotter;
 import com.chalq.object2d.shape2d.Rectangle;
 import com.chalq.util.Color;
@@ -24,14 +25,8 @@ public class TestScenes {
         config.backgroundColor = new Color(0.102f, 0.137f, 0.2f, 1f);
         config.antialiasing = true;
 //        config.outputMP4Path = "vidout/thousandsquares.mp4";
-        new CqWindow(config, new Scene2());
+        new CqWindow(config, new ParticlesScene());
 
-//        BufferedImage image = new BufferedImage(1920, 1080, BufferedImage.TYPE_3BYTE_BGR);
-//        byte[] imageData = ( (DataBufferByte) image.getRaster().getDataBuffer() ).getData();
-//        System.out.println(imageData.length);
-//        ByteBuffer buffer = ByteBuffer.allocateDirect(1920 * 1080 * 3);
-//        System.out.println(1920 * 1080 * 3);
-//        System.out.println("buffer size: " + buffer.remaining());
     }
 
     static class Scene1 extends CqScene {
@@ -125,6 +120,34 @@ public class TestScenes {
         private float w2c(float in) { return MathUtils.lerp( wsum(in), w2(in), morphFac); }
         private float w3c(float in) { return MathUtils.lerp( wsum(in), w3(in), morphFac); }
         private float w4c(float in) { return MathUtils.lerp( wsum(in), w4(in), morphFac); }
+    }
+
+    static class ParticlesScene extends CqScene {
+
+        Particles particles = new Particles(30);
+        Random rand = new Random();
+
+        @Override
+        public void init() {
+            for (int i = 0; i < 50; i++) {
+                particles.addParticle(200 + rand.nextInt(1500), 100 + rand.nextInt(800));
+            }
+            addChild(particles);
+        }
+
+        @Override
+        public void update() {
+
+            float dx = (float) Math.cos(time * 4) + (float) Math.cos(time);
+            float dy = (float) Math.sin(time * 4);
+            dx *= 2;
+            dy *= 2;
+
+            for (int i = 0; i < particles.getSize(); i++) {
+                particles.updateParticle(i, particles.getX(i) + dx, particles.getY(i) + dy);
+            }
+        }
+
     }
 
 }

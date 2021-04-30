@@ -1,0 +1,93 @@
+package com.chalq.object2d;
+
+import com.chalq.core.Object2D;
+import com.chalq.math.MathUtils;
+import com.chalq.math.Vec2;
+import com.chalq.util.Color;
+
+import java.util.ArrayList;
+
+public class Particles extends Object2D {
+
+    // arrays go { x1, y1, x2, y2 ... xn, yn }
+    private final ArrayList<float[]> particles = new ArrayList<>();
+    private final int trailSegments;
+    private final float particleSize = 5;
+    private final float trailWidth = 3;
+    private final float trailSegmentLength = 5;
+
+    public Particles(int trailSegments) {
+        trailSegments = MathUtils.clamp(trailSegments, 0, 50);
+        this.trailSegments = trailSegments;
+    }
+
+    public int addParticle(float x, float y) {
+        float[] p = new float[2 + trailSegments * 2];
+        for (int i = 0; i < p.length; i += 2) {
+            p[i    ] = x;
+            p[i + 1] = y;
+        }
+        particles.add(p);
+        return particles.size() - 1;
+    }
+
+    public void updateParticle(int id, float x, float y) {
+        float[] p = particles.get(id);
+        if ( (x - p[2]) * (x - p[2]) + (y - p[3]) * (y - p[3]) > trailSegmentLength * trailSegmentLength ) {
+            for (int i = p.length - 2; i >= 2; i -= 2) {
+                p[i    ] = p[i - 2];
+                p[i + 1] = p[i - 1];
+            }
+        }
+        p[0] = x; // this must go afterwards, or else trail stutters every new segment
+        p[1] = y;
+    }
+
+    @Override
+    public void draw(long nvg) {
+
+        penSetColor(Color.WHITE);
+
+        penBeginPath(nvg);
+        for (float[] p : particles) {
+
+            penCircle(nvg, p[0], p[1], particleSize);
+        }
+        penFillPath(nvg);
+
+        for (float[] p : particles) {
+
+            // the last segment will shorten as the first segment lengthens, to prevent choppiness of updating segments
+            float lastSegmentPortion =
+                    1 - (float) Math.sqrt((p[0] - p[2]) * (p[0] - p[2]) + (p[1] - p[3]) * (p[1] - p[3])) / trailSegmentLength;
+
+            penBeginPath(nvg);
+            penMoveTo(nvg, p[0], p[1]);
+            for (int i = 2; i < p.length - 2; i += 2)
+                penLineTo(nvg, p[i], p[i + 1]);
+
+            penLineTo(nvg,
+                    MathUtils.lerp(p[p.length - 4], p[p.length - 2], lastSegmentPortion),  // final point X position
+                    MathUtils.lerp(p[p.length - 3], p[p.length - 1], lastSegmentPortion)); // final point Y position
+
+            penStrokePath(nvg, trailWidth);
+        }
+    }
+
+    @Override
+    public void update() {
+
+    }
+
+    public int getSize() {
+        return particles.size();
+    }
+
+    public float getX(int id) {
+        return particles.get(id)[0];
+    }
+
+    public float getY(int id) {
+        return particles.get(id)[1];
+    }
+}
