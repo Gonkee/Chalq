@@ -231,6 +231,7 @@ public abstract class Object2D implements Drawable {
 
     protected void penStrokePath(long nvg, float strokeWidth) {
         nvgLineCap(nvg, NVG_ROUND);
+        nvgLineJoin(nvg, NVG_ROUND);
         nvgStrokeColor(nvg, penColor);
         nvgStrokeWidth(nvg, strokeWidth);
         nvgStroke(nvg);

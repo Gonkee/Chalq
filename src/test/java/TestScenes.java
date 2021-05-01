@@ -124,12 +124,13 @@ public class TestScenes {
 
     static class ParticlesScene extends CqScene {
 
-        Particles particles = new Particles(30);
+        Particles particles = new Particles(0, 10, 1, 5);
         Random rand = new Random();
 
         @Override
         public void init() {
-            for (int i = 0; i < 50; i++) {
+//            particles.addParticle(960, 540);
+            for (int i = 0; i < 10; i++) {
                 particles.addParticle(200 + rand.nextInt(1500), 100 + rand.nextInt(800));
             }
             addChild(particles);

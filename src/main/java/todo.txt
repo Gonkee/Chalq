@@ -22,3 +22,6 @@ have abstract/generic graph class for line graphs and function graphs
 function graph smoothing
 
 video encoding with better quality and on separate thread
+
+vector fields, particle systems
+axes for vector and particle fields
