@@ -1,6 +1,7 @@
 package com.chalq.core;
 
 import com.chalq.math.Mat3;
+import com.chalq.math.MathUtils;
 import com.chalq.math.Vec2;
 import com.chalq.object2d.Drawable;
 import com.chalq.util.Color;
@@ -198,7 +199,7 @@ public abstract class Object2D implements Drawable {
 
     @Override
     public void addChild(Drawable drawable) {
-        if (drawable.getParent() == null) {
+        if (drawable.getParent() == null && drawable != this) {
             children.add(drawable);
             drawable.setParent(this);
         }
@@ -226,6 +227,26 @@ public abstract class Object2D implements Drawable {
 
     protected void penLineTo(long nvg, float x, float y) {
         tv1.set(x, y).transform(globalTransform);
+        nvgLineTo(nvg, tv1.x, tv1.y);
+    }
+    
+    protected void penArrowTip(long nvg, float x, float y, float dir, float width) {
+        // get transformed arrow tip position
+        // use a non-zero vector to determine rotation as a result of transformation
+        // added on to the target position instead of origin, dunno if it makes a difference
+        tv1.set(x, y).transform(globalTransform);
+        tv2.set(x, y).add( tv3.set(1, 0).rotateRad(dir) ).transform(globalTransform);
+        x = tv1.x;
+        y = tv1.y;
+        dir = (float) Math.atan2(tv2.y - tv1.y, tv2.x - tv1.x);
+
+        tv1.set(width, 0).rotateRad(dir                          ).add(x, y);
+        tv2.set(width, 0).rotateRad(dir - 120 * MathUtils.deg2rad).add(x, y);
+        tv3.set(width, 0).rotateRad(dir + 120 * MathUtils.deg2rad).add(x, y);
+
+        nvgMoveTo(nvg, tv1.x, tv1.y);
+        nvgLineTo(nvg, tv2.x, tv2.y);
+        nvgLineTo(nvg, tv3.x, tv3.y);
         nvgLineTo(nvg, tv1.x, tv1.y);
     }
 

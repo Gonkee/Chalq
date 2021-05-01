@@ -50,16 +50,20 @@ public class Arrow extends Object2D implements Traceable{
         Vec2 pathPos = new Vec2(path.getX(), path.getY());
         float arrowTipRotation = isArc ? ((ArcPath) path).tangentAngAtTrace() : (float) Math.atan2(pointVector.y, pointVector.x);
 
-        tipV1.set(width * 2 * path.getTraceProgress(), 0).rotateRad(arrowTipRotation).add(pathTracePos).add(pathPos);
-        tipV2.set(width * 2 * path.getTraceProgress(), 0).rotateRad(arrowTipRotation - 120 * MathUtils.degreesToRadians).add(pathTracePos).add(pathPos);
-        tipV3.set(width * 2 * path.getTraceProgress(), 0).rotateRad(arrowTipRotation + 120 * MathUtils.degreesToRadians).add(pathTracePos).add(pathPos);
-
         penBeginPath(nvg);
-        penMoveTo(nvg, tipV1.x, tipV1.y);
-        penLineTo(nvg, tipV2.x, tipV2.y);
-        penLineTo(nvg, tipV3.x, tipV3.y);
-        penLineTo(nvg, tipV1.x, tipV1.y);
+        penArrowTip(nvg, path.getX() + pathTracePos.x, path.getY() + pathTracePos.y, arrowTipRotation, width * 2 * path.getTraceProgress());
         penFillPath(nvg);
+
+//        tipV1.set(width * 2 * path.getTraceProgress(), 0).rotateRad(arrowTipRotation).add(pathTracePos).add(pathPos);
+//        tipV2.set(width * 2 * path.getTraceProgress(), 0).rotateRad(arrowTipRotation - 120 * MathUtils.deg2rad).add(pathTracePos).add(pathPos);
+//        tipV3.set(width * 2 * path.getTraceProgress(), 0).rotateRad(arrowTipRotation + 120 * MathUtils.deg2rad).add(pathTracePos).add(pathPos);
+//
+//        penBeginPath(nvg);
+//        penMoveTo(nvg, tipV1.x, tipV1.y);
+//        penLineTo(nvg, tipV2.x, tipV2.y);
+//        penLineTo(nvg, tipV3.x, tipV3.y);
+//        penLineTo(nvg, tipV1.x, tipV1.y);
+//        penFillPath(nvg);
     }
 
 

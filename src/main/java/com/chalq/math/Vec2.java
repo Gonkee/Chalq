@@ -272,7 +272,7 @@ public class Vec2 {
     /** @return the angle in degrees of this vector (point) relative to the x-axis. Angles are towards the positive y-axis
      *         (typically counter-clockwise) and between 0 and 360. */
     public float angle () {
-        float angle = (float)Math.atan2(y, x) * MathUtils.radiansToDegrees;
+        float angle = (float)Math.atan2(y, x) * MathUtils.rad2deg;
         if (angle < 0) angle += 360;
         return angle;
     }
@@ -280,7 +280,7 @@ public class Vec2 {
     /** @return the angle in degrees of this vector (point) relative to the given vector. Angles are towards the positive y-axis
      *         (typically counter-clockwise.) between -180 and +180 */
     public float angle (Vec2 reference) {
-        return (float)Math.atan2(crs(reference), dot(reference)) * MathUtils.radiansToDegrees;
+        return (float)Math.atan2(crs(reference), dot(reference)) * MathUtils.rad2deg;
     }
 
     /** @return the angle in radians of this vector (point) relative to the x-axis. Angles are towards the positive y-axis.
@@ -298,7 +298,7 @@ public class Vec2 {
     /** Sets the angle of the vector in degrees relative to the x-axis, towards the positive y-axis (typically counter-clockwise).
      * @param degrees The angle in degrees to set. */
     public Vec2 setAngle (float degrees) {
-        return setAngleRad(degrees * MathUtils.degreesToRadians);
+        return setAngleRad(degrees * MathUtils.deg2rad);
     }
 
     /** Sets the angle of the vector in radians relative to the x-axis, towards the positive y-axis (typically counter-clockwise).
@@ -313,7 +313,7 @@ public class Vec2 {
     /** Rotates the Vec2 by the given angle, counter-clockwise assuming the y-axis points up.
      * @param degrees the angle in degrees */
     public Vec2 rotateDeg(float degrees) {
-        return rotateRad(degrees * MathUtils.degreesToRadians);
+        return rotateRad(degrees * MathUtils.deg2rad);
     }
 
     /** Rotates the Vec2 by the given angle around reference vector, counter-clockwise assuming the y-axis points up.

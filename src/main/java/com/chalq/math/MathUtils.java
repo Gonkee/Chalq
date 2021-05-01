@@ -3,9 +3,9 @@ package com.chalq.math;
 public class MathUtils {
 
     /** multiply by this to convert from radians to degrees */
-    static public final float radiansToDegrees = (float) (180f / Math.PI);
+    static public final float rad2deg = (float) (180f / Math.PI);
     /** multiply by this to convert from degrees to radians */
-    static public final float degreesToRadians =  (float) (Math.PI / 180);
+    static public final float deg2rad =  (float) (Math.PI / 180);
 
     public static short clamp (short value, short min, short max) {
         if (value < min) return min;

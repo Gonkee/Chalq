@@ -2,9 +2,6 @@ package com.chalq.object2d.path2d;
 
 import com.chalq.math.MathUtils;
 import com.chalq.math.Vec2;
-import com.chalq.util.Color;
-
-import java.util.Arrays;
 
 
 public class ArcPath extends Path2D{
@@ -31,8 +28,8 @@ public class ArcPath extends Path2D{
 
     public void set(float centerX, float centerY, float radius, float startAng, float endAng, boolean clockWise) {
         setPos(centerX, centerY);
-        this.startAng = startAng * MathUtils.degreesToRadians;
-        this.endAng = endAng * MathUtils.degreesToRadians;
+        this.startAng = startAng * MathUtils.deg2rad;
+        this.endAng = endAng * MathUtils.deg2rad;
         this.radius = radius;
         this.clockWise = clockWise ? 1 : -1;
         computeBeziers();
@@ -46,7 +43,7 @@ public class ArcPath extends Path2D{
 
         Vec2 to2ndPt = new Vec2(x2 - x1, y2 - y1);
         float halfChordLength = to2ndPt.len() / 2;
-        float halfArcAngle = MathUtils.degreesToRadians * angleDegrees / 2;
+        float halfArcAngle = MathUtils.deg2rad * angleDegrees / 2;
 
         if (halfChordLength == 0) {
             new IllegalArgumentException("length cannot be 0").printStackTrace();
@@ -62,8 +59,8 @@ public class ArcPath extends Path2D{
             Vec2 center = new Vec2( (x1 + x2) / 2, (y1 + y2) / 2 ).add( chordMidpointToCenter );
             setPos(center.x, center.y);
 
-            startAng = new Vec2(x1 - center.x, y1 - center.y).angle() * MathUtils.degreesToRadians;
-            endAng   = new Vec2(x2 - center.x, y2 - center.y).angle() * MathUtils.degreesToRadians;
+            startAng = new Vec2(x1 - center.x, y1 - center.y).angle() * MathUtils.deg2rad;
+            endAng   = new Vec2(x2 - center.x, y2 - center.y).angle() * MathUtils.deg2rad;
         } else {
             new IllegalArgumentException("Angle cannot be 0").printStackTrace();
         }

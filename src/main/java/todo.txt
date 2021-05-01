@@ -2,6 +2,7 @@
 
 trace bezier paths like after effects
 
+stroke styles = solid, dashed, dotted
 
 figure out the rotation (clockwise / counter, where is 0 rotation, rad / deg) - arcs
 
@@ -25,3 +26,10 @@ video encoding with better quality and on separate thread
 
 vector fields, particle systems
 axes for vector and particle fields
+
+have a GraphSpace class which you can add lines, functions, vectors, particles etc to
+- with its own set of axis, and stuff are abstract so they can be 2d or 3d
+
+move pop up / trace functions from Scene to Object?
+
+bounded interface for objects that have x, y, width, height, for easy centering and alignment
