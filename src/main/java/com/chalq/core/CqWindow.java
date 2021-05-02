@@ -51,7 +51,7 @@ public class CqWindow {
         scene.init();
 
         VideoRecorder recorder = null;
-        if (config.outputMP4Path != null) recorder = new VideoRecorder(width, height, config.outputMP4Path);
+        if (config.outputMP4Path != null) recorder = new VideoRecorder(width, height, config.outputMP4Path, config.crfFactor);
 
         Mat3 identity = new Mat3();
         long lastTick = System.nanoTime();

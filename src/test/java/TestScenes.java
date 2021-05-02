@@ -22,7 +22,7 @@ public class TestScenes {
         config.height = 1080;
         config.backgroundColor = new Color(0.102f, 0.137f, 0.2f, 1f);
         config.antialiasing = true;
-//        config.outputMP4Path = "vidout/thousandsquares.mp4";
+        config.outputMP4Path = "vidout/loryerr.mp4";
         new CqWindow(config, new Scene1());
 
     }
@@ -30,20 +30,91 @@ public class TestScenes {
     static class Scene1 extends CqScene {
 
         GraphSpace plotter;
+        Particles particles;
+        Random rand = new Random();
+
+        int numPoints = 200;
+        float[] points = new float[numPoints * 3];
 
         @Override
         public void init() {
-            plotter = new GraphSpace(200, 200, 800, 400, -10, 10, -5, 5);
+            plotter = new GraphSpace(200, 200, 1520, 680, -15, 20, -30, 30);
 
             FunctionGraph fg1 = new FunctionGraph(this::f, -10, 10, new Color(1, 0, 0, 1), 300, true, false);
             FunctionGraph fg2 = new FunctionGraph(this::g, -10, 10, new Color("#56B0FF"), 300, true, false);
-            plotter.addToGraphSpace(fg1);
-            plotter.addToGraphSpace(fg2);
+//            plotter.addToGraphSpace(fg1);
+//            plotter.addToGraphSpace(fg2);
             addChild(plotter);
+
+            particles = new Particles(2, 20, 1, 2, new Color("#db1247"));
+            for (int i = 0; i < numPoints; i++) {
+
+                points[i * 3    ] = -15 + rand.nextFloat() * 35;
+                points[i * 3 + 1] = -30 + rand.nextFloat() * 60;
+                points[i * 3 + 2] = rand.nextFloat() * 50;
+
+                particles.addParticle(points[i * 3    ], points[i * 3 + 1]);
+            }
+            plotter.addToGraphSpace(particles);
+
         }
 
         @Override
         public void update() {
+//            float dx = (float) Math.cos(time * 4) + (float) Math.cos(time);
+//            float dy = (float) Math.sin(time * 4);
+//            dx *= 0.1;
+//            dy *= 0.1;
+
+
+            float alpha = 0.1f;
+            float beta = 0.1f;
+            float gamma = 0.1f;
+            float delta2 = 0.1f;
+            float x, y, z, dx, dy, dz;
+
+            float a = -0.64f;
+            float b = 0.76f;
+
+            for (int i = 0; i < numPoints; i++) {
+
+
+//                x = particles.getX(i);
+//                y = particles.getY(i);
+//                dx = 10 * delta * x * (alpha - beta * y);
+//                dy = 10 * delta * y * (delta2 * x - gamma);
+
+                x = points[i * 3    ];
+                y = points[i * 3 + 1];
+                z = points[i * 3 + 2];
+
+//                dx = 3.0f * (1 - x) - 2.2f * z;
+//                dy = -1.0f * (1 - x * x) * y;
+//                dz = 0.001f * x;
+
+                dx = 10 * (y - x);
+                dy = x * (28 - z) - y;
+                dz = x * y - (8f / 3f) * z;
+
+                dx *= 0.5f;
+                dy *= 0.5f;
+                dz *= 0.5f;
+
+                x += dx * delta;
+                y += dy * delta;
+                z += dz * delta;
+
+                points[i * 3    ] = x;
+                points[i * 3 + 1] = y;
+                points[i * 3 + 2] = z;
+
+
+//                float xnew= (float) (Math.sin(x * y / b) * y + Math.cos(a * x - y));
+//                float ynew= (float) (x + Math.sin(y) / b);
+
+                particles.updateParticle(i, x, y);
+//                particles.updateParticle(i, x + dx, y + dy);
+            }
         }
 
         public float f(float x) {
@@ -125,7 +196,7 @@ public class TestScenes {
 
     static class ParticlesScene extends CqScene {
 
-        Particles particles = new Particles(0, 10, 1, 5);
+        Particles particles = new Particles(0, 10, 1, 5, new Color("#db1247"));
         Random rand = new Random();
 
         @Override

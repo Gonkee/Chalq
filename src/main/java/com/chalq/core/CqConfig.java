@@ -12,6 +12,7 @@ public class CqConfig {
     public boolean constantTimeStep = false;
     public Color backgroundColor = new Color(0, 0, 0, 1);
     public String outputMP4Path = null;
+    public int crfFactor = 18;
 
 //    Color
 

@@ -1,5 +1,6 @@
 package com.chalq.core;
 
+import com.chalq.math.MathUtils;
 import io.humble.video.*;
 import io.humble.video.awt.MediaPictureConverter;
 import io.humble.video.awt.MediaPictureConverterFactory;
@@ -39,7 +40,7 @@ class VideoRecorder extends Thread{
 
     float pixelTime, encoderTime, recordingTime;
 
-    protected VideoRecorder(int width, int height, String outputFile) {
+    protected VideoRecorder(int width, int height, String outputFile, int crfFactor) {
         this.width = width;
         this.height = height;
         w3 = 3 * width;
@@ -65,7 +66,7 @@ class VideoRecorder extends Thread{
         System.out.println("codec: " + codec);
 
         KeyValueBag encoderOptions = KeyValueBag.make();
-        encoderOptions.setValue("crf", "18");
+        encoderOptions.setValue("crf", "" + MathUtils.clamp(crfFactor, 0, 51));
 
         encoder = Encoder.make(codec);
         encoder.setWidth(width);

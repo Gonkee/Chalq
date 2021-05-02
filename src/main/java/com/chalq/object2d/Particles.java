@@ -14,15 +14,17 @@ public class Particles extends Object2D {
     private final int trailSegments, framesPerSegment;
     private final float particleSize;
     private final float trailWidth;
+    private final Color color;
 
     int yee = 0;
 
-    public Particles(float particleSize, int trailSegments, float trailWidth, int framesPerSegment) {
+    public Particles(float particleSize, int trailSegments, float trailWidth, int framesPerSegment, Color color) {
         trailSegments = MathUtils.clamp(trailSegments, 0, 500);
         this.trailSegments = trailSegments;
         this.framesPerSegment = framesPerSegment;
         this.particleSize = particleSize;
         this.trailWidth = trailWidth;
+        this.color = color;
     }
 
     public int addParticle(float x, float y) {
@@ -50,7 +52,7 @@ public class Particles extends Object2D {
     @Override
     public void draw(long nvg) {
 
-        penSetColor(Color.WHITE);
+        penSetColor(color);
 
         if (particleSize > 0) {
             penBeginPath(nvg);
