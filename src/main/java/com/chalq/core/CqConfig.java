@@ -14,6 +14,4 @@ public class CqConfig {
     public String outputMP4Path = null;
     public int crfFactor = 18;
 
-//    Color
-
 }

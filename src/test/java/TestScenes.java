@@ -6,6 +6,7 @@ import com.chalq.math.MathUtils;
 import com.chalq.object2d.FunctionGraph;
 import com.chalq.object2d.GraphSpace;
 import com.chalq.object2d.Particles;
+import com.chalq.object2d.VectorField;
 import com.chalq.object2d.shape2d.Rectangle;
 import com.chalq.util.Color;
 
@@ -22,8 +23,8 @@ public class TestScenes {
         config.height = 1080;
         config.backgroundColor = new Color(0.102f, 0.137f, 0.2f, 1f);
         config.antialiasing = true;
-        config.outputMP4Path = "vidout/loryerr.mp4";
-        new CqWindow(config, new Scene1());
+//        config.outputMP4Path = "vidout/loryerr.mp4";
+        new CqWindow(config, new GraphSpaceScene());
 
     }
 
@@ -225,15 +226,38 @@ public class TestScenes {
 
     static class GraphSpaceScene extends CqScene {
 
-        GraphSpace graphSpace = new GraphSpace(200, 200, 800, 600, 0, 10, 0, 10);
+        GraphSpace graphSpace = new GraphSpace(200, 100, 1520, 880, -8, 8, -10, 10);
+        VectorField vectorField = new VectorField(-8, 8, -10, 10, 0.6f, 15, new Color("#ff3838"), 4);
 
         @Override
         public void init() {
             popUpObjectSlow(graphSpace, 1, 0);
+            graphSpace.addToGraphSpace(vectorField);
+
+            float realX, realY;
+            for (int x = 0; x < vectorField.xCount(); x++) {
+                for (int y = 0; y < vectorField.yCount(); y++) {
+                    realX = vectorField.getX(x);
+                    realY = vectorField.getY(y);
+                    vectorField.setVec(x, y,
+                            realX - realX * realX * realX / 3 - realY,
+                            realX
+                    );
+                }
+            }
         }
 
         @Override
         public void update() {
+
+//            float realX, realY;
+//            for (int x = 0; x < vectorField.xCount(); x++) {
+//                for (int y = 0; y < vectorField.xCount(); y++) {
+//                    realX = vectorField.getX(x);
+//                    realY = vectorField.getY(y);
+//                    vectorField.setVec(x, y, (float) Math.cos(realX + time) * 0.5f, (float) Math.cos(realY + time) * 0.5f);
+//                }
+//            }
         }
     }
 

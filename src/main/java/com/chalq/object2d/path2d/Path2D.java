@@ -12,12 +12,18 @@ public abstract class Path2D extends Object2D implements Traceable {
     }
 
     public StrokeStyle strokeStyle = StrokeStyle.SOLID;
-    public float strokeWidth = 4;
+    protected float width = 4;
     public Color color = new Color(1, 1, 1, 1);
 
     private float traceProgress = 1;
 
+    public void setWidth(float width) {
+        this.width = width;
+    }
 
+    public float getWidth() {
+        return width;
+    }
 
     @Override
     public void update() {

@@ -58,7 +58,13 @@ public class MathUtils {
     }
 
     public static int floor(float f) {
-        return f >= 0 ? (int) f : (int) f - 1;
+        return f == (float) (int) f ? (int) f :
+                (f >= 0 ? (int) f : (int) f - 1);
+    }
+
+    public static int ceil(float f) {
+        return f == (float) (int) f ? (int) f :
+                (f >= 0 ? (int) f + 1 : (int) f);
     }
 
     public static float fract(float f) {

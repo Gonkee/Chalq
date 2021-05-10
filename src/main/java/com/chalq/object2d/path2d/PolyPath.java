@@ -1,6 +1,5 @@
 package com.chalq.object2d.path2d;
 
-import com.chalq.core.Cq;
 import com.chalq.math.Vec2;
 
 
@@ -98,7 +97,7 @@ public class PolyPath extends Path2D{
         }
         penLineTo(nvg, finalX, finalY);
         penSetColor(color);
-        penStrokePath(nvg, strokeWidth);
+        penStrokePath(nvg, width);
     }
 
 

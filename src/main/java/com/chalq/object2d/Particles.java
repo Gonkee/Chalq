@@ -2,7 +2,6 @@ package com.chalq.object2d;
 
 import com.chalq.core.Object2D;
 import com.chalq.math.MathUtils;
-import com.chalq.math.Vec2;
 import com.chalq.util.Color;
 
 import java.util.ArrayList;
@@ -16,7 +15,7 @@ public class Particles extends Object2D {
     private final float trailWidth;
     private final Color color;
 
-    int yee = 0;
+    int segmentFrameCounter = 0;
 
     public Particles(float particleSize, int trailSegments, float trailWidth, int framesPerSegment, Color color) {
         trailSegments = MathUtils.clamp(trailSegments, 0, 500);
@@ -39,7 +38,7 @@ public class Particles extends Object2D {
 
     public void updateParticle(int id, float x, float y) {
         float[] p = particles.get(id);
-        if ( yee == 0 ) {
+        if ( segmentFrameCounter == 0 ) {
             for (int i = p.length - 2; i >= 2; i -= 2) {
                 p[i    ] = p[i - 2];
                 p[i + 1] = p[i - 1];
@@ -67,7 +66,7 @@ public class Particles extends Object2D {
 
             // the last segment will shorten as the first segment lengthens, to prevent choppiness of updating segments
             float lastSegmentPortion =
-                    1 - yee / (float) framesPerSegment;
+                    1 - segmentFrameCounter / (float) framesPerSegment;
 
             penBeginPath(nvg);
             penMoveTo(nvg, p[0], p[1]);
@@ -77,24 +76,8 @@ public class Particles extends Object2D {
                     MathUtils.lerp(p[p.length - 4], p[p.length - 2], lastSegmentPortion),  // final point X position
                     MathUtils.lerp(p[p.length - 3], p[p.length - 1], lastSegmentPortion)); // final point Y position
             penStrokePath(nvg, trailWidth);
-
-
-//            float width = trailWidth;
-//            for (int i = 2; i < p.length - 2; i += 2) {
-//                penBeginPath(nvg);
-//                penMoveTo(nvg, p[i - 2], p[i - 1]);
-//                penLineTo(nvg, p[i    ], p[i + 1]);
-//                penStrokePath(nvg, width);
-//                width *= 0.95;
-//            }
-//            penBeginPath(nvg);
-//            penMoveTo(nvg, p[p.length - 4], p[p.length - 3]);
-//            penLineTo(nvg,
-//                    MathUtils.lerp(p[p.length - 4], p[p.length - 2], lastSegmentPortion),  // final point X position
-//                    MathUtils.lerp(p[p.length - 3], p[p.length - 1], lastSegmentPortion)); // final point Y position
-//            penStrokePath(nvg, width);
         }
-        yee = (yee + 1) % framesPerSegment;
+        segmentFrameCounter = (segmentFrameCounter + 1) % framesPerSegment;
     }
 
     @Override

@@ -8,6 +8,7 @@ public class ArcPath extends Path2D{
 
     private float radius, startAng, endAng, traceAng;
     private int clockWise; // 1 = clockwise, -1 = counter clockwise
+    private boolean dirtyBezier = true;
 
     // temp vector
     private final Vec2 tv1 = new Vec2();
@@ -32,7 +33,7 @@ public class ArcPath extends Path2D{
         this.endAng = endAng * MathUtils.deg2rad;
         this.radius = radius;
         this.clockWise = clockWise ? 1 : -1;
-        computeBeziers();
+        dirtyBezier = true;
     }
 
     public void set(float x1, float y1, float x2, float y2, float angleDegrees){
@@ -46,7 +47,7 @@ public class ArcPath extends Path2D{
         float halfArcAngle = MathUtils.deg2rad * angleDegrees / 2;
 
         if (halfChordLength == 0) {
-            new IllegalArgumentException("length cannot be 0").printStackTrace();
+            new IllegalArgumentException("Length cannot be 0").printStackTrace();
             return;
         }
 
@@ -64,13 +65,13 @@ public class ArcPath extends Path2D{
         } else {
             new IllegalArgumentException("Angle cannot be 0").printStackTrace();
         }
-        computeBeziers();
+        dirtyBezier = true;
     }
 
     @Override
     public void setTraceProgress(float progress) {
         super.setTraceProgress(progress);
-        computeBeziers();
+        dirtyBezier = true;
     }
 
     private void computeBeziers() {
@@ -124,6 +125,12 @@ public class ArcPath extends Path2D{
 
     @Override
     public void draw(long nvg) {
+
+        if (dirtyBezier) {
+            computeBeziers();
+            dirtyBezier = false;
+        }
+
         penBeginPath(nvg);
         penMoveTo(nvg, bezier1[0], bezier1[1]);
         penBezierTo(nvg, bezier1[2], bezier1[3], bezier1[4], bezier1[5], bezier1[6], bezier1[7]);
@@ -131,7 +138,7 @@ public class ArcPath extends Path2D{
         penBezierTo(nvg, bezier3[2], bezier3[3], bezier3[4], bezier3[5], bezier3[6], bezier3[7]);
         penBezierTo(nvg, bezier4[2], bezier4[3], bezier4[4], bezier4[5], bezier4[6], bezier4[7]);
         penSetColor(color);
-        penStrokePath(nvg, strokeWidth);
+        penStrokePath(nvg, width);
     }
 
     @Override

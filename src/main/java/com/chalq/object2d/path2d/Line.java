@@ -5,16 +5,19 @@ import com.chalq.math.Vec2;
 
 public class Line extends Path2D{
 
-    public final Vec2 travel = new Vec2();
+    public float travelX, travelY;
 
 
     public Line(float x, float y, float travelX, float travelY) {
         setPos(x, y);
-        travel.x = travelX;
-        travel.y = travelY;
+        this.travelX = travelX;
+        this.travelY = travelY;
     }
 
-
+    public void setTravel(float travelX, float travelY) {
+        this.travelX = travelX;
+        this.travelY = travelY;
+    }
 
     @Override
     public void draw(long nvg) {
@@ -24,9 +27,9 @@ public class Line extends Path2D{
 
         switch (strokeStyle) {
             case SOLID:
-                penLineTo(nvg, getX() + travel.x * getTraceProgress(), getY() + travel.y * getTraceProgress());
+                penLineTo(nvg, getX() + travelX * getTraceProgress(), getY() + travelY * getTraceProgress());
                 penSetColor(color);
-                penStrokePath(nvg, strokeWidth);
+                penStrokePath(nvg, width);
                 break;
             case DASHED:
                 break;
@@ -37,6 +40,6 @@ public class Line extends Path2D{
 
     @Override
     public Vec2 getLocalTracePosition() {
-        return new Vec2(getX() + travel.x * getTraceProgress(), getY() + travel.y * getTraceProgress());
+        return new Vec2(getX() + travelX * getTraceProgress(), getY() + travelY * getTraceProgress());
     }
 }
