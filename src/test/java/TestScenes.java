@@ -1,13 +1,8 @@
-import com.chalq.core.Cq;
-import com.chalq.core.CqConfig;
-import com.chalq.core.CqScene;
-import com.chalq.core.CqWindow;
-import com.chalq.math.MathUtils;
+import com.chalq.core.*;
 import com.chalq.object2d.FunctionGraph;
 import com.chalq.object2d.GraphSpace;
 import com.chalq.object2d.Particles;
 import com.chalq.object2d.VectorField;
-import com.chalq.object2d.shape2d.Rectangle;
 import com.chalq.util.Color;
 
 import java.util.Random;
@@ -24,7 +19,7 @@ public class TestScenes {
         config.backgroundColor = new Color(0.102f, 0.137f, 0.2f, 1f);
         config.antialiasing = true;
 //        config.outputMP4Path = "vidout/loryerr.mp4";
-        new CqWindow(config, new GraphSpaceScene());
+        new CqWindow(config, new PhaseSpace());
 
     }
 
@@ -195,43 +190,28 @@ public class TestScenes {
 //        private float w4c(float in) { return MathUtils.lerp( wsum(in), w4(in), morphFac); }
 //    }
 
-    static class ParticlesScene extends CqScene {
 
-        Particles particles = new Particles(0, 10, 1, 5, new Color("#db1247"));
-        Random rand = new Random();
+    static class PhaseSpace extends CqScene {
 
-        @Override
-        public void init() {
-//            particles.addParticle(960, 540);
-            for (int i = 0; i < 10; i++) {
-                particles.addParticle(200 + rand.nextInt(1500), 100 + rand.nextInt(800));
-            }
-            addChild(particles);
-        }
+        float minX = -10;
+        float maxX = 10;
+        float minY = -8;
+        float maxY = 8;
+        float particleRadius = 50;
+        int particleCount = 3000;
 
-        @Override
-        public void update() {
+        GraphSpace graphSpace = new GraphSpace(200, 100, 1520, 880, minX, maxX, minY, maxY);
+        VectorField vectorField = new VectorField(minX, maxX, minY, maxY, 0.6f, 15, new Color("#ff3838"), 4);
+        Particles particles = new Particles(0, 10, 1, 1, new Color("#FFFF00"));
+        Random random = new Random();
 
-            float dx = (float) Math.cos(time * 4) + (float) Math.cos(time);
-            float dy = (float) Math.sin(time * 4);
-            dx *= 2;
-            dy *= 2;
+        float timeToStartAddingParticles;
+        float addParticlesDuration = 3;
 
-            for (int i = 0; i < particles.getSize(); i++) {
-                particles.updateParticle(i, particles.getX(i) + dx, particles.getY(i) + dy);
-            }
-        }
-
-    }
-
-    static class GraphSpaceScene extends CqScene {
-
-        GraphSpace graphSpace = new GraphSpace(200, 100, 1520, 880, -8, 8, -10, 10);
-        VectorField vectorField = new VectorField(-8, 8, -10, 10, 0.6f, 15, new Color("#ff3838"), 4);
 
         @Override
         public void init() {
-            popUpObjectSlow(graphSpace, 1, 0);
+            addChild(graphSpace);
             graphSpace.addToGraphSpace(vectorField);
 
             float realX, realY;
@@ -240,24 +220,53 @@ public class TestScenes {
                     realX = vectorField.getX(x);
                     realY = vectorField.getY(y);
                     vectorField.setVec(x, y,
-                            realX - realX * realX * realX / 3 - realY,
-                            realX
+                            dx(realX, realY),
+                            dy(realX, realY)
                     );
                 }
             }
+            Tween.interpolate(vectorField::setTraceProgress, 0, 1, time, 1.5f, Tween.Easing.EASE_IN_OUT);
+
+            graphSpace.addToGraphSpace(particles);
+            timeToStartAddingParticles = time + 3;
+        }
+
+        public void addParticle() {
+            float angle = random.nextFloat() * 2 * (float) Math.PI;
+            float radius = (float) Math.pow(random.nextFloat(), 6) * particleRadius;
+            particles.addParticle(
+                    (float) Math.cos(angle) * radius,
+                    (float) Math.sin(angle) * radius
+            );
+        }
+
+        public float dx(float x, float y) {
+            return -y - 0.1f * x;
+        }
+
+        public float dy(float x, float y) {
+            return x - 0.4f * y;
         }
 
         @Override
         public void update() {
 
-//            float realX, realY;
-//            for (int x = 0; x < vectorField.xCount(); x++) {
-//                for (int y = 0; y < vectorField.xCount(); y++) {
-//                    realX = vectorField.getX(x);
-//                    realY = vectorField.getY(y);
-//                    vectorField.setVec(x, y, (float) Math.cos(realX + time) * 0.5f, (float) Math.cos(realY + time) * 0.5f);
-//                }
-//            }
+            float x, y, dx, dy, dt;
+            for (int i = 0; i < particles.getSize(); i++) {
+                x = particles.getX(i);
+                y = particles.getY(i);
+                dx = dx(x, y);
+                dy = dy(x, y);
+                dt = (float) Math.log(time - particles.getBirthTime(i) + 1) / 40f;
+                particles.updateParticle(i, x + dx * dt, y + dy * dt);
+            }
+
+            if (time > timeToStartAddingParticles && particles.getSize() < particleCount) {
+                for (int i = 0; i < (int) (particleCount * delta / addParticlesDuration); i++) {
+                    addParticle();
+                }
+            }
+
         }
     }
 

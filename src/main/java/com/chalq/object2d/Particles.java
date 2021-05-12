@@ -1,5 +1,6 @@
 package com.chalq.object2d;
 
+import com.chalq.core.Cq;
 import com.chalq.core.Object2D;
 import com.chalq.math.MathUtils;
 import com.chalq.util.Color;
@@ -10,6 +11,7 @@ public class Particles extends Object2D {
 
     // arrays go { x1, y1, x2, y2 ... xn, yn }
     private final ArrayList<float[]> particles = new ArrayList<>();
+    private final ArrayList<Float> birthTimes = new ArrayList<>();
     private final int trailSegments, framesPerSegment;
     private final float particleSize;
     private final float trailWidth;
@@ -33,6 +35,7 @@ public class Particles extends Object2D {
             p[i + 1] = y;
         }
         particles.add(p);
+        birthTimes.add(Cq.time);
         return particles.size() - 1;
     }
 
@@ -95,5 +98,9 @@ public class Particles extends Object2D {
 
     public float getY(int id) {
         return particles.get(id)[1];
+    }
+
+    public float getBirthTime(int id) {
+        return birthTimes.get(id);
     }
 }

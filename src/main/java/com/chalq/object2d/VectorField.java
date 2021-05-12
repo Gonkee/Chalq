@@ -1,10 +1,12 @@
 package com.chalq.object2d;
 
 import com.chalq.core.Object2D;
+import com.chalq.core.Tween;
 import com.chalq.math.MathUtils;
+import com.chalq.math.Vec2;
 import com.chalq.util.Color;
 
-public class VectorField extends Object2D {
+public class VectorField extends Object2D implements Traceable{
 
     private final int xCount, yCount; // columns (no. of x values), rows (no. of y values)
     private final float interval, maxLength, arrowWidth;
@@ -14,6 +16,8 @@ public class VectorField extends Object2D {
     private final float[][] vecY;
     private final Arrow[][] arrows;
     private final Color color;
+
+    private float traceProgress = 1;
 
 
     public VectorField(float minX, float maxX, float minY, float maxY, float interval, float maxLength, Color color, float arrowWidth) {
@@ -101,5 +105,37 @@ public class VectorField extends Object2D {
     @Override
     public void update() {
 
+    }
+
+    @Override
+    public void setTraceProgress(float progress) {
+        this.traceProgress = progress;
+
+        float bottomLeft = posX[0] + posY[0];
+        float topRight = posX[xCount - 1] + posY[yCount - 1];
+
+        float buffer = (topRight - bottomLeft) / 3;
+        float threshold = MathUtils.lerp(bottomLeft - buffer, topRight, traceProgress);
+
+        for (int x = 0; x < xCount; x++) {
+            for (int y = 0; y < yCount; y++) {
+                arrows[x][y].setTraceProgress(
+                        Tween.easeInOut(
+                                1 - (posX[x] + posY[y] - threshold) / buffer
+                        )
+                );
+            }
+        }
+
+    }
+
+    @Override
+    public float getTraceProgress() {
+        return traceProgress;
+    }
+
+    @Override
+    public Vec2 getLocalTracePosition() {
+        return null;
     }
 }
