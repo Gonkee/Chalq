@@ -200,7 +200,7 @@ public class TestScenes {
         float particleRadius = 50;
         int particleCount = 3000;
 
-        GraphSpace graphSpace = new GraphSpace(200, 100, 1520, 880, minX, maxX, minY, maxY);
+        GraphSpace graphSpace = new GraphSpace(200, 100, 1520 / 1, 880 / 1, minX, maxX, minY, maxY);
         VectorField vectorField = new VectorField(minX, maxX, minY, maxY, 0.6f, 15, new Color("#ff3838"), 4);
         Particles particles = new Particles(0, 10, 1, 1, new Color("#FFFF00"));
         Random random = new Random();

@@ -1,11 +1,12 @@
 package com.chalq.object2d;
 
 import com.chalq.core.Object2D;
+import com.chalq.util.Color;
 
 public class GraphSpace extends Object2D {
 
     private final EmptyObject childrenTransform;
-    private final Arrow xAxisPos, yAxisPos, xAxisNeg, yAxisNeg;
+    private final Axis xAxis, yAxis;
     private float curveWidth = 5;
 
     private float width, height;
@@ -27,14 +28,17 @@ public class GraphSpace extends Object2D {
         setPos(x, y);
         this.width = width;
         this.height = height;
-        xAxisPos = new Arrow(0, 0, xAxisMax, 0, 0, curveWidth);
-        yAxisPos = new Arrow(0, 0, 0, yAxisMax, 0, curveWidth);
-        xAxisNeg = new Arrow(0, 0, xAxisMin, 0, 0, curveWidth);
-        yAxisNeg = new Arrow(0, 0, 0, yAxisMin, 0, curveWidth);
-        addToGraphSpace(xAxisPos);
-        addToGraphSpace(yAxisPos);
-        addToGraphSpace(xAxisNeg);
-        addToGraphSpace(yAxisNeg);
+
+        float xVisualUnitLength = width / (xAxisMax - xAxisMin);
+        float yVisualUnitLength = height / (yAxisMax - yAxisMin);
+        float xMarkingWidth = 20 / yVisualUnitLength;
+        float yMarkingWidth = 20 / xVisualUnitLength;
+        System.out.println(xVisualUnitLength + " , " + yVisualUnitLength);
+        System.out.println(xMarkingWidth + " , " + yMarkingWidth);
+        xAxis = new Axis(xAxisMin, xAxisMax, 2, false, Color.WHITE, 3, xMarkingWidth);
+        yAxis = new Axis(yAxisMin, yAxisMax, 2, true, Color.WHITE, 3, yMarkingWidth);
+        addToGraphSpace(xAxis);
+        addToGraphSpace(yAxis);
 
         this.xAxisMin = xAxisMin;
         this.xAxisMax = xAxisMax;
@@ -43,10 +47,7 @@ public class GraphSpace extends Object2D {
     }
 
     public void setAxesVisible(boolean visible) {
-        xAxisPos.visible = visible;
-        yAxisPos.visible = visible;
-        xAxisNeg.visible = visible;
-        yAxisNeg.visible = visible;
+        xAxis.visible = visible;
     }
 
     @Override

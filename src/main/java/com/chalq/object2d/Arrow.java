@@ -17,11 +17,6 @@ public class Arrow extends Object2D implements Traceable{
     private final float arcAngle;
     private boolean dirtyPath = true;
 
-    // so that new ones don't have to be constantly made
-    private final Vec2 tipV1 = new Vec2();
-    private final Vec2 tipV2 = new Vec2();
-    private final Vec2 tipV3 = new Vec2();
-
     public Arrow(float x, float y, float pointX, float pointY, float arcAngle, float width) {
         setPos(x, y);
         this.pointX = pointX;
@@ -50,8 +45,6 @@ public class Arrow extends Object2D implements Traceable{
             }
             dirtyPath = false;
         }
-
-
 
         path.draw(nvg);
 

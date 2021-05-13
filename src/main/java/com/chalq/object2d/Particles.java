@@ -65,21 +65,21 @@ public class Particles extends Object2D {
             penFillPath(nvg);
         }
 
+        penBeginPath(nvg);
         for (float[] p : particles) {
 
             // the last segment will shorten as the first segment lengthens, to prevent choppiness of updating segments
             float lastSegmentPortion =
                     1 - segmentFrameCounter / (float) framesPerSegment;
 
-            penBeginPath(nvg);
             penMoveTo(nvg, p[0], p[1]);
             for (int i = 2; i < p.length - 2; i += 2)
                 penLineTo(nvg, p[i], p[i + 1]);
             penLineTo(nvg,
                     MathUtils.lerp(p[p.length - 4], p[p.length - 2], lastSegmentPortion),  // final point X position
                     MathUtils.lerp(p[p.length - 3], p[p.length - 1], lastSegmentPortion)); // final point Y position
-            penStrokePath(nvg, trailWidth);
         }
+        penStrokePath(nvg, trailWidth);
         segmentFrameCounter = (segmentFrameCounter + 1) % framesPerSegment;
     }
 
