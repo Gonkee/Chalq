@@ -284,16 +284,14 @@ public abstract class Object2D implements Drawable {
         nvgBezierTo(nvg, tv1.x, tv1.y, tv2.x, tv2.y, tv3.x, tv3.y);
     }
 
-//    protected void penText(long nvg, String text, float x, float y, float fontSize) {
-//        tv1.set(x, y).transform(globalTransform);
-//        float scaleX = (float) Math.sqrt(globalTransform.m00 * globalTransform.m00 + globalTransform.m01 * globalTransform.m01);
-////        float scaleY = (float) Math.sqrt(globalTransform.m10 * globalTransform.m10 + globalTransform.m11 * globalTransform.m11);
-//        Cq.textSettings(fontSize * scaleX, );
-//    }
+    protected void penText(long nvg, String text, float x, float y) {
+        tv1.set(x, y).transform(globalTransform);
+        nvgFontFace(nvg, "bahnschrift");
+        nvgText(nvg, tv1.x, tv1.y, text);
+    }
 
     protected void penCircle(long nvg, float x, float y, float radius) {
         tv1.set(x, y).transform(globalTransform);
-//        radius = applyScale(radius);
         nvgCircle(nvg, tv1.x, tv1.y, radius);
     }
 

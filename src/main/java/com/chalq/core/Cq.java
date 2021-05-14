@@ -112,15 +112,15 @@ public class Cq {
         Cq.color.a(color.a);
     }
 
-    public static void setBackgroundColor(float r, float g, float b) {
-        checkInit();
-        glClearColor(r, g, b, 1);
-    }
-
-    public static void setBackgroundColor(Color bgColor) {
-        checkInit();
-        glClearColor(bgColor.r, bgColor.g, bgColor.b, 1);
-    }
+//    public static void setBackgroundColor(float r, float g, float b) {
+//        checkInit();
+//        glClearColor(r, g, b, 1);
+//    }
+//
+//    public static void setBackgroundColor(Color bgColor) {
+//        checkInit();
+//        glClearColor(bgColor.r, bgColor.g, bgColor.b, 1);
+//    }
 
     public static void clearFrame() {
         checkInit();
@@ -141,49 +141,49 @@ public class Cq {
         stroke(strokeWidth);
     }
 
-    public static void line(float x1, float y1, float x2, float y2, float strokeWidth) {
-        checkInit();
-        nvgBeginPath(nvg);
-        nvgMoveTo(nvg, x1, y1);
-        nvgLineTo(nvg, x2, y2);
-        stroke(strokeWidth);
-    }
+//    public static void line(float x1, float y1, float x2, float y2, float strokeWidth) {
+//        checkInit();
+//        nvgBeginPath(nvg);
+//        nvgMoveTo(nvg, x1, y1);
+//        nvgLineTo(nvg, x2, y2);
+//        stroke(strokeWidth);
+//    }
 
-    public static void arcClockwise(float x1, float y1, float x2, float y2, float angleDegrees, float strokeWidth) {
+//    public static void arcClockwise(float x1, float y1, float x2, float y2, float angleDegrees, float strokeWidth) {
+//
+//        angleDegrees %= 360;
+//        if (angleDegrees < 0) angleDegrees += 360;
+//
+//        Vec2 to2ndPt = new Vec2(x2 - x1, y2 - y1);
+//        float chordLength = to2ndPt.len();
+//        if (chordLength == 0) return;
+//
+//        float chordToRadiusRatio = 2 * (float) Math.sin(MathUtils.deg2rad * angleDegrees / 2);
+//        if (chordToRadiusRatio != 0) {
+//            float radius = chordLength / chordToRadiusRatio;
+//
+//            // must normalize then scale, setLength() only does positive values, messing up angles larger than 180 (cosine < 0)
+//            Vec2 chordMidpointToCenter = new Vec2(to2ndPt).rotateDeg(90).nor().scl( radius * (float) Math.cos(MathUtils.deg2rad * angleDegrees / 2) );
+//            Vec2 center = new Vec2( (x1 + x2) / 2, (y1 + y2) / 2 ).add( chordMidpointToCenter );
+//            float ang1 = new Vec2(x1 - center.x, y1 - center.y).angle() * MathUtils.deg2rad;
+//            float ang2 = new Vec2(x2 - center.x, y2 - center.y).angle() * MathUtils.deg2rad;
+//
+//            checkInit();
+//            nvgBeginPath(nvg);
+//            nvgMoveTo(nvg, x1, y1);
+//            nvgArc(nvg, center.x, center.y, radius, ang1, ang2, NVG_CW);
+//            stroke(strokeWidth);
+//        } else {
+//            line(x1, y1, x2, y2, strokeWidth);
+//        }
+//    }
 
-        angleDegrees %= 360;
-        if (angleDegrees < 0) angleDegrees += 360;
-
-        Vec2 to2ndPt = new Vec2(x2 - x1, y2 - y1);
-        float chordLength = to2ndPt.len();
-        if (chordLength == 0) return;
-
-        float chordToRadiusRatio = 2 * (float) Math.sin(MathUtils.deg2rad * angleDegrees / 2);
-        if (chordToRadiusRatio != 0) {
-            float radius = chordLength / chordToRadiusRatio;
-
-            // must normalize then scale, setLength() only does positive values, messing up angles larger than 180 (cosine < 0)
-            Vec2 chordMidpointToCenter = new Vec2(to2ndPt).rotateDeg(90).nor().scl( radius * (float) Math.cos(MathUtils.deg2rad * angleDegrees / 2) );
-            Vec2 center = new Vec2( (x1 + x2) / 2, (y1 + y2) / 2 ).add( chordMidpointToCenter );
-            float ang1 = new Vec2(x1 - center.x, y1 - center.y).angle() * MathUtils.deg2rad;
-            float ang2 = new Vec2(x2 - center.x, y2 - center.y).angle() * MathUtils.deg2rad;
-
-            checkInit();
-            nvgBeginPath(nvg);
-            nvgMoveTo(nvg, x1, y1);
-            nvgArc(nvg, center.x, center.y, radius, ang1, ang2, NVG_CW);
-            stroke(strokeWidth);
-        } else {
-            line(x1, y1, x2, y2, strokeWidth);
-        }
-    }
-
-    public static void fillRect(float x, float y, float width, float height) {
-        checkInit();
-        nvgBeginPath(nvg);
-        nvgRect(nvg, x, y, width, height);
-        fill();
-    }
+//    public static void fillRect(float x, float y, float width, float height) {
+//        checkInit();
+//        nvgBeginPath(nvg);
+//        nvgRect(nvg, x, y, width, height);
+//        fill();
+//    }
 
     public static void strokeRect(float x, float y, float width, float height, float strokeWidth) {
         checkInit();
@@ -192,42 +192,42 @@ public class Cq {
         stroke(strokeWidth);
     }
 
-    public static void fillPolygon(float[] vertices) {
-        checkInit();
-        if (vertices.length < 6) throw new IllegalArgumentException("Polygons must contain at least 3 points.");
-        if (vertices.length % 2 != 0) throw new IllegalArgumentException("Polygon vertices must have even number of coordinates.");
-        nvgBeginPath(nvg);
-        nvgMoveTo(nvg, vertices[0], vertices[1]);
-        for (int i = 2; i < vertices.length; i += 2) {
-            nvgLineTo(nvg, vertices[i], vertices[i + 1]);
-        }
-        fill();
-    }
+//    public static void fillPolygon(float[] vertices) {
+//        checkInit();
+//        if (vertices.length < 6) throw new IllegalArgumentException("Polygons must contain at least 3 points.");
+//        if (vertices.length % 2 != 0) throw new IllegalArgumentException("Polygon vertices must have even number of coordinates.");
+//        nvgBeginPath(nvg);
+//        nvgMoveTo(nvg, vertices[0], vertices[1]);
+//        for (int i = 2; i < vertices.length; i += 2) {
+//            nvgLineTo(nvg, vertices[i], vertices[i + 1]);
+//        }
+//        fill();
+//    }
 
-    public static void strokePolygon(float[] vertices, float strokeWidth) {
-        checkInit();
-        if (vertices.length < 6) throw new IllegalArgumentException("Polygon must contain at least 3 points.");
-        if (vertices.length % 2 != 0) throw new IllegalArgumentException("Polygon vertices must have even number of coordinates.");
-        nvgBeginPath(nvg);
-        nvgMoveTo(nvg, vertices[0], vertices[1]);
-        for (int i = 2; i < vertices.length; i += 2) {
-            nvgLineTo(nvg, vertices[i], vertices[i + 1]);
-        }
-        nvgLineTo(nvg, vertices[0], vertices[1]);
-        stroke(strokeWidth);
-    }
+//    public static void strokePolygon(float[] vertices, float strokeWidth) {
+//        checkInit();
+//        if (vertices.length < 6) throw new IllegalArgumentException("Polygon must contain at least 3 points.");
+//        if (vertices.length % 2 != 0) throw new IllegalArgumentException("Polygon vertices must have even number of coordinates.");
+//        nvgBeginPath(nvg);
+//        nvgMoveTo(nvg, vertices[0], vertices[1]);
+//        for (int i = 2; i < vertices.length; i += 2) {
+//            nvgLineTo(nvg, vertices[i], vertices[i + 1]);
+//        }
+//        nvgLineTo(nvg, vertices[0], vertices[1]);
+//        stroke(strokeWidth);
+//    }
 
-    public static void strokePolyline (float[] vertices, float strokeWidth) {
-        checkInit();
-        if (vertices.length < 4) throw new IllegalArgumentException("Polyline must contain at least 2 points.");
-        if (vertices.length % 2 != 0) throw new IllegalArgumentException("Polyline vertices must have even number of coordinates.");
-        nvgBeginPath(nvg);
-        nvgMoveTo(nvg, vertices[0], vertices[1]);
-        for (int i = 2; i < vertices.length; i += 2) {
-            nvgLineTo(nvg, vertices[i], vertices[i + 1]);
-        }
-        stroke(strokeWidth);
-    }
+//    public static void strokePolyline (float[] vertices, float strokeWidth) {
+//        checkInit();
+//        if (vertices.length < 4) throw new IllegalArgumentException("Polyline must contain at least 2 points.");
+//        if (vertices.length % 2 != 0) throw new IllegalArgumentException("Polyline vertices must have even number of coordinates.");
+//        nvgBeginPath(nvg);
+//        nvgMoveTo(nvg, vertices[0], vertices[1]);
+//        for (int i = 2; i < vertices.length; i += 2) {
+//            nvgLineTo(nvg, vertices[i], vertices[i + 1]);
+//        }
+//        stroke(strokeWidth);
+//    }
 
     public static void text(String text, float x, float y) {
         checkInit();

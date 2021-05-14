@@ -59,7 +59,6 @@ public class Particles extends Object2D {
         if (particleSize > 0) {
             penBeginPath(nvg);
             for (float[] p : particles) {
-
                 penCircle(nvg, p[0], p[1], particleSize);
             }
             penFillPath(nvg);
