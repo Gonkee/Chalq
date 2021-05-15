@@ -1,8 +1,7 @@
 import com.chalq.core.*;
-import com.chalq.object2d.FunctionGraph;
-import com.chalq.object2d.GraphSpace;
-import com.chalq.object2d.Particles;
-import com.chalq.object2d.VectorField;
+import com.chalq.math.Vec2;
+import com.chalq.object2d.*;
+import com.chalq.object2d.shape2d.Circle;
 import com.chalq.util.Color;
 
 import java.util.Random;
@@ -208,11 +207,42 @@ public class TestScenes {
         float timeToStartAddingParticles;
         float addParticlesDuration = 3;
 
+        Circle demoPoint;
+        Text demoText1;
+        Text demoText2;
+        float demoPointX = 3;
+        float demoPointY = 3;
 
         @Override
         public void init() {
-            addChild(graphSpace);
-            graphSpace.addToGraphSpace(vectorField);
+            graphSpace.xLabel = "X";
+            graphSpace.yLabel = "Y";
+            graphSpace.xMarkingInterval = 2;
+            graphSpace.yMarkingInterval = 2;
+            graphSpace.xMarkingDecimalPlaces = 0;
+            graphSpace.yMarkingDecimalPlaces = 0;
+            traceObject(graphSpace, 1);
+
+            demoPoint = new Circle(0, 0, 10, Color.WHITE);//new Color("#ff3838"));
+            Vec2 pointPos = graphSpace.graphToGlobal(demoPointX, demoPointY);
+            demoPoint.setPos(pointPos.x, pointPos.y);
+
+            demoText1 = new Text("");
+            demoText2 = new Text("");
+
+            popUpObjectSlow(demoPoint, 1, 3f);
+            popUpObjectSlow(demoText1, 1, 3f);
+            popUpObjectSlow(demoText2, 1, 3f);
+
+            demoText1.fontSize = 30;
+            demoText2.fontSize = 30;
+            demoText1.offsetY = -15;
+            demoText2.offsetY = 15;
+            demoText1.offsetX = 20;
+            demoText2.offsetX = 20;
+            demoText1.alignH = TextAlignH.LEFT;
+            demoText2.alignH = TextAlignH.LEFT;
+//            graphSpace.addToGraphSpace(vectorField);
 
             float realX, realY;
             for (int x = 0; x < vectorField.xCount(); x++) {
@@ -227,7 +257,7 @@ public class TestScenes {
             }
             Tween.interpolate(vectorField::setTraceProgress, 0, 1, time, 1.5f, Tween.Easing.EASE_IN_OUT);
 
-            graphSpace.addToGraphSpace(particles);
+//            graphSpace.addToGraphSpace(particles);
             timeToStartAddingParticles = time + 3;
         }
 
@@ -250,6 +280,15 @@ public class TestScenes {
 
         @Override
         public void update() {
+
+            Vec2 pointPos = graphSpace.graphToGlobal(demoPointX, demoPointY);
+            demoPoint.setPos(pointPos.x, pointPos.y);
+
+            demoText1.text = "x = " + String.format("%.1f", demoPointX);
+            demoText2.text = "y = " + String.format("%.1f", demoPointY);
+            demoText1.setPos(pointPos.x, pointPos.y);
+            demoText2.setPos(pointPos.x, pointPos.y);
+
 
             float x, y, dx, dy, dt;
             for (int i = 0; i < particles.getSize(); i++) {

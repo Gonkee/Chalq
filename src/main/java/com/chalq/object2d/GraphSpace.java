@@ -2,10 +2,12 @@ package com.chalq.object2d;
 
 import com.chalq.core.Cq;
 import com.chalq.core.Object2D;
+import com.chalq.core.Tween;
 import com.chalq.math.MathUtils;
+import com.chalq.math.Vec2;
 import com.chalq.util.Color;
 
-public class GraphSpace extends Object2D {
+public class GraphSpace extends Object2D implements Traceable{
 
     private final EmptyObject childrenTransform;
 
@@ -13,24 +15,38 @@ public class GraphSpace extends Object2D {
     private float minX, maxX;
     private float minY, maxY;
 
-    private final float
-            xMarkingWidth,
-            yMarkingWidth,
+    private float traceProgress = 1;
+
+
+    public String
+            xLabel = "",
+            yLabel = "";
+
+    public float
+            markingWidth = 20,
             axesStrokeWidth = 3,
-            axesMarkingInterval = 2;
+            xMarkingInterval = 1,
+            yMarkingInterval = 1,
+            markingsFontSize = 30,
+            labelFontSize = 50;
 
-    private final int
-            xMarkingCount,
-            xMinIntervalMultiple,
-            xMaxIntervalMultiple,
 
-            yMarkingCount,
-            yMinIntervalMultiple,
-            yMaxIntervalMultiple;
+    public int
+            xMarkingDecimalPlaces = 1,
+            yMarkingDecimalPlaces = 1;
+//    private final int
+//            xMarkingCount,
+//            xMinIntervalMultiple,
+//            xMaxIntervalMultiple,
+//
+//            yMarkingCount,
+//            yMinIntervalMultiple,
+//            yMaxIntervalMultiple;
 
     public boolean
             xAxisVisible = true,
             yAxisVisible = true;
+
 
     private Color axesColor = Color.WHITE;
 
@@ -48,27 +64,6 @@ public class GraphSpace extends Object2D {
         setPos(x, y);
         this.width = width;
         this.height = height;
-
-        float xVisualUnitLength = width / (maxX - minX);
-        float yVisualUnitLength = height / (maxY - minY);
-        xMarkingWidth = 20 / yVisualUnitLength;
-        yMarkingWidth = 20 / xVisualUnitLength;
-        System.out.println(xVisualUnitLength + " , " + yVisualUnitLength);
-        System.out.println(xMarkingWidth + " , " + yMarkingWidth);
-//        xAxis = new Axis(minX, maxX, 2, false, Color.WHITE, 3, xMarkingWidth);
-//        yAxis = new Axis(minY, maxY, 2, true, Color.WHITE, 3, yMarkingWidth);
-//        addToGraphSpace(xAxis);
-//        addToGraphSpace(yAxis);
-
-
-        // interval multiple = number that interval is multiplied by to get the min/max
-        xMinIntervalMultiple = MathUtils.ceil(minX / axesMarkingInterval);
-        xMaxIntervalMultiple = MathUtils.floor(maxX / axesMarkingInterval);
-        yMinIntervalMultiple = MathUtils.ceil(minY / axesMarkingInterval);
-        yMaxIntervalMultiple = MathUtils.floor(maxY / axesMarkingInterval);
-
-        xMarkingCount = xMaxIntervalMultiple - xMinIntervalMultiple + 1;
-        yMarkingCount = yMaxIntervalMultiple - yMinIntervalMultiple + 1;
 
         Axes axes = new Axes();
         axes.gs = this;
@@ -100,8 +95,27 @@ public class GraphSpace extends Object2D {
 
     }
 
+    public Vec2 graphToGlobal(float x, float y) {
+        return childrenTransform.localToGlobal(x, y);
+    }
+
     public void addToGraphSpace(Drawable drawable) {
         childrenTransform.addChild(drawable);
+    }
+
+    @Override
+    public void setTraceProgress(float progress) {
+        this.traceProgress = progress;
+    }
+
+    @Override
+    public float getTraceProgress() {
+        return traceProgress;
+    }
+
+    @Override
+    public Vec2 getLocalTracePosition() {
+        return null;
     }
 
     private static class Axes extends Object2D{
@@ -110,32 +124,89 @@ public class GraphSpace extends Object2D {
 
         @Override
         public void draw(long nvg) {
+
+            float xVisualUnitLength = gs.width / (gs.maxX - gs.minX);
+            float yVisualUnitLength = gs.height / (gs.maxY - gs.minY);
+            float xMarkingWidth = gs.markingWidth / yVisualUnitLength;
+            float yMarkingWidth = gs.markingWidth / xVisualUnitLength;
+
+            float axesProgress     = MathUtils.clamp(gs.traceProgress * 1.1f         , 0, 1); // finish early
+            float markingsProgress = MathUtils.clamp(gs.traceProgress * 1.1f - (0.1f), 0, 1); // finish late
+
             penSetColor(gs.axesColor);
             penBeginPath(nvg);
 
             if (gs.xAxisVisible) {
-                Cq.textSettings(30, Cq.TextAlignH.CENTER, Cq.TextAlignV.TOP);
-                penMoveTo(nvg, gs.minX, 0);
-                penLineTo(nvg, gs.maxX, 0);
-                for (int i = 0; i < gs.xMarkingCount; i++) {
-                    float pos = (gs.xMinIntervalMultiple + i) * gs.axesMarkingInterval;
-                    penMoveTo(nvg, pos, -gs.xMarkingWidth / 2);
-                    penLineTo(nvg, pos, gs.xMarkingWidth / 2);
-                    penText(nvg, "" + pos, pos, -gs.xMarkingWidth / 2 * 1.5f);
+
+                float midpoint = (gs.minX + gs.maxX) / 2;
+                float halfDist = (gs.maxX - gs.minX) / 2;
+                float buffer = halfDist / 3;
+                float threshold = MathUtils.lerp( -buffer, halfDist, markingsProgress);
+
+                penMoveTo(nvg, MathUtils.lerp(midpoint, gs.minX, axesProgress), 0);
+                penLineTo(nvg, MathUtils.lerp(midpoint, gs.maxX, axesProgress), 0);
+
+                float progress = 0;
+                for (int
+                     multiple =  MathUtils.ceil(gs.minX / gs.xMarkingInterval);
+                     multiple <= MathUtils.floor(gs.maxX / gs.xMarkingInterval);
+                     multiple ++
+                ) {
+
+                    float pos = multiple * gs.xMarkingInterval;
+                    if (pos == 0 && gs.yAxisVisible) continue;
+
+                    float currentDistance = Math.abs(pos - midpoint);
+                    progress = Tween.easeInOut( 1 - (currentDistance - threshold) / buffer );
+
+                    penMoveTo(nvg, pos, -xMarkingWidth / 2 * progress);
+                    penLineTo(nvg, pos,  xMarkingWidth / 2 * progress);
+
+                    Cq.textSettings(gs.markingsFontSize * progress, Cq.TextAlignH.CENTER, Cq.TextAlignV.TOP);
+                    penText(nvg,
+                            String.format("%." + Math.abs(gs.xMarkingDecimalPlaces) + "f", pos),
+                            pos, -xMarkingWidth / 2 * 1.5f);
                 }
+
+                Cq.textSettings(gs.labelFontSize * progress, Cq.TextAlignH.LEFT, Cq.TextAlignV.CENTER);
+                penText(nvg, gs.xLabel, gs.maxX + halfDist * 0.03f, 0);
+
             }
 
 
             if (gs.yAxisVisible) {
-                Cq.textSettings(30, Cq.TextAlignH.LEFT, Cq.TextAlignV.CENTER);
-                penMoveTo(nvg, 0, gs.minY);
-                penLineTo(nvg, 0, gs.maxY);
-                for (int i = 0; i < gs.yMarkingCount; i++) {
-                    float pos = (gs.yMinIntervalMultiple + i) * gs.axesMarkingInterval;
-                    penMoveTo(nvg, -gs.yMarkingWidth / 2, pos);
-                    penLineTo(nvg, gs.yMarkingWidth / 2, pos);
-                    penText(nvg, "" + pos, gs.yMarkingWidth / 2 * 1.5f, pos);
+
+                float midpoint = (gs.minY + gs.maxY) / 2;
+                float halfDist = (gs.maxY - gs.minY) / 2;
+                float buffer = halfDist / 3;
+                float threshold = MathUtils.lerp( -buffer, halfDist, markingsProgress);
+
+                penMoveTo(nvg, 0, MathUtils.lerp(midpoint, gs.minY, axesProgress));
+                penLineTo(nvg, 0, MathUtils.lerp(midpoint, gs.maxY, axesProgress));
+
+                float progress = 0;
+                for (int
+                     multiple =  MathUtils.ceil(gs.minY / gs.yMarkingInterval);
+                     multiple <= MathUtils.floor(gs.maxY / gs.yMarkingInterval);
+                     multiple ++
+                ) {
+                    float pos = multiple * gs.yMarkingInterval;
+                    if (pos == 0 && gs.xAxisVisible) continue;
+
+                    float distFromMid = Math.abs(pos - midpoint);
+                    progress = Tween.easeInOut( 1 - (distFromMid - threshold) / buffer );
+
+                    penMoveTo(nvg, -yMarkingWidth / 2 * progress, pos);
+                    penLineTo(nvg, yMarkingWidth / 2 * progress, pos);
+
+                    Cq.textSettings(gs.markingsFontSize * progress, Cq.TextAlignH.LEFT, Cq.TextAlignV.CENTER);
+                    penText(nvg,
+                            String.format("%." + Math.abs(gs.yMarkingDecimalPlaces) + "f", pos),
+                            yMarkingWidth / 2 * 1.5f, pos);
                 }
+
+                Cq.textSettings(gs.labelFontSize * progress, Cq.TextAlignH.CENTER, Cq.TextAlignV.BOTTOM);
+                penText(nvg, gs.yLabel, 0, gs.maxY + halfDist * 0.03f);
             }
 
             penStrokePath(nvg, gs.axesStrokeWidth);

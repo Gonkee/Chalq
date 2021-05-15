@@ -152,6 +152,10 @@ public abstract class Object2D implements Drawable {
           |     0      ,      0      ,                 1                   |
      */
 
+    public Vec2 localToGlobal(float x, float y) {
+        return new Vec2(x, y).transform(globalTransform);
+    }
+
     private void updateLocalTransform() {
         float sin = (float) Math.sin(rotationRad);
         float cos = (float) Math.cos(rotationRad);

@@ -33,3 +33,7 @@ have a GraphSpace class which you can add lines, functions, vectors, particles e
 move pop up / trace functions from Scene to Object?
 
 bounded interface for objects that have x, y, width, height, for easy centering and alignment
+
+shapes objects are sketchy, must formalize properties in class hierarchy and separate outline objects not always updated
+
+standardise object color property
