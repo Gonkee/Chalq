@@ -17,7 +17,7 @@ public class TestScenes {
         config.height = 1080;
         config.backgroundColor = new Color(0.102f, 0.137f, 0.2f, 1f);
         config.antialiasing = true;
-//        config.outputMP4Path = "vidout/loryerr.mp4";
+        config.outputMP4Path = "vidout/vecThing.mp4";
         new CqWindow(config, new PhaseSpace());
 
     }
@@ -199,7 +199,7 @@ public class TestScenes {
         float particleRadius = 50;
         int particleCount = 3000;
 
-        GraphSpace graphSpace = new GraphSpace(200, 100, 1520 / 1, 880 / 1, minX, maxX, minY, maxY);
+        GraphSpace graphSpace = new GraphSpace(225, 125, 1920 - 450, 1080 - 250, minX, maxX, minY, maxY);
         VectorField vectorField = new VectorField(minX, maxX, minY, maxY, 0.6f, 15, new Color("#ff3838"), 4);
         Particles particles = new Particles(0, 10, 1, 1, new Color("#FFFF00"));
         Random random = new Random();
@@ -207,11 +207,22 @@ public class TestScenes {
         float timeToStartAddingParticles;
         float addParticlesDuration = 3;
 
+        Arrow demoVec;
         Circle demoPoint;
         Text demoText1;
         Text demoText2;
+        Text demoVecText1;
+        Text demoVecText2;
         float demoPointX = 3;
         float demoPointY = 3;
+
+        public void setDemoX(float x) {
+            this.demoPointX = x;
+        }
+
+        public void setDemoY(float y) {
+            this.demoPointY = y;
+        }
 
         @Override
         public void init() {
@@ -223,26 +234,79 @@ public class TestScenes {
             graphSpace.yMarkingDecimalPlaces = 0;
             traceObject(graphSpace, 1);
 
-            demoPoint = new Circle(0, 0, 10, Color.WHITE);//new Color("#ff3838"));
+            demoPoint = new Circle(0, 0, 10, new Color("#ff3838"));
             Vec2 pointPos = graphSpace.graphToGlobal(demoPointX, demoPointY);
             demoPoint.setPos(pointPos.x, pointPos.y);
 
             demoText1 = new Text("");
             demoText2 = new Text("");
+            demoVecText1 = new Text("");
+            demoVecText2 = new Text("");
 
-            popUpObjectSlow(demoPoint, 1, 3f);
+            demoVec = new Arrow(0, 0, 0, 0, 0, 7);
+            demoVec.setTraceProgress(0);
+            demoVec.setColor(new Color("#FFF000"));
+
+            Circle circle = new Circle(10000, 10000, 2, Color.WHITE);
+            addChild(circle); // to make the text white?
+
             popUpObjectSlow(demoText1, 1, 3f);
             popUpObjectSlow(demoText2, 1, 3f);
+
+            popUpObjectSlow(demoVecText1, 1, 9.5f);
+            popUpObjectSlow(demoVecText2, 1, 9.5f);
+
+            popUpObjectSlow(demoPoint, 1, 3f);
+
+            Tween.interpolate(demoVec::setTraceProgress, 0, 1, time + 9.5f, 0.8f, Tween.Easing.EASE_IN_OUT);
+
+
+            graphSpace.addToGraphSpace(demoVec);
 
             demoText1.fontSize = 30;
             demoText2.fontSize = 30;
             demoText1.offsetY = -15;
             demoText2.offsetY = 15;
-            demoText1.offsetX = 20;
-            demoText2.offsetX = 20;
+            demoText1.offsetX = 25;
+            demoText2.offsetX = 25;
             demoText1.alignH = TextAlignH.LEFT;
             demoText2.alignH = TextAlignH.LEFT;
-//            graphSpace.addToGraphSpace(vectorField);
+            graphSpace.addToGraphSpace(vectorField);
+            vectorField.setTraceProgress(0);
+
+            demoVecText1.fontSize = 30;
+            demoVecText2.fontSize = 30;
+            demoVecText1.offsetY = -15;
+            demoVecText2.offsetY = 15;
+            demoVecText1.alignH = TextAlignH.CENTER;
+            demoVecText2.alignH = TextAlignH.CENTER;
+
+            Tween.interpolate(this::setDemoX, demoPointX, 5, time + 5, 2, Tween.Easing.EASE_IN_OUT);
+            Tween.interpolate(this::setDemoY, demoPointY, -4, time + 5, 2, Tween.Easing.EASE_IN_OUT);
+
+            Tween.interpolate(this::setDemoX, 5, -8, time + 7.5f, 2, Tween.Easing.EASE_IN_OUT);
+            Tween.interpolate(this::setDemoY, -4, 2, time + 7.5f, 2, Tween.Easing.EASE_IN_OUT);
+
+            Tween.interpolate(this::setDemoX, -8, -2, time + 12f, 2, Tween.Easing.EASE_IN_OUT);
+            Tween.interpolate(this::setDemoY, 2, 1.5f, time + 12f, 2, Tween.Easing.EASE_IN_OUT);
+
+            Tween.interpolate(this::setDemoX, -2, 2, time + 14.5f, 2, Tween.Easing.EASE_IN_OUT);
+            Tween.interpolate(this::setDemoY, 1.5f, 4, time + 14.5f, 2, Tween.Easing.EASE_IN_OUT);
+
+            Tween.interpolate(this::setDemoX, 2, 2, time + 17f, 2, Tween.Easing.EASE_IN_OUT);
+            Tween.interpolate(this::setDemoY, 4, -2.5f, time + 17f, 2, Tween.Easing.EASE_IN_OUT);
+
+            Tween.interpolate(demoVecText1::setScaleX, 1, 0, time + 20, 1, Tween.Easing.EASE_IN_OUT);
+            Tween.interpolate(demoVecText1::setScaleY, 1, 0, time + 20, 1, Tween.Easing.EASE_IN_OUT);
+            Tween.interpolate(demoText1::setScaleX, 1, 0, time + 20, 1, Tween.Easing.EASE_IN_OUT);
+            Tween.interpolate(demoText1::setScaleY, 1, 0, time + 20, 1, Tween.Easing.EASE_IN_OUT);
+            Tween.interpolate(demoVecText2::setScaleX, 1, 0, time + 20, 1, Tween.Easing.EASE_IN_OUT);
+            Tween.interpolate(demoVecText2::setScaleY, 1, 0, time + 20, 1, Tween.Easing.EASE_IN_OUT);
+            Tween.interpolate(demoText2::setScaleX, 1, 0, time + 20, 1, Tween.Easing.EASE_IN_OUT);
+            Tween.interpolate(demoText2::setScaleY, 1, 0, time + 20, 1, Tween.Easing.EASE_IN_OUT);
+            Tween.interpolate(demoPoint::setScaleX, 1, 0, time + 20, 1, Tween.Easing.EASE_IN_OUT);
+            Tween.interpolate(demoPoint::setScaleY, 1, 0, time + 20, 1, Tween.Easing.EASE_IN_OUT);
+            Tween.interpolate(demoVec::setTraceProgress, 1, 0, time + 20, 1, Tween.Easing.EASE_IN_OUT);
 
             float realX, realY;
             for (int x = 0; x < vectorField.xCount(); x++) {
@@ -255,10 +319,10 @@ public class TestScenes {
                     );
                 }
             }
-            Tween.interpolate(vectorField::setTraceProgress, 0, 1, time, 1.5f, Tween.Easing.EASE_IN_OUT);
+            Tween.interpolate(vectorField::setTraceProgress, 0, 1, time + 22, 1.5f, Tween.Easing.EASE_IN_OUT);
 
-//            graphSpace.addToGraphSpace(particles);
-            timeToStartAddingParticles = time + 3;
+            graphSpace.addToGraphSpace(particles);
+            timeToStartAddingParticles = time + 25;
         }
 
         public void addParticle() {
@@ -282,12 +346,27 @@ public class TestScenes {
         public void update() {
 
             Vec2 pointPos = graphSpace.graphToGlobal(demoPointX, demoPointY);
+
+            Vec2 pointer = new Vec2(demoVec.getPointX(), demoVec.getPointY());
+            float len = pointer.len();
+            pointer.nor().scl(len + 1);
+
+            Vec2 vecPos = graphSpace.graphToGlobal(demoPointX + pointer.x, demoPointY + pointer.y);
             demoPoint.setPos(pointPos.x, pointPos.y);
 
             demoText1.text = "x = " + String.format("%.1f", demoPointX);
             demoText2.text = "y = " + String.format("%.1f", demoPointY);
             demoText1.setPos(pointPos.x, pointPos.y);
             demoText2.setPos(pointPos.x, pointPos.y);
+
+            demoVecText1.text = "dx = " + String.format("%.1f", demoVec.getPointX());
+            demoVecText2.text = "dy = " + String.format("%.1f", demoVec.getPointY());
+            demoVecText1.setPos(vecPos.x, vecPos.y);
+            demoVecText2.setPos(vecPos.x, vecPos.y);
+
+            demoVec.setPos(demoPointX, demoPointY);
+            demoVec.setPointX(dx(demoPointX, demoPointY));
+            demoVec.setPointY(dy(demoPointX, demoPointY));
 
 
             float x, y, dx, dy, dt;
