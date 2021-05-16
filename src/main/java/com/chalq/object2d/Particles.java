@@ -20,7 +20,7 @@ public class Particles extends Object2D {
     int segmentFrameCounter = 0;
 
     public Particles(float particleSize, int trailSegments, float trailWidth, int framesPerSegment, Color color) {
-        trailSegments = MathUtils.clamp(trailSegments, 0, 500);
+        trailSegments = MathUtils.clamp(trailSegments, 0, 2000);
         this.trailSegments = trailSegments;
         this.framesPerSegment = framesPerSegment;
         this.particleSize = particleSize;

@@ -1,5 +1,8 @@
 import com.chalq.core.*;
+import com.chalq.math.Mat4;
+import com.chalq.math.MathUtils;
 import com.chalq.math.Vec2;
+import com.chalq.math.Vec3;
 import com.chalq.object2d.*;
 import com.chalq.object2d.shape2d.Circle;
 import com.chalq.util.Color;
@@ -15,10 +18,10 @@ public class TestScenes {
         CqConfig config = new CqConfig();
         config.width = 1920;
         config.height = 1080;
-        config.backgroundColor = new Color(0.102f, 0.137f, 0.2f, 1f);
+        config.backgroundColor = new Color("#1A2333");
         config.antialiasing = true;
-        config.outputMP4Path = "vidout/vecThing.mp4";
-        new CqWindow(config, new PhaseSpace());
+        config.outputMP4Path = "vidout/lorenzInfiniteDetail.mp4";
+        new CqWindow(config, new Scene1());
 
     }
 
@@ -26,98 +29,154 @@ public class TestScenes {
 
         GraphSpace plotter;
         Particles particles;
+        Particles particles2;
         Random rand = new Random();
 
-        int numPoints = 200;
+        int numPoints = 10;
         float[] points = new float[numPoints * 3];
+        float[] points2 = new float[3];
+
+        float timeToStartAddingParticles;
+        float addParticlesDuration = 3;
+
+        public void addParticle(int i) {
+            points[i * 3    ] = -25 + rand.nextFloat() * 50;
+            points[i * 3 + 1] = -30 + rand.nextFloat() * 60;
+            points[i * 3 + 2] = rand.nextFloat() * 50;
+
+//            particles.addParticle(points[i * 3    ], points[i * 3 + 2]);
+        }
+
+        public void addParticle2(int i) {
+            points2[i * 3    ] = -25 + rand.nextFloat() * 50;
+            points2[i * 3 + 1] = -30 + rand.nextFloat() * 60;
+            points2[i * 3 + 2] = rand.nextFloat() * 50;
+
+            particles2.addParticle(points2[i * 3    ], points2[i * 3 + 2]);
+        }
+
 
         @Override
         public void init() {
-            plotter = new GraphSpace(200, 200, 1520, 680, -15, 20, -30, 30);
-
-            FunctionGraph fg1 = new FunctionGraph(this::f, -10, 10, new Color(1, 0, 0, 1), 300, true, false);
-            FunctionGraph fg2 = new FunctionGraph(this::g, -10, 10, new Color("#56B0FF"), 300, true, false);
-//            plotter.addToGraphSpace(fg1);
-//            plotter.addToGraphSpace(fg2);
+            plotter = new GraphSpace(200, 100, 1520, 880, -20, 20, 0, 45);
             addChild(plotter);
 
-            particles = new Particles(2, 20, 1, 2, new Color("#db1247"));
-            for (int i = 0; i < numPoints; i++) {
-
-                points[i * 3    ] = -15 + rand.nextFloat() * 35;
-                points[i * 3 + 1] = -30 + rand.nextFloat() * 60;
-                points[i * 3 + 2] = rand.nextFloat() * 50;
-
-                particles.addParticle(points[i * 3    ], points[i * 3 + 1]);
-            }
+            particles = new Particles(3, 2000, 2, 2, new Color("#FFF000"));
+            particles2 = new Particles(4, 2000, 3, 2, new Color("#00CC00"));
             plotter.addToGraphSpace(particles);
+            plotter.addToGraphSpace(particles2);
 
+            plotter.yMarkingDecimalPlaces = 0;
+            plotter.xMarkingDecimalPlaces = 0;
+            plotter.xMarkingInterval = 5;
+            plotter.yMarkingInterval = 5;
+
+            plotter.xLabel = "X";
+            plotter.yLabel = "Z";
+
+            timeToStartAddingParticles = time + 2;
+            for (int i = 0; i < numPoints; i++) {
+                addParticle(i);
+            }
         }
+
+        boolean yer = false;
 
         @Override
         public void update() {
-//            float dx = (float) Math.cos(time * 4) + (float) Math.cos(time);
-//            float dy = (float) Math.sin(time * 4);
-//            dx *= 0.1;
-//            dy *= 0.1;
 
 
-            float alpha = 0.1f;
-            float beta = 0.1f;
-            float gamma = 0.1f;
-            float delta2 = 0.1f;
-            float x, y, z, dx, dy, dz;
+            if (time > timeToStartAddingParticles && !yer) {
+                for (int i = 0; i < numPoints; i++) {
+                    particles.addParticle(points[i * 3    ], points[i * 3 + 2]);
+                }
+                yer = true;
+            }
 
-            float a = -0.64f;
-            float b = 0.76f;
+//            if (time > timeToStartAddingParticles && particles.getSize() < numPoints) {
+//                for (int i = 0; i < (int) (numPoints * delta / addParticlesDuration); i++) {
+//                    if (particles.getSize() < numPoints) addParticle(particles.getSize());
+//                }
+//            }
+
+//            if (time > timeToStartAddingParticles && !yer) {
+//                addParticle2(0);
+//                yer = true;
+//            }
+
 
             for (int i = 0; i < numPoints; i++) {
+                updatePoint(points, i);
+                if (i < particles.getSize())
+                particles.updateParticle(i, points[i * 3    ], points[i * 3 + 2]);
+            }
 
-
-//                x = particles.getX(i);
-//                y = particles.getY(i);
-//                dx = 10 * delta * x * (alpha - beta * y);
-//                dy = 10 * delta * y * (delta2 * x - gamma);
-
-                x = points[i * 3    ];
-                y = points[i * 3 + 1];
-                z = points[i * 3 + 2];
-
-//                dx = 3.0f * (1 - x) - 2.2f * z;
-//                dy = -1.0f * (1 - x * x) * y;
-//                dz = 0.001f * x;
-
-                dx = 10 * (y - x);
-                dy = x * (28 - z) - y;
-                dz = x * y - (8f / 3f) * z;
-
-                dx *= 0.5f;
-                dy *= 0.5f;
-                dz *= 0.5f;
-
-                x += dx * delta;
-                y += dy * delta;
-                z += dz * delta;
-
-                points[i * 3    ] = x;
-                points[i * 3 + 1] = y;
-                points[i * 3 + 2] = z;
-
-
-//                float xnew= (float) (Math.sin(x * y / b) * y + Math.cos(a * x - y));
-//                float ynew= (float) (x + Math.sin(y) / b);
-
-                particles.updateParticle(i, x, y);
-//                particles.updateParticle(i, x + dx, y + dy);
+            if (particles2.getSize() > 0) {
+                updatePoint(points2, 0);
+                particles2.updateParticle(0, points2[0], points2[2]);
             }
         }
 
-        public float f(float x) {
-            return x * x * x;
+        void updatePoint(float[] points, int i) {
+
+            float x, y, z, dx, dy, dz, dt;
+
+            x = points[i * 3    ];
+            y = points[i * 3 + 1];
+            z = points[i * 3 + 2];
+
+            dx = 10 * (y - x);
+            dy = x * (28 - z) - y;
+            dz = x * y - (8f / 3f) * z;
+
+            dt = (float) Math.log(time
+//                    - particles.getBirthTime(i)
+                    + 1) / 8f;
+            dx *= dt;
+            dy *= dt;
+            dz *= dt;
+
+            x += dx * delta;
+            y += dy * delta;
+            z += dz * delta;
+
+            points[i * 3    ] = x;
+            points[i * 3 + 1] = y;
+            points[i * 3 + 2] = z;
         }
 
-        public float g(float x) {
-            return (float)( Math.sin(x - Cq.time) + Math.cos(x * 0.7 + Cq.time)) * 5;
+    }
+
+
+    static class Traj extends CqScene {
+
+        GraphSpace plotter;
+        Particles particles;
+
+
+
+        @Override
+        public void init() {
+            plotter = new GraphSpace(200, 100, 1520, 880, -3, 3, -1, 3);
+            addChild(plotter);
+
+            particles = new Particles(10, 1000, 5, 2, new Color("#FFFFFF"));
+            plotter.addToGraphSpace(particles);
+
+            plotter.xAxisVisible = false;
+            plotter.yAxisVisible = false;
+
+            particles.addParticle(0, 0);
+        }
+
+        boolean yer = false;
+
+        @Override
+        public void update() {
+            float
+                    dx = (float) (Math.cos(time) + Math.cos(time * 5)) * delta,
+                    dy = (float) (Math.sin(time)) * delta;
+            particles.updateParticle(0, particles.getX(0) + dx, particles.getY(0) + dy);
         }
 
     }
@@ -376,6 +435,92 @@ public class TestScenes {
                 dx = dx(x, y);
                 dy = dy(x, y);
                 dt = (float) Math.log(time - particles.getBirthTime(i) + 1) / 40f;
+                particles.updateParticle(i, x + dx * dt, y + dy * dt);
+            }
+
+            if (time > timeToStartAddingParticles && particles.getSize() < particleCount) {
+                for (int i = 0; i < (int) (particleCount * delta / addParticlesDuration); i++) {
+                    addParticle();
+                }
+            }
+
+        }
+    }
+
+    public static class VanDerPol extends CqScene {
+        float minX = -6;
+        float maxX = 6;
+        float minY = -6;
+        float maxY = 6;
+        float particleRadius = 50;
+        int particleCount = 3000;
+
+        GraphSpace graphSpace = new GraphSpace(225, 125, 1920 - 450, 1080 - 250, minX, maxX, minY, maxY);
+        VectorField vectorField = new VectorField(minX, maxX, minY, maxY, 0.6f, 15, new Color("#ff3838"), 4);
+        Particles particles = new Particles(2, 10, 1, 1, new Color("#FFFF00"));
+        Random random = new Random();
+
+        float timeToStartAddingParticles;
+        float addParticlesDuration = 3;
+        @Override
+        public void init() {
+            graphSpace.xLabel = "X";
+            graphSpace.yLabel = "Y";
+            graphSpace.xMarkingInterval = 2;
+            graphSpace.yMarkingInterval = 2;
+            graphSpace.xMarkingDecimalPlaces = 0;
+            graphSpace.yMarkingDecimalPlaces = 0;
+            addChild(graphSpace);
+
+
+            graphSpace.addToGraphSpace(vectorField);
+            vectorField.setTraceProgress(0);
+
+            float realX, realY;
+            for (int x = 0; x < vectorField.xCount(); x++) {
+                for (int y = 0; y < vectorField.yCount(); y++) {
+                    realX = vectorField.getX(x);
+                    realY = vectorField.getY(y);
+                    vectorField.setVec(x, y,
+                            dx(realX, realY),
+                            dy(realX, realY)
+                    );
+                }
+            }
+            Tween.interpolate(vectorField::setTraceProgress, 0, 1, time + 1, 1.5f, Tween.Easing.EASE_IN_OUT);
+
+            graphSpace.addToGraphSpace(particles);
+            timeToStartAddingParticles = time + 4;
+        }
+
+        public void addParticle() {
+            float angle = random.nextFloat() * 2 * (float) Math.PI;
+            float radius = (float) Math.pow(random.nextFloat(), 6) * particleRadius;
+            particles.addParticle(
+                    (float) Math.cos(angle) * radius,
+                    (float) Math.sin(angle) * radius
+            );
+        }
+
+        public float dx(float x, float y) {
+            return x - (x * x * x) / 3 - y;
+        }
+
+        public float dy(float x, float y) {
+            return x;
+        }
+
+        @Override
+        public void update() {
+
+
+            float x, y, dx, dy, dt;
+            for (int i = 0; i < particles.getSize(); i++) {
+                x = particles.getX(i);
+                y = particles.getY(i);
+                dx = dx(x, y);
+                dy = dy(x, y);
+                dt = (float) Math.log(time - particles.getBirthTime(i) + 1) / 60f;
                 particles.updateParticle(i, x + dx * dt, y + dy * dt);
             }
 
