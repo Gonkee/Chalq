@@ -20,8 +20,9 @@ public class TestScenes {
         config.height = 1080;
         config.backgroundColor = new Color("#1A2333");
         config.antialiasing = true;
-        config.outputMP4Path = "vidout/lorenzInfiniteDetail.mp4";
-        new CqWindow(config, new Scene1());
+//        config.outputMP4Path = "vidout/convergence.mp4";
+        config.crfFactor = 15;
+        new CqWindow(config, new Traj());
 
     }
 
@@ -32,9 +33,9 @@ public class TestScenes {
         Particles particles2;
         Random rand = new Random();
 
-        int numPoints = 10;
+        int numPoints = 1000;
         float[] points = new float[numPoints * 3];
-        float[] points2 = new float[3];
+        float[] points2 = new float[6];
 
         float timeToStartAddingParticles;
         float addParticlesDuration = 3;
@@ -44,7 +45,7 @@ public class TestScenes {
             points[i * 3 + 1] = -30 + rand.nextFloat() * 60;
             points[i * 3 + 2] = rand.nextFloat() * 50;
 
-//            particles.addParticle(points[i * 3    ], points[i * 3 + 2]);
+            particles.addParticle(points[i * 3    ], points[i * 3 + 2]);
         }
 
         public void addParticle2(int i) {
@@ -61,10 +62,10 @@ public class TestScenes {
             plotter = new GraphSpace(200, 100, 1520, 880, -20, 20, 0, 45);
             addChild(plotter);
 
-            particles = new Particles(3, 2000, 2, 2, new Color("#FFF000"));
-            particles2 = new Particles(4, 2000, 3, 2, new Color("#00CC00"));
+            particles = new Particles(0, 20, 1, 1, new Color("#FFF000"));
+            particles2 = new Particles(6, 25, 4, 1, new Color("#ff3b3b"));
             plotter.addToGraphSpace(particles);
-            plotter.addToGraphSpace(particles2);
+//            plotter.addToGraphSpace(particles2);
 
             plotter.yMarkingDecimalPlaces = 0;
             plotter.xMarkingDecimalPlaces = 0;
@@ -78,6 +79,24 @@ public class TestScenes {
             for (int i = 0; i < numPoints; i++) {
                 addParticle(i);
             }
+
+
+            float px = -9.085123f;
+            float py = -11.816816f;
+            float pz = 23.804787f;
+
+            points2[0] = px;
+            points2[1] = py;
+            points2[2] = pz;
+
+            particles2.addParticle(points2[0], points2[2]);
+
+            points2[3] = px + 0.1f;
+            points2[4] = py;
+            points2[5] = pz;
+
+            particles2.addParticle(points2[3], points2[5]);
+
         }
 
         boolean yer = false;
@@ -86,12 +105,12 @@ public class TestScenes {
         public void update() {
 
 
-            if (time > timeToStartAddingParticles && !yer) {
-                for (int i = 0; i < numPoints; i++) {
-                    particles.addParticle(points[i * 3    ], points[i * 3 + 2]);
-                }
-                yer = true;
-            }
+//            if (time > timeToStartAddingParticles && !yer) {
+//                for (int i = 0; i < numPoints; i++) {
+//                    particles.addParticle(points[i * 3    ], points[i * 3 + 2]);
+//                }
+//                yer = true;
+//            }
 
 //            if (time > timeToStartAddingParticles && particles.getSize() < numPoints) {
 //                for (int i = 0; i < (int) (numPoints * delta / addParticlesDuration); i++) {
@@ -114,6 +133,10 @@ public class TestScenes {
             if (particles2.getSize() > 0) {
                 updatePoint(points2, 0);
                 particles2.updateParticle(0, points2[0], points2[2]);
+//                System.out.println(points2[0] + " , " +  points2[1] + " , " + points2[2]);
+
+                updatePoint(points2, 1);
+                particles2.updateParticle(1, points2[3], points2[5]);
             }
         }
 
@@ -131,7 +154,7 @@ public class TestScenes {
 
             dt = (float) Math.log(time
 //                    - particles.getBirthTime(i)
-                    + 1) / 8f;
+                    + 1) / 14f;
             dx *= dt;
             dy *= dt;
             dz *= dt;
@@ -153,30 +176,43 @@ public class TestScenes {
         GraphSpace plotter;
         Particles particles;
 
+        float x = -3;
 
+        public void setX(float x) {
+            this.x = x;
+        }
 
         @Override
         public void init() {
-            plotter = new GraphSpace(200, 100, 1520, 880, -3, 3, -1, 3);
+            plotter = new GraphSpace(200, 100, 1520, 880, -3, 3, -1, 8);
             addChild(plotter);
 
-            particles = new Particles(10, 1000, 5, 2, new Color("#FFFFFF"));
+            particles = new Particles(7, 1000, 5, 2, new Color("#FFF000"));
             plotter.addToGraphSpace(particles);
 
             plotter.xAxisVisible = false;
             plotter.yAxisVisible = false;
 
-            particles.addParticle(0, 0);
+            particles.addParticle(x, 0);
+            particles.addParticle(x, (float) Math.pow(0.5, x));
+
+            Tween.interpolate(this::setX, -3, 3, time + 1, 4, Tween.Easing.EASE_IN_OUT);
         }
 
         boolean yer = false;
 
         @Override
         public void update() {
-            float
-                    dx = (float) (Math.cos(time) + Math.cos(time * 5)) * delta,
-                    dy = (float) (Math.sin(time)) * delta;
-            particles.updateParticle(0, particles.getX(0) + dx, particles.getY(0) + dy);
+//            float
+//                    dx = (float) (Math.cos(time) + Math.cos(time * 5)) * delta,
+//                    dy = (float) (Math.sin(time)) * delta;
+//
+//            particles.updateParticle(0, particles.getX(0) + dx, particles.getY(0) + dy);
+
+//            x += delta;
+
+            particles.updateParticle(0, x, 0);
+            particles.updateParticle(1, x, (float) Math.pow(0.5, x));
         }
 
     }

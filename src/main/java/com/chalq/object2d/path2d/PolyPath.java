@@ -34,6 +34,17 @@ public class PolyPath extends Path2D{
         }
     }
 
+    public float getVertexCoord(int coordID) {
+        if (coordID < vertices.length) {
+            return vertices[coordID];
+        }
+        return 0;
+    }
+
+    public int getVertexCount() {
+        return vertices.length / 2;
+    }
+
     private void updatePath() {
         pathDirty = false;
         totalLength = 0;
@@ -53,6 +64,7 @@ public class PolyPath extends Path2D{
         }
         setTraceProgress(getTraceProgress());
     }
+
 
     @Override
     public void setTraceProgress(float progress) {
