@@ -30,8 +30,14 @@ public class Text extends Object2D {
     @Override
     public void draw(long nvg) {
         Cq.textSettings(fontSize * getScaleX(), alignH, alignV);
+
+        // TODO: not sure why text colour must be set by drawing a non text previously
+        penSetColor(color);
         penBeginPath(nvg);
-        penSetColor(Color.WHITE);
+        penCircle(nvg, 0, 0, 0);
+        penFillPath(nvg);
+
+        penBeginPath(nvg);
         penText(nvg, text, offsetX, offsetY);
     }
 

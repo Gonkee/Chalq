@@ -89,6 +89,4 @@ public class CqWindow {
         glfwDestroyWindow(window);
         glfwTerminate();
     }
-
-
 }

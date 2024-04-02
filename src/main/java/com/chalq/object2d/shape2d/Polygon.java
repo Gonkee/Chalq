@@ -1,11 +1,8 @@
 package com.chalq.object2d.shape2d;
 
-import com.chalq.core.Object2D;
 import com.chalq.math.Vec2;
 import com.chalq.object2d.path2d.PolyPath;
 import com.chalq.util.Color;
-
-import java.util.Arrays;
 
 public class Polygon extends Shape2D {
 
@@ -52,9 +49,7 @@ public class Polygon extends Shape2D {
     }
 
     @Override
-    public void update() {
-
-    }
+    public void update() {}
 
     @Override
     public Vec2 getLocalTracePosition() {
@@ -68,7 +63,6 @@ public class Polygon extends Shape2D {
     public int getVertexCount() {
         return vertexCount;
     }
-
 
     public void setTraceProgress (float progress) {
         path.setTraceProgress(progress);
