@@ -1,5 +1,6 @@
 ### Motion graphics animation library for making programmatic visuals
 - Uses a lightweight vector graphics rendering library called [NanoVG](https://github.com/memononen/nanovg)
+- Uses the [Humble video library](https://github.com/artclarke/humble-video) to save output to mp4
 
 Used to power the animations of many videos on the [Gonkee youtube channel](https://www.youtube.com/@gonkee), such as:
 - [How Stable Diffusion Works (AI Image Generation)](https://www.youtube.com/watch?v=sFztPP9qPRc)
